@@ -1,0 +1,225 @@
+% --- Template for thesis / report with tktltiki2 class ---
+% 
+% last updated 2013/02/15 for tkltiki2 v1.02
+
+\documentclass[english, grading]{tktltiki2}
+
+% tktltiki2 automatically loads babel, so you can simply
+% give the language parameter (e.g. finnish, swedish, english, british) as
+% a parameter for the class: \documentclass[finnish]{tktltiki2}.
+% The information on title and abstract is generated automatically depending on
+% the language, see below if you need to change any of these manually.
+% 
+% Class options:
+% - grading                 -- Print labels for grading information on the front page.
+% - disablelastpagecounter  -- Disables the automatic generation of page number information
+%                              in the abstract. See also \numberofpagesinformation{} command below.
+%
+% The class also respects the following options of article class:
+%   10pt, 11pt, 12pt, final, draft, oneside, twoside,
+%   openright, openany, onecolumn, twocolumn, leqno, fleqn
+%
+% The default font size is 11pt. The paper size used is A4, other sizes are not supported.
+%
+% rubber: module pdftex
+
+% --- General packages ---
+
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hyphens]{url}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsfonts,amsmath,amssymb,amsthm,booktabs,color,enumitem,graphicx}
+\usepackage[pdftex,hidelinks]{hyperref}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{diagbox}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+%\usepackage[bottom]{footmisc}
+
+% Automatically set the PDF metadata fields
+\makeatletter
+\AtBeginDocument{\hypersetup{pdftitle = {\@title}, pdfauthor = {\@author}}}
+\makeatother
+
+% --- Language-related settings ---
+%
+% these should be modified according to your language
+
+% babelbib for non-english bibliography using bibtex
+\usepackage[fixlanguage]{babelbib}
+\selectbiblanguage{english}
+
+% add bibliography to the table of contents
+\usepackage[nottoc]{tocbibind}
+% tocbibind renames the bibliography, use the following to change it back
+\settocbibname{References}
+
+% -- Handy shortcuts
+\newcommand{\etal}{\textit{et al}. }
+\newcommand{\ie}{\textit{i}.\textit{e}., }
+\newcommand{\eg}{\textit{e}.\textit{g}. }
+\newcommand{\cpp}{C\texttt{++}}
+\newcommand{\bolditt}[1]{\mathbf{#1}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% --- Theorem environment definitions ---
+\newtheorem{lau}{Lause}
+\newtheorem{lem}[lau]{Lemma}
+\newtheorem{kor}[lau]{Korollaari}
+
+\theoremstyle{definition}
+\newtheorem{maar}[lau]{Definition}
+\newtheorem{ong}{Ongelma}
+\newtheorem{alg}[lau]{Algoritmi}
+\newtheorem{esim}[lau]{Esimerkki}
+
+\theoremstyle{remark}
+\newtheorem*{huom}{Huomautus}
+
+
+% --- tktltiki2 options ---
+%
+% The following commands define the information used to generate title and
+% abstract pages. The following entries should be always specified:
+
+\title{Automatic Software Plagiarism Detection}
+\author{Kristian Wahlroos}
+\date{\today}
+\level{M.Sc. Thesis}
+\abstract{
+Plagiarism is an act of copying where one doesn't rightfully credit the original source. The motivations behind plagiarism can vary from gaining economical advantage to even completing academic courses in a desperate way. Plagiarism itself exists in various domains where people want to take credit from something they have worked on. These areas can include e.g. literature, art or software.   
+
+In this study, automatic authorship identification and plagiarism detection from software is analyzed and a model is built on top of findings. The term \textit{automatic} here refers to a system which requires as little as possible human intervention as possible. The goal for the model is to point out possible plagiarism from a collection of documents, which here is specified as a collection of source code files written by various authors. This situation closely related to authorship identification, and thus as a statistical tool, supervised machine learning model is utilized. The latter problem can be stated as \emph{given a document, which author has written this} and \emph{does this document follow the previous style of the author}. 
+}
+
+% The following can be used to specify keywords and classification of the paper:
+
+\keywords{plagiarism; authorship identification; }
+
+% classification according to ACM Computing Classification System (http://www.acm.org/about/class/)
+% This is probably mostly relevant for computer scientists
+% uncomment the following; contents of \classification will be printed under the abstract with a title
+% "ACM Computing Classification System (CCS):"
+% \classification{}
+
+% If the automatic page number counting is not working as desired in your case,
+% uncomment the following to manually set the number of pages displayed in the abstract page:
+%
+% \numberofpagesinformation{16 sivua + 10 sivua liitteissä}
+%
+% If you are not a computer scientist, you will want to uncomment the following by hand and specify
+% your department, faculty and subject by hand:
+%
+% \faculty{Matemaattis-luonnontieteellinen}
+% \department{Tietojenkäsittelytieteen laitos}
+% \subject{Tietojenkäsittelytiede}
+%
+% If you are not from the University of Helsinki, then you will most likely want to set these also:
+%
+% \university{Helsingin Yliopisto}
+% \universitylong{HELSINGIN YLIOPISTO --- HELSINGFORS UNIVERSITET --- UNIVERSITY OF HELSINKI} % displayed on the top of the abstract page
+% \city{Helsinki}
+%
+
+
+% 10-15 pages abstract
+
+\begin{document}
+
+% --- Front matter ---
+
+\frontmatter      % roman page numbering for front matter
+
+\maketitle        % title page
+\makeabstract     % abstract page
+
+\tableofcontents  % table of contents
+
+% --- Main matter ---
+
+\mainmatter       % clear page, start arabic page numbering
+
+\section{Introduction}
+
+What means term plagiarism?
+What is plagiarism?
+Why studied here --> 
+
+\section{Background}
+
+
+\subsection{Source code plagiarism}
+\subsubsection{Code structure}
+\subsubsection{Plagiarism types}
+\subsubsection{Plagiarism motives}
+\subsubsection{In-class plagiarism}
+\subsubsection{Plagiarism in industry}
+\subsubsection{Similarity measure}
+\subsection{Authorship identification}
+\subsection{Machine learning}
+\subsubsection{Clustering}
+\subsubsection{Classification}
+
+\newpage
+
+\section{Related Work}
+\input{liter_review/high_results.tex}
+
+\subsubsection{Data}
+\input{liter_review/data.tex}
+
+\subsubsection{Methods}
+\input{liter_review/methods.tex}
+
+\subsubsection{Accuracies}
+\input{liter_review/accuracies.tex}
+
+\newpage
+
+
+\section{Methodology}
+\subsection{Context}
+% Course in Uni helsinki etc.
+\subsection{Data}
+\subsubsection{Preprocessing}
+\subsubsection{}
+\subsection{Research question}
+
+\section{Results}
+
+\section{Discussion}
+
+\section{Conclusion}
+
+
+%
+
+% --- References ---
+%
+% bibtex is used to generate the bibliography. The babplain style
+% will generate numeric references (for example [1]) appropriate for theoretical
+% computer science. If you need alphanumeric references (e.g [Tur90]), use
+%
+%\bibliographystyle{babalpha-lf}
+%
+% instead.
+\newpage
+\bibliographystyle{babplain-lf}
+\bibliography{references-fi}
+
+
+% --- Appendices ---
+
+% uncomment the following
+
+% \newpage
+% \appendix
+% 
+% \section{Esimerkkiliite}
+
+\end{document}

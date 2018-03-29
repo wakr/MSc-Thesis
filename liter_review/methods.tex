@@ -1,0 +1,111 @@
+In this chapter we turn the focus to the actual methods used in various studies. We use the same 
+classification as a baseline for studies that was made earlier. The math used in studies is generalized to match the style of this paper, which means that a document is represented as $d$, matrices are bold and upper-cased $\bolditt{A}$ and vectors are bold but lower-cased $\bolditt{a}$. 
+
+\paragraph{Similarity detection}\mbox{}\\
+As a recap, the problem of similarity detection can be described formally as following.
+
+\newtheorem*{smd}{Similarity detection}
+
+\begin{smd}
+Given a set of source code documents $D = \{d_1,...,d_n\}$, define similarity function $sim: d_i, d_j \rightarrow [0, 1]$ such that $sim(d_i, d_j) = sim(d_j, d_i)$ and $sim(d_i, d_i) = 1$, with a optional threshold $\theta \in [0, 1]$ that defines the limit where two source codes are considered as too similar. With this definition, any pair of source code file $(d_i, d_j) \in D \times D$ can also be presented as a triplet $(d_i, d_j, s)$, where $i \neq j$ and $s$ is the similarity value between documents. 
+\end{smd}
+
+The attribute counting study by Moussiades and Vakali uses a graph clustering on top of pair-wise similarities calculated using the Jaccard coefficient \cite{PACASCD2005}. Authors use following form of Jaccard coeficcient in their study where $T$ is the indexed set of substitute keywords per source code 
+
+\begin{equation}\label{jacc_eqn}
+    sim(d_1, d_2) = \dfrac{|T(d_1) \cap T(d_2)|}{|T(d_1) \cup T(d_2)|}
+\end{equation}
+\noindent
+% refer to plag. attack
+The indexed set can be built considering language dependent keywords \eg \texttt{while, for, false and true} in \cpp, and marking their position with respect to the occurrences of same keywords previously. However, authors claim that to generalize the set more, substitution keywords should be used. This means that for example all occurrences of \texttt{for}- and \texttt{while} -loops should be counted together, which helps to protect against plagiarism attack. The graph clustering algorithm Moussiades and Vakali uses is called \emph{WMajorClust} which works by presenting all pairs of source codes as non-directed graph $G = (V, E)$ where the set of vertices $V$ represents the source codes while the set of edges $E$ are weighted by equation \ref{jacc_eqn}. We can also express the definition of $E$ by Moussiades and Vakali with following constraints
+
+\begin{equation}\label{jacc_edges_eqn}
+         E = \Big\{ \{ d_i, d_j, sim(d_i, d_j)\} \, | \, (d_i, d_j) \in D \times D \land sim(d_i, d_j) \geq \theta \Big\}
+\end{equation}
+
+\noindent
+%chapter ref
+In equation \ref{jacc_edges_eqn}, $\theta$ is a user-defined parameter and works as a minimum threshold value that separates non-plagiarized source codes from plagiarized ones \ie two source codes will not share an edge if their similarity is below $\theta$.
+
+Segment matching study by Brixtel \etal presents their algorithm, which builds from three major steps \cite{LICD2010}: pre-filtering, segmentation and document distance calculation. Their pre-filtering is to normalize the source code in a way, that every keyword and parameter definitions is transformed into a single symbol. As a segmentation, authors split the source code by lines forming set of segments $S_k$ presenting the partitioned set of a single source code. Similarity calculation happens by first forming distance matrix $\bolditt{M}$ between two source codes $d_1, d_2$ and then comparing all pairs of segments $(s_i^1, s_j^2) \in S_1 \times S_2$ where $S_k = (s_1^k, ..., s_n^k)$, with \emph{Levenshtein edit distance}. Distance matrix $\bolditt{M}$ is then transformed into noise reduction matrix $\bolditt{H}$ by finding the maximal matching between segmentations. Finally, $\bolditt{H}$ is filtered into a matrix $\bolditt{P}$ by convolution and utilizing a threshold\footnote{Authors used $\theta = 0.7$}. With the matrix $\bolditt{P}$, distance between two pairs of documents can be calculated by Brixtel \etal as 
+
+\begin{equation}
+    sim(d_1, d_2) = 1 - \dfrac{1}{\min(|S_1|, |S_2|)}\sum_{i, j} 1 - \bolditt{P}_{(i, j)}
+\end{equation}
+
+\noindent
+Zhang and Liu utilize AST-tree and their core method is mainly constructed from two methods \cite{ASTMLPD2013}: forming the AST-representation and similarity calculation. Their AST-representation is done by traversing the parsed AST-tree and turning it into textual format by printing the nodes, and similarity calculation is computed using \emph{Smith Waterman algorithm} that finds the optimal matching between two strings $S_1, S_2$. Zhang et Liu gives the formula for similarity calculation between two source codes as
+
+\begin{equation}
+    sim(d_1, d_2) = \dfrac{2 \cdot \text{ SLength}(d_1, d_2)}{|S_1| + |S_2|}
+\end{equation}
+\noindent
+Where SLength is the length of maximal matching string obtained via  \emph{Smith Waterman algorithm}, and $|S_k|$ represents the character length of one segment. 
+
+
+$N$-gram studies take a different approach. Cosma and Joy uses \emph{Latent Semantic Analysis} to find suspicious documents \cite{AASCPD2012}. They first preprocess the documents by removing \eg short terms and comments. Then all documents are first transformed into a term-by-file matrix $\bolditt{A}$, where each document is represented as a occurrences of each unique term, which is same as forming the unigrams of a document. Values of $\bolditt{A}$ are weighted, and then $\bolditt{A}$ is decomposed via \emph{singular value decomposition} into $\bolditt{A} = \bolditt{U}\mathbf{\Sigma}\bolditt{V}^\intercal$ where $\bolditt{U}$ represents terms by dimension, $\mathbf{\Sigma}$ singular values and $\bolditt{V}$ files by dimensions. The dimensionality reduction is performed for all these matrices by considering only the first 30 columns. Finally, the similarity between a query vector $\bolditt{q}$ representing term frequency of document $d_i$, and document $d_j$ represented as a column $\bolditt{a}_j$ of matrix $\bolditt{A}$ is calculated by \emph{cosine similarity} \cite{AASCPD2012}
+
+\begin{equation}\label{cosine_sim_eqn}
+    sim(\bolditt{q}, d_j) = \cos \Theta_j = \dfrac{\bolditt{a}_j^\intercal \bolditt{q}}{\norm{\bolditt{a}_j}_2 \norm{\bolditt{q}}_2} = \dfrac{\bolditt{a}_j \boldsymbol{\cdot} \bolditt{q}}{\sqrt{\sum \limits_{i} \bolditt{a}_{(j, i)}^2} \sqrt{\sum \limits_{i} \bolditt{q}_i^2}}
+\end{equation}
+
+\noindent
+Acampora and Cosma \cite{AFAPLI2015} continues on same style as Cosma and Joy \cite{AASCPD2012}, first preprocessing the documents by lowercasing and removing comments, syntactical tokens and short terms. Then using singular value decomposition with weighting to form three matrices from the corpus of source codes. For the reduced matrix $\bolditt{V}$ however, they perform a \emph{Fuzzy C-Means} clustering algorithm, which is tuned with \emph{ANFIS} learning algorithm to optimize the hyperparameters of Fuzzy C-means \cite{AFAPLI2015}. The process returns a membership degree $\mu_{i, k}$ per document, indicating how close $i$th document is to $k$th cluster. 
+\noindent
+Flores \etal \cite{USCR2014} uses similar preprocessing approach to Cosma and Joy. They first process the documents by lower-casing them and removing repeated character, tabs with spaces. Then transform the documents into $3$-grams and weighting them by using a \emph{term frequency}. Finally, similarity is calculated using cosine similarity where $t$ is one of the 3-grams and $tf$ is the term frequency function \cite{USCR2014}. Formally this can be calculated in a same way as in equation \ref{cosine_sim_eqn} between two documents as
+
+\begin{equation}
+    sim(d_i, d_j) = \dfrac{\sum\limits_{t \in d_i \cap d_j} tf(t, d_i) tf(t, d_j) }
+                          {\sqrt{\sum\limits_{t \in d_i} tf(t, d_i)^2 \sum\limits_{t \in d_j} tf(t, d_j)^2}}
+\end{equation}
+
+\noindent
+Heblikar \etal \cite{Heblikar2015NormalizationBS} preprocesses also their documents by lower-casing, pruning repeated whitespace and removing single symbols. They then normalize the documents by considering most frequent terms, renaming similar terms under same symbols and ultimately filtering them completely out from the source codes. For detection phase, they use same approach as Flores \etal did in \cite{USCR2014} but use both 1-grams and 2-grams with \emph{term frequency - inverse document frequency} (tf-idf) weighting. Interestingly, also Ramírez-de-la-Cruz \etal in \cite{OTIOLSS2015} and Ramírez-de-la-Cruz \etal in \cite{ramirez2015high} decides to use cosine similarity and Jaccard coefficient. The only major difference being, that Ramírez-de-la-Cruz \etal uses additional structural and stylistic features, forming total combination of eight various similarity measurements \cite{OTIOLSS2015}. Where as Ramírez-de-la-Cruz \etal in \cite{ramirez2015high} uses cosine similarity with character 3-grams to calculate five different similarities: lexical, stylistic, comments, text\footnote{Referring here as any string passed in as an argument of a function} and structural. Lastly, Ohmann and Rahal proposes density-based clustering to form clusters of similar documents \cite{Ohmann2015}. Their similarity approach follows closely to other studies presented above: filtering and normalization as preprocessing, data format as word $n$-grams and similarity values gained by using cosine similarity. 
+
+Tree-based studies mostly relies on calculating similarity between two tree structures $T_i, T_j$ obtained from the original documents $d_i, d_j$ by parsing them. For example Ng \etal first generates parse tree $T$ from the source code, then decomposes parse tree into subtrees $T' \subseteq T$ with respect to the functionality \eg imports are categorized together \cite{TBCFPD2012}. The similarity score is thus obtained by comparing trees with \emph{depth-first search} and summing the scores for all subtrees to form a similarity score between two documents. The similarity function between two documents can be expressed with the following definition where $simST$ is the similarity score between two subtrees obtained by comparing nodes and tokens 
+
+\begin{equation}
+    sim(d_i, d_j) = sim(T_i, T_j) = \dfrac{\sum\limits_{i, j}simST(T'_i, T'_j)}{10 \cdot |T'|} \cdot 100
+\end{equation}
+
+\noindent
+Son \etal computes similarity value between two parse trees with a modified parse tree kernel \cite{AAPSCDPTK2013}. They define the kernel function $k$ via recursive function $C$ where $n$ is the node of a subtree $T'$. Function $C$ finds a maximal similarity between $n_i, n_j$ thus authors calls it as \emph{maximum node value}  
+
+\begin{equation}
+    k(T_i, T_j) = \sum\limits_{n_i \in T'_i} \sum\limits_{n_j \in T'_j} C(n_i, n_j)
+\end{equation}
+
+\noindent
+The actual similarity between documents can be calculated via normalization \cite{AAPSCDPTK2013}
+
+\begin{equation}
+    sim(d_i, d_j) = \dfrac{k(T_i, T_j)}{\sqrt{k(T_i, T_i) \cdot k(T_j, T_j)}}
+\end{equation}
+
+% C(n_i, n_j) &= \lambda \prod \limits_{k}^{nc(n_i)} \left( 1 + \max\limits_{ch \in ch_{n_j}} C(ch_k(n_i), ch)\right)
+
+\noindent
+Asd
+
+%   \cite{AIR2015} & \cite{Fu2017WASTKAW}
+
+
+\newpage
+\paragraph{Authorship identification}\mbox{}\\
+a
+
+
+
+%\begin{algorithm}[ht]
+%\caption{See how easy it is to provide algorithms}
+%\label{myFirstAlgorithm}
+%\begin{algorithmic}
+%\REQUIRE $a$
+%\STATE $b = 0$
+%\STATE $x \leftarrow 1:10$
+%\FORALL{x}
+%    \STATE $b = b+a$
+%\ENDFOR
+%\RETURN $b$
+%\end{algorithmic}
+%\end{algorithm}
