@@ -30,9 +30,9 @@ The total number of papers gathered by querying Scopus in the first part of the 
 \end{figure}
 
 \noindent
-This set was filtered by terms described in the previous chapter, and the total number of papers inspected more carefully in this systematic literature review is 33. 
+This set was filtered by terms described in the previous chapter, and the total number of papers inspected more carefully in this systematic literature review is 32. 
 
-From the set of 33 studies, we look answers for following questions: \emph{how plagiarism can be detected from source code}, \emph{what are possible features that can be derived from source code} and \emph{how can one identify the author of a given source code}. We start first by grouping the papers by their themes to see what kind of different approaches there are to deal with the problem of plagiarism detection. After the initial classification, following aspects are identified from the studies: data, methods and test results. 
+From the set of 32 studies, we look answers for following questions: \emph{how plagiarism can be detected from source code}, \emph{what are possible features that can be derived from source code} and \emph{how can one identify the author of a given source code}. We start first by grouping the papers by their themes to see what kind of different approaches there are to deal with the problem of plagiarism detection. After the initial classification, following aspects are identified from the studies: data, methods and test results. 
 
 
 \subsubsection{Approaches}
@@ -50,13 +50,13 @@ query; dividing papers either to be about the detection of plagiarism or identif
         {\bf Similarity detection} & {\bf Authorship identification} \\ \hline
     
         \cite{AFAPLI2015, LICD2010, AASCPD2012} & \cite{SCAANN2017, ABEC2014, CAPSCAP2014}   \\
-        \cite{Heblikar2015NormalizationBS, USCR2014, AIR2015} &  \cite{SCANG2007, RA:AE2010, EJPFSAI2004}\\
+        \cite{Heblikar2015NormalizationBS, USCR2014, AIR2015} &  \cite{SCANG2007, EJPFSAI2004, ACSBPD2012}\\
         \cite{OTIOLSS2015, BUAA2009, ramirez2015high} &  \cite{APASCAI2007, UCMHGAAI2007, ESHPFSCAC2008}\\
         \cite{Ohmann2015, TBCFPD2012, Fu2017WASTKAW} &  \cite{AIRTSCAA2009, TSUDIJSCAI2011, DNNSCAI2013} \\
         \cite{ASTMLPD2013, AAPSCDPTK2013, CPDPPD2013}    & \cite{SCAIUFL2013, SDNAIJSP2015, AISC2017} \\
-        \cite{PACASCD2005, RCISCP2017} & \cite{ACSBPD2012} \\ \hline
+        \cite{PACASCD2005, RCISCP2017} &  \\ \hline
         {\bf Number of papers} & {\bf Number of papers} \\ \hline
-        17 & 16 \\ \hline
+        17 & 15 \\ \hline
     \end{tabular}
 \end{table}
 
@@ -74,7 +74,7 @@ Considers two source codes as two strings and finding maximum match between them
 \paragraph{$N$-gram}
 Treating the source code as a string and splitting it via sliding window where the window size is the value of $n$ and the window traverses on either word or character level. This forms the vocabulary of the source code which is then transformed into occurrences of particular terms that are present, thus ultimately creating a vector representation of the source code. For example the statement \texttt{int a = 2} could be transformed into following word level 2-tuples using two as the value of $n$ (bigram). The first value of the following tuples is the $n$-gram extracted and the second value is the frequency: (\texttt{int a}, 1), (\texttt{a =}, 1), (\texttt{= 2}, 1). 
 
-\paragraph{Tree based methods}
+\paragraph{Tree-based methods}
 Constructing a tree presentation from the source code, that captures the structure. The generation of a tree presentation usually requires some kind of parser because it's language specific feature. The inspection of a generated tree can be done via tree traversal methods for example using recursive functions. 
 
 \paragraph{Hybrid methods}
@@ -118,10 +118,9 @@ When inspecting the division of authorship studies, we can see the division in t
         \hline
         {\bf AC} & {\bf NG-STR} & {\bf AST-STR} & {\bf HYB-STR} \\ \hline
         \cite{EJPFSAI2004, UCMHGAAI2007, APASCAI2007} & \cite{SCANG2007, ESHPFSCAC2008, AIRTSCAA2009} & \cite{SCAANN2017} & \cite{SDNAIJSP2015, AISC2017}\\ 
-        \cite{RA:AE2010, ACSBPD2012, SCAIUFL2013} & \cite{TSUDIJSCAI2011, CAPSCAP2014, ABEC2014} & &\\ 
-        \cite{DNNSCAI2013} &  & &\\ \hline
+        \cite{ACSBPD2012, SCAIUFL2013, DNNSCAI2013} & \cite{TSUDIJSCAI2011, CAPSCAP2014, ABEC2014} & &\\ \hline
         {\bf \#AC} & \multicolumn{3}{c |}{\bf \#STR} \\ \hline
-        7 & \multicolumn{3}{c |}{9}
+        6 & \multicolumn{3}{c |}{9}
         \\ \hline
     \end{tabular}
 \end{table}

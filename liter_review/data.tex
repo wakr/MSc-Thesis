@@ -1,4 +1,4 @@
-The data used in testing phase of 34 gathered studies is presented next, where the focus is for the similarity detection on following attributes: number of total documents, is there any synthetic data used and the average number of lines of code (Avg. LOC). For the authorship identification we focus on features like documents per author and number of possible authors. The term \emph{document} here refers to the number of source code file samples per author. We summarize the findings from data utilizing the categorization that was made earlier.
+The data used in testing phase of 32 gathered studies is presented next, where the focus is for the similarity detection on following attributes: number of total documents, is there any synthetic data used and the average number of lines of code (Avg. LOC). For the authorship identification we focus on features like documents per author and number of possible authors. The term \emph{document} here refers to the number of source code file samples per author. We summarize the findings from data utilizing the categorization that was made earlier.
 
 \paragraph{Similarity Detection}\mbox{}\\
 Attribute counting study by Moussiades and Vakali in \cite{PACASCD2005} uses two real data sets written in C\texttt{++}. They contain programming assignments and a forged set of programs. The first data set contains 24 programs having an average of 247 lines of code per submission, the second set is 51 programs having an average of 178 lines per source code. The forged data set is two modified versions from one program, trying to deliberately confuse state-of-the-art detectors.
@@ -48,23 +48,23 @@ Finally, hybrid study by Xiong \etal utilizes 40 assignments gathered from stude
 \paragraph{Authorship identification}\mbox{}\\
 Usage of data in studies dealing with the problem of identifying the author and utilizing attribute counting are summarized to the following table, where we now turn the focus on the amount of candidate authors and documents per author reported in studies.
 
+In table \ref{table-ai-ac-str-data}, one can see that there are two same data sets used in \cite{SCAIUFL2013, DNNSCAI2013}. This set was collected from \emph{SourceForge}\footnote{\url{https://sourceforge.net/}} projects and there are around 61 to 377 files per author. Rest of the attribute counting studies prefers to use \eg submissions gathered from students, as it's an easy way to gather tagged source code files.  
+
 \begin{table}[ht]
 \centering
 \caption{Data used in authorship studies utilizing attribute counting}
 \label{table-ai-ac-str-data}
 \scalebox{0.9}{
-    \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
               \hline
-              \backslashbox{\bf Feature}{\bf Paper} & \cite{EJPFSAI2004} & \cite{UCMHGAAI2007} & \cite{APASCAI2007} & (\cite{RA:AE2010}) & \cite{ACSBPD2012} & \cite{SCAIUFL2013} & \cite{DNNSCAI2013}\\ \hline
-    \bf Authors  & 46 & 20 & 8 & 15 & 120 & 10 & 10 \\ \hline
-    \bf Documents per author  & NA & 3 & 3 & 4 & NA & 61-377 & 61-377\\ \hline
-    \bf Synthetic  & No & No & No & No & No & No & No\\ \hline
+              \backslashbox{\bf Feature}{\bf Paper} & \cite{EJPFSAI2004} & \cite{UCMHGAAI2007} & \cite{APASCAI2007}  & \cite{ACSBPD2012} & \cite{SCAIUFL2013} & \cite{DNNSCAI2013}\\ \hline
+    \bf Authors  & 46 & 20 & 8  & 120 & 10 & 10 \\ \hline
+    \bf Documents per author  & NA & 3 & 3  & NA & 61-377 & 61-377\\ \hline
+    \bf Synthetic  & No & No & No & No & No & No\\ \hline
     \end{tabular}
 }
 \end{table}
 
-\noindent
-In table \ref{table-ai-ac-str-data}, one can see that there are two same data sets used in \cite{SCAIUFL2013, DNNSCAI2013}. This set was collected from \emph{SourceForge}\footnote{\url{https://sourceforge.net/}} projects and there are around 61 to 377 files per author. Rest of the attribute counting studies prefers to use \eg submissions gathered from students, as it's an easy way to gather tagged source code files.  
 
 Next, data sets from the second popular method $n$-grams used in authorship identification, are summarized into following table.
 
