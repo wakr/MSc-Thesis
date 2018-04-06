@@ -1,0 +1,2 @@
+course,exercise,id,source_code
+hy-s2016-ohpe,viikko01-Viikko01_002.HeiMaailma,opnro,{"/src/HeiMaailma.java":"public class HeiMaailma {\n\n    public static void main(String[] args) {\n        // Toteuta ohjelmasi tähän.\n        System.out.println(\"Hei Maailma!\");\n        System.out.println(\"(Ja Mualima!)\");\n\n    }\n\n}\n"}
