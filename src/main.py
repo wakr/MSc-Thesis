@@ -1,18 +1,18 @@
-import json
-
 import pandas as pd
 
 #%% read
 
-df = pd.read_csv('./data/placeholder.csv')
-df['source_code'] = df['source_code'].apply(json.loads)
+df = pd.read_csv('./data/ohpe2016s_processed.csv')
 
-#%% concatenate source codes into one text file 
 
-def stringify(sc_dict):
-    base = ""
-    for k in sc_dict.keys():
-        base += sc_dict[k] + "\n"
-    return base
+df['course'] = df['course'].astype('category')
+df['exercise'] = df['exercise'].astype('category')
+df['student'] = df['student'].astype('category')
 
-df['source_code'] = df.source_code.apply(stringify)
+
+# (full_course, exam)
+course_info = {'ohpe': ('hy-s2016-ohpe', 'hy-s2016-ohpe-konekoe-3'),
+               'ohja': ('hy-s2016-ohja', 'hy-s2016-ohja-konekoe-3')}
+
+
+df.head(5)

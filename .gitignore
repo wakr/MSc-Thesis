@@ -5,6 +5,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+src/data/ohpe2016s*
+
 .spyproject
 .DS_Store
 
