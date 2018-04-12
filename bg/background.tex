@@ -1,15 +1,71 @@
-\subsection{Source code plagiarism}
-\paragraph{Code structure}
-\paragraph{Plagiarism types}
-\paragraph{Plagiarism motives}
-\paragraph{In-class plagiarism}
+\subsection{Source-code plagiarism}
+
+Source-code plagiarism refers to a plagiarism that happens between source code files. This 
+scenario is common in academic programming courses and in software industry, where detection can be impossible due to time constraints. In academia, the underlying motives behind source code plagiarism include things like \cite{DPPA2008}; ambiguity about what is considered as excessive collaboration between students, using other students work to gain grades and minimizing the work needed to complete the course. Also, some students have problems to define what they consider as source-code plagiarism, and thus three common guidelines can be given \cite{Pieterse2014DecodingCP}:
+
+\begin{enumerate}
+    \item[1)] Refactoring other students work, and submitting it as your own, is plagiarism
+    \item[2)] If exercise templates are used, possible similarities between documents and templates are not plagiarism
+    \item[3)] Submitting a direct copy of other students work is plagiarism
+\end{enumerate}
+
+\noindent
+%Because of possible confusion about what is considered as plagiarism and the serious nature of plagiarism accusations in academia, it's preferable still to use some kind of human expert to judge to call out if a student has actually plagiarized someone \cite{Pieterse2014DecodingCP}. This allows the detection process to reveal candidates, which prunes heavily the amount of manual work needed.
+Detecting 2. and 3. are straightforward; code templates can be filtered out from documents so that they contain only students own work and detecting direct copy can be easily found by using string matching techniques. However, the problem arises when students tries to hide the plagiarism by mutating the copied document.
+
+\paragraph{Plagiarism strategies}\mbox{}\\
+Some common source code transformation techniques, often called as \emph{obfuscation strategies}, are targeted mainly towards two types of changes \cite{DPPA2008}: lexical and structural. Lexical changes doesn't require a deeper understanding of the logic and are doable with any \emph{integrated development environment} (IDE). Structural changes requires some understanding of the program logic, and includes modifications which change the layout of the source code but keeps the logic same. For example considering clause with an operand \texttt{if(a == true)}, this can be written equally as \texttt{if(a == !false)}.
+
+\begin{table}[ht]
+\centering
+\caption{Common transformation targets}
+\label{tbl-plag-strat}
+\begin{tabular}{|l|l|} \hline
+ \textbf{Lexical} & \textbf{Structural} \\ \hline
+ Comments                    & Loops                          \\
+ Formatting                  & Clauses                        \\
+ Naming                      & Statement order                \\
+                             & Operand order               \\ \hline
+\end{tabular}
+\end{table}
+
+\noindent
+Table \ref{tbl-plag-strat} shows some of the most common transformation targets in source codes. Given a source code from another student, plagiarist can apply above transformations and make it really difficult for a human to spot plagiarism, or even confuse naïve methods. The motivation behind using these transformations is simple, plagiarists want to hide traces and thus, the detection method must be resilient against these strategies. Plagiarism transformations defined in table \ref{tbl-plag-strat} closely relate to an earlier study which characterized six levels of transformations \cite{Faidhi:1987:EAD:27319.27321}.
+
+\begin{table}[ht]
+\centering
+\caption{Transformation levels}
+\label{tbl-plag-transf}
+\scalebox{0.85}{
+    \begin{tabular}{|c|c|p{5cm}|} \hline
+     \textbf{Level of change} & \textbf{Target}  & \textbf{Example action}\\ \hline
+     1 & Comments and indentation & Add extra spaces and newlines\\ \hline
+     2 & Identifiers & Rename all variables\\ \hline
+     3 & Declarations & Reorder functions\\ \hline
+     4 & Modules & Merge functions\\ \hline
+     5 & Statements & Use \texttt{for} instead of \texttt{while}\\ \hline
+     6 & Logic & Change whole expressions\\ \hline
+    
+    \end{tabular}
+    }
+\end{table}
+
+\noindent
+Applying all of these transformations one after another, makes the detection of plagiarism very difficult, as the plagiarized document diverges too much from the original document and hides most of the traces that could be used for detection. However, as the textual information changes, plagiarists still try to maintain the same logic between original and copied documents. In theory this implies that there still exists some kind of similarity, but now the similarity can't be found directly from representing the source code as a string. One intermediate structure that captures the logic of a code, is represented by a tree and called as \emph{abstract syntax tree} (AST).
+
+\paragraph{Code structure}\mbox{}\\
+Source code is a structured text, made of keywords and user-defined variables. There are  
 
 
-\subsubsection{Plagiarism in industry}
+\newpage
+\paragraph{Tools}\mbox{}\\
+Source-code plagiarism has studied a lot and many previous methods have been applied. One example is Sherlock \cite{DPPA2008}
 
-Google vs Others
+\newpage
+In this study the focus is set to reveal cases of plagiarism in academic environment, because the data is easier to acquire and analyze.
 
-\subsubsection{Plagiarism in academia}
+\newpage
+
 
 \subsection{Authorship identification}
 

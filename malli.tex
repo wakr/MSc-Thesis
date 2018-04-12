@@ -37,6 +37,8 @@
 \usepackage{listings}
 \usepackage{diagbox}
 
+\usepackage{dirtytalk}
+
 \usepackage{algorithm}
 \usepackage{algorithmic}
 %\usepackage[bottom]{footmisc}
@@ -150,11 +152,37 @@ In this study, automatic authorship identification and plagiarism detection from
 
 \section{Introduction}
 
-What means term plagiarism?
-What is plagiarism?
-Why studied here --> 
+%What means term plagiarism?
+%What is plagiarism?
+%Why studied here --> 
+
+Massive Online Courses (MOOCs) are popular autonomous way to complete undergraduate courses offered by various institutes and universities. For example a course \emph{Circuits and Electronics} which was led by Massachusetts Institute of Technology and Harvard University, gathered around 155\,000 registered students from all over the world to a website called \emph{edX}\footnote{\url{https://www.edx.org/}} in 2012 \cite{SLWCRFM2013}. The usual structure of MOOCs is a theory part followed with various graded tasks offered weekly. For example, a course \emph{Ohjelmoinnin MOOC} is a online course offered by University of Helsinki consisting of two parts: introduction and advanced course in Java programming language. Both parts are mandatory undergraduate-level courses, and both are split into seven weeks of workload. During these weeks, students follow the material independently and submit their solutions to various programming tasks that are automatically tested and scored. As the nature of this system is heavily score-based and students are free to choose their working hours without any mandatory attendance, it can create motivation to cheat amongst students. Also the fact that there are over hundred students registered and many submissions per student, makes it time-consuming for teaching assistants to detect possible cheating. 
+
+The word \emph{cheating} here refers to an act of plagiarism and one of the ways to define the verb \emph{plagiarize} is as \say{to steal and pass off (the ideas or words of another) as one's own}\footnote{\url{https://www.merriam-webster.com} Accessed 10th April 2018}, and the person conducting this act is called \emph{a plagiarist}. Source-code plagiarism refers to the act of plagiarism that happens between software, and more specifically between lines of code without a permission. This kind of plagiarism can be also defined as \emph{source-code reuse}, which includes the following four aspects \cite{TDSCP2008}: copying others work without alterations, copying and changing some parts of the code to fool human inspector, converting a solution from one language to another and using code-generators to automatically create a solution. 
+
+
+Source-code plagiarism in academia is considered as a serious offence and there often exists a zero tolerance for it \cite{TDSCP2008}. This is often stressed at the start of courses and can lead to serious consequences ranging from rejecting the students current course registration to even suspension, but still some students rely on it. Dick \etal points out that in some cases over 80\% of the students were found guilty of cheating if they were given a good enough opportunity \cite{Dick:2002:ASC:782941.783000}. Usual forms of cheating were related to plagiarism and found to be copying solutions from the web, sharing solutions with friends and excessive collaboration between students. The opinions about cheating motives varies between students and academics. Academics reported that cheating is due to three major factors: external pressure, the ease of sharing solutions and cultural differences. Students on the other hand, gave two major reasons: time pressure and heavy workloads.
+
+In this study, we approach the problem of plagiarism detection with machine learning. We build two classifiers: suspicious files based on the similarity scores and authorship identification. Suspicious files are clustered together to reveal clusters of possible plagiarists, where as authorship identification is used to detect if a writing style of an author matches more somebody else's style. The intersection of these two sets is thus believed here to reveal information about possible plagiarists, and ultimately solve the problem of plagiarism detection. 
+
+Following research questions are asked, and answered based on the results:
+
+\begin{itemize}
+    \item[Q1:] \emph{How can plagiarism be automatically detected?}
+    \item[Q2:] \emph{Can code structure be used as a feature for classification?}
+    \item[Q3:] \emph{Does similarity detection and authorship identification together minimize the rate of false-positives?}
+\end{itemize}
+
+Rest of this study is structured as follows: in chapter 2, more detailed overview of source code plagiarism is given with a theory of machine learning methods; chapter 3 presents the results of systematic literature review where we focus on methods applied in current studies; in chapter 4, our method of using two classifiers and the real-life data set are presented; chapter 5 presents the results by comparing our method to two popular baselines and answers to the previous research questions; chapter 6 presents possible problems when automatic system is used to accuse students from plagiarism. 
 
 \section{Background}
+
+\newtheorem*{sc-plg}{Plagiarism detection}
+\begin{sc-plg}
+Given a set of documents $D = \{d_1, d_2, ..., d_n\}$ called corpus and a set of authors $A = \{a_1, a_2, ..., a_k\}$ which are writers of these documents, define a function $f$ that is able to classify which document pairs $\{d_i, d_j\} \subset D$ are plagiarized, and who are possible plagiarists from the set of authors $A$.
+\end{sc-plg}
+
+Above formalization gives an overview of the problem that is studied in this thesis, and it's notable that there are some things that has deliberately been left out. For example we don't try to reveal the \emph{direction} of plagiarism, we don't use the creation process and we only consider authors inside a pre-known set. To understand the nuances that are relevant to source-code plagiarism, we define some imporant themes and terms next.
 
 \input{bg/background.tex}
 
@@ -172,7 +200,6 @@ Why studied here -->
 \subsubsection{Accuracies}
 \input{liter_review/accuracies.tex}
 
-\newpage
 
 
 \section{Methodology}
