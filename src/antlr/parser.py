@@ -6,40 +6,36 @@ import pprint
 
 from antlr4 import RuleContext
 
-#%%
-
-def ASTWalker(p, t, indent):
-    explore(p, t, indent)
+"""
+Return ast-representation from source-code
+"""
+class Parser:
     
-    
-def explore(p, t, indent):
-    ruleName = p.ruleNames[t.getRuleIndex()]
-    for i in range(indent):
-        print(" ", end="")
-    print(ruleName)
-    for j in range(t.getChildCount()):
-        elem = t.getChild(j)
-        if type(elem) != antlr4.tree.Tree.TerminalNodeImpl: # the leaf
-            explore(p, elem, indent + 1)
+    def __init__(self, source_code):
+        self.source_code = source_code
+        self.ast = ""
 
+    def ast_walker(self, p, t, indent):
+        self._explore(p, t, indent)
+        return self.ast
 
+    def _explore(self, p, t, indent):
+        rule_name = p.ruleNames[t.getRuleIndex()]
+        self.ast = self.ast + (" " * indent) + rule_name + "\n"
+        
+        for j in range(t.getChildCount()):
+            elem = t.getChild(j)
+            if type(elem) != antlr4.tree.Tree.TerminalNodeImpl:  # the leaf
+                self._explore(p, elem, indent + 2)
+            else:
+                self.ast = self.ast + (" " * (indent + 2)) + "${}$".format(elem.getText()) + "\n"
 
-#%%
-
-
-code = open('./example.java', 'r').read()
-
-codeStream = antlr4.InputStream(code)
-lexer = JavaLexer(codeStream)
-tokensStream = antlr4.CommonTokenStream(lexer)
-parser = JavaParser(tokensStream)
-
-tree = parser.compilationUnit()
-print("Tree " + tree.toStringTree(recog=parser))
-
-#ASTWalker(parser, tree, 0)
-
-#printer = JavaParserListener()
-#walker = ParseTreeWalker()
-#walker.walk(printer, tree)
-#%%
+    def parse_to_ast(self):
+        code_stream = antlr4.InputStream(self.source_code)
+        lexer = JavaLexer(code_stream)
+        token_stream = antlr4.CommonTokenStream(lexer)
+        parser = JavaParser(token_stream)
+        tree = parser.compilationUnit()
+        #print("Tree " + tree.toStringTree(recog=parser))
+        #return self.ast_walker(parser, tree, 0)
+        return tree.toStringTree(recog=parser)

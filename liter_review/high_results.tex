@@ -1,10 +1,13 @@
-Systematic literature review was conducted to gain information about the current state of source code plagiarism study in academia. The database that was utilized to query research papers is called \emph{Scopus\footnote{\url{https://www.scopus.com/}}}, which is a web service containing peer-reviewed scientific literature. The service itself holds links to papers which are published under for example \emph{ACM (Association for Computing Machinery)} and \emph{IEEE (Institute of Electrical and Electronics Engineers)}, both of these being major computer science institutions. 
+Systematic literature review was conducted as a purpose to gain an overview of the current state of source code plagiarism research. We mainly focus on methods applied in this review, to find consensus about what is held as a well-performing approach to plagiarism detection. Our review consists six key steps that follows the structure of systematic review \cite{AGCSLRIS2010}: 1) purpose, 2) details of search, 3) inclusion criteria, 4) exclusion criteria, 5) information extraction and 6) analysis. To easily conduct the review we used a web service to gather the articles.
 
-Following subchapters describe how the review was conducted and what kind of results were found. 
 
-\subsection{Review process}
+The database that was utilized to query research papers is called \emph{Scopus\footnote{\url{https://www.scopus.com/}}}, which is a service containing peer-reviewed scientific literature. It allows users to search scientific articles by matching \eg titles, abstracts or keywords to user-defined query. The service itself maintains links to articles which are published under for example \emph{ACM (Association for Computing Machinery)} and \emph{IEEE (Institute of Electrical and Electronics Engineers)}, both of these being major computer science releases. 
 
-Querying Scopus can be done in a similar way as querying databases in SQL-like languages. The used query inside Scopus was following
+Following subchapters describe how the review was conducted and what kind of results were found. We first form a categorization between studies to gain overview of the methods that are applied, then we extract statistics about data sets used in studies, and finally show the various methods that are applied to detect plagiarism. 
+
+\subsection{Methodology}
+
+Querying Scopus can be done in a similar way as querying databases in SQL-like languages. The query used inside Scopus as inclusion step was following
 \begin{verbatim}
 TITLE-ABS-KEY (("plagiarism" OR "authorship identification")  
                 AND "source code") 
@@ -12,33 +15,24 @@ AND  (LIMIT-TO (SUBJAREA,"COMP"))
 \end{verbatim}
 
 \noindent
-This query translates to finding papers which title, abstract or keywords contains the word \emph{plagiarism} or \emph{authorship identification} and at least the term \emph{source code}. The reason to choose these keywords was to find papers which study the problem of plagiarism finding from source code either in general terms, or by utilizing authorship identification techniques. Next, the query limits the area of study to computer science to focus on plagiarism studies which utilize techniques found from computer science.
+Above query translates to searching for articles which title, abstract or keywords contains the word \emph{plagiarism} or \emph{authorship identification} and the term \emph{source code}. These keywords were chosen in order to find articles which study the problem of plagiarism finding from source code either in general terms, or by utilizing authorship identification techniques. Finally, the query limits the area of study to computer science publications to find relevant methods for this thesis. 
 
-After the initial search, the goal of the second step was to limit the amount of papers. This was done by excluding all papers that were any of the following types: a review of certain aspect of source code plagiarism e.g. student motives behind plagiarism, an improvement to some pre-existing algorithm\footnote{In this context meaning algorithmic speedup}, plugin to online learning management systems, application to competition where the used method wasn't explained, study that used either byte-level information or information gathered during running the program, hashing techniques\footnote{Using the size of compression as a metric}, system review which didn't address the method and theses. 
+The total number of articles gathered by querying Scopus in the inclusive search part of the literature review was 187, and the date when the query was done was 7th of February 2018. The distribution of studies per year can be seen in the following plot.
 
-Beside these attributes, included papers needed to also test their proposed method in some way and the amount of documents in experiment phase needed to be larger than two. The reason for including this as a limiting factor, was to gather studies that used test sets to evaluate the performance of their model in terms of accuracy, as this allows to compare used techniques more critically. 
-
-
-\subsection{Review results}
-
-The total number of papers gathered by querying Scopus in the first part of the literature review was 187, and the date when the query was done was 7th of February 2018. The distribution of paper per year can be seen in the following plot.
-
-\begin{figure}[h]
+\begin{figure}[ht]
 \centering
 \includegraphics[width=\textwidth]{plots/Rplot.png}
-\caption{Results of the first query to Scopus}
+\caption{Results of inclusion phase}
 \end{figure}
 
-\noindent
-This set was filtered by terms described in the previous chapter, and the total number of papers inspected more carefully in this systematic literature review is 32. 
+After the inclusive search, we performed exclusion phase. This was done by filtering out manually all articles that were any of the following types: a review of certain aspect of source code plagiarism e.g. student motives behind plagiarism, an improvement to some pre-existing algorithm\footnote{In this context meaning algorithmic speedup}, plugin to online learning management systems, application to competition where the used method wasn't explained, study that used either byte-level information or information gathered during running the program, hashing techniques\footnote{Using the size of compression as a metric}, system review which didn't address the method and theses. Beside these attributes, articles needed to also test their proposed method in some way and the amount of documents in experiment phase needed to be larger than two. The reason for adding this as a limiting factor was to gather studies that used test sets to evaluate the performance of their model.
 
-From the set of 32 studies, we look answers for following questions: \emph{how plagiarism can be detected from source code}, \emph{what are possible features that can be derived from source code} and \emph{how can one identify the author of a given source code}. We start first by grouping the papers by their themes to see what kind of different approaches there are to deal with the problem of plagiarism detection. After the initial classification, following aspects are identified from the studies: data, methods and test results. 
+The final number of articles after exclusion, and which are inspected more carefully in this systematic literature review is 32. From the set of 32 studies, we look answers for following questions: \emph{how plagiarism can be detected from source code}, \emph{what are possible features that can be derived from source code} and \emph{how can one identify the author of a given source code}. We start first by categorizing the articles by their themes to see what kind of different approaches there are to deal with the problem of plagiarism detection. After the initial classification, we summarize statistics about data and briefly explain the methods.
 
 
-\subsubsection{Approaches}
+\subsection{Categorization}
 
-The most high level division between papers could be done in a similar fashion as was used by the
-query; dividing papers either to be about the detection of plagiarism or identifying the author of a given source code. However, during the literature review it was found that it's more clearer to make a division between similarity detection and identifying the authorship. This high-level division can be seen from the following table.
+The naïve categorization between articles can be done in a similar fashion as was used by the query; dividing papers either to be about the detection of plagiarism or identifying the author of a given source code. However, as authorship identifying can also work as a way to detect plagiarism by verifying the author, we use high-level split seen in a following table where similarity detection is used as a second major category to avoid overlap.
 
 \begin{table}[ht]
     \caption{Papers divided into two high-level categories}
@@ -124,7 +118,5 @@ When inspecting the division of authorship studies, we can see the division in t
         \\ \hline
     \end{tabular}
 \end{table}
-
-\newpage
 
 Both of these results seems to show that utilizing structure is popular in both high-level classes, but quite dominant in similarity detection. However both groups of studies seems to show high popularity on $n$-gram methods, which is able to capture both individual style of the author and structural preferences. % source?
