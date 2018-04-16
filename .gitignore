@@ -6,6 +6,7 @@ __pycache__/
 *$py.class
 
 src/data/ohpe2016s*
+src/data/soco/*
 
 .spyproject
 .DS_Store
