@@ -29,8 +29,11 @@ Some common source code transformation techniques, often called as \emph{obfusca
 \end{tabular}
 \end{table}
 
-\noindent
-Table \ref{tbl-plag-strat} shows some of the most common transformation targets in source codes. Given a source code from another student, plagiarist can apply above transformations and complicate the task for a human to spot plagiarism, or even confuse naïve methods. The motivation behind using these transformations is simple, plagiarists want to hide traces and thus, the detection method must be resilient against these strategies. Plagiarism transformations defined in table \ref{tbl-plag-strat} closely relate to an earlier study which characterized six levels of transformations \cite{Faidhi:1987:EAD:27319.27321}.
+Table \ref{tbl-plag-strat} shows some of the most common transformation targets in source codes. Given a source code from another student, plagiarist can apply above transformations and complicate the task for a human to spot plagiarism, or even confuse naïve methods. The motivation behind using these transformations is simple, plagiarists want to hide traces and thus, the detection method must be resilient against these strategies.
+
+\newpage
+
+Plagiarism transformations defined in table \ref{tbl-plag-strat} closely relate to an earlier study which characterized six levels of transformations \cite{Faidhi:1987:EAD:27319.27321}.
 
 \begin{table}[ht]
 \centering
@@ -58,16 +61,17 @@ Source code is a structured text, made of keywords and user-defined variables. T
 
 \newpage
 
-\begin{diagram}[ht] \label{diag-parse}
+\begin{diagram}[ht]
 \centering
 \scalebox{1}{
 \Tree[.VariableDeclaration [.Identifier "a" ] [.Literal "5" ] ]
 }
 \caption{Example syntax tree for \texttt{var a = 5;}}
+\label{diag-parse}
 \end{diagram}
 
 \noindent
-Pruning the leaves of diagram 1 leads to a more general expression that captures the logic of the source code, becoming resistant against most of the transformations given in table \ref{tbl-plag-transf}. This gives ability to detect similar \emph{structure} rather than similar \emph{tokens}, which are more vulnerable to simple transformations.
+Pruning the leaves of diagram \ref{diag-parse} leads to a more general expression that captures the logic of the source code, becoming resistant against most of the transformations given in table \ref{tbl-plag-transf}. This gives ability to detect similar \emph{structure} rather than similar \emph{tokens}, which are more vulnerable to simple transformations.
 
 \paragraph{Tools}\mbox{}\\
 Because plagiarism is kept as a serious offence in academia, a lot of various detection software has been made for it. Novak lists seven of the most well-known tools in a review and explains some common properties \cite{RSCAD2016}: \emph{MOSS, JPlag, SPLaT, SIM, Marble, Plaggie} and \emph{Sherlock}. These tools can be classified into five different categories based on methods used: text, token, graph, tree and hybrid. Among these tools, the most common way to detect plagiarism is a five step approach: pre-process documents, tokenize documents, exclude templates, calculate similarities and finding suspects using these similarity scores.
@@ -76,11 +80,17 @@ Because plagiarism is kept as a serious offence in academia, a lot of various de
 
 \subsection{Similarity detection}
 
+What is authorship identification: \cite{KRSUL1997233}\\
+What are some common tools 
+
 \subsection{Authorship identification}
+
+\subsection{Vector space model}
 
 \subsection{Machine learning}
 
 Statistical method.
+
 
 \subsubsection{Clustering}
 

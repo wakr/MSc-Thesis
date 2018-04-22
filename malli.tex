@@ -37,6 +37,15 @@
 \usepackage{listings}
 \usepackage{diagbox}
 
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\newlength\figureheight
+\newlength\figurewidth
+
+\usepackage{multicol}
+\usepackage{subcaption}
+
 \usepackage{qtree}
 \usepackage{newfloat}
 \DeclareFloatingEnvironment[fileext=lod]{diagram}
@@ -44,7 +53,7 @@
 \usepackage{dirtytalk}
 
 \usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage{algpseudocode}
 %\usepackage[bottom]{footmisc}
 
 % Automatically set the PDF metadata fields
@@ -160,16 +169,18 @@ In this study, automatic authorship identification and plagiarism detection from
 %What is plagiarism?
 %Why studied here --> 
 
-Massive Online Courses (MOOCs) are popular autonomous way to complete undergraduate courses offered by various institutes and universities. For example a course \emph{Circuits and Electronics} which was led by Massachusetts Institute of Technology and Harvard University, gathered around 155\,000 registered students from all over the world to a website called \emph{edX}\footnote{\url{https://www.edx.org/}} in 2012 \cite{SLWCRFM2013}. The usual structure of MOOCs consists of two parts: theory part and graded tasks which are offered weekly. The course \emph{Ohjelmoinnin MOOC} is a online course offered by University of Helsinki consisting of two parts: introduction and advanced course in Java programming language. Both parts are mandatory undergraduate-level courses, and both are split into seven weeks of workload. During these weeks, students follow the material independently and submit their solutions to various programming tasks that are automatically tested and scored. As the nature of this system is heavily score-based and students are free to choose their working hours without any mandatory attendance, it can create motivation to cheat among some students. Also the fact that there are over hundred students registered and many submissions per student, makes it time-consuming for teaching assistants to detect possible cheating. 
+Massive Online Courses (MOOCs) are a popular way to complete undergraduate courses offered by various institutes and universities. For example a course \emph{Circuits and Electronics} led by Massachusetts Institute of Technology and Harvard University, gathered around 155\,000 registered students from all over the world to a website called \emph{edX}\footnote{\url{https://www.edx.org/}} in 2012 \cite{SLWCRFM2013}. The structure of \emph{Circuits and Electronics} consisted of two parts which are now common in majority of MOOCs: theory part and graded tasks which are offered weekly during the timespan of a course. 
 
-The word \emph{cheating} here refers to an act of plagiarism and one of the ways to define the verb \emph{plagiarize} is as \say{to steal and pass off (the ideas or words of another) as one's own}\footnote{\url{https://www.merriam-webster.com} Accessed 10th April 2018}, and the person conducting this act is called \emph{a plagiarist}. Source-code plagiarism refers to the act of plagiarism that happens between software without a permission, and more specifically between lines of code. This kind of plagiarism can be also defined as \emph{source-code reuse}, which includes the following four aspects \cite{TDSCP2008}: copying others work without alterations, copying and changing some parts of the code to fool a human inspector, converting a solution from one language to another and using code-generators to automatically create a solution. 
+The course \emph{Ohjelmoinnin MOOC} is a online course offered by University of Helsinki, having a two-parted structure: introduction and advanced course in Java programming language. Both are mandatory undergraduate-level courses, and split into seven weeks of workload. During these weeks, students follow the material independently and submit their solutions to various programming tasks that are automatically tested and scored. As the nature of this system is heavily score-based and students are free to choose their working hours without any major mandatory attendance, it can create a motivation to cheat among  students. Also the fact that there are over hundred students registered and many submissions per student, makes it practically impossible for course staff to detect possible cheating. 
+
+The word \emph{cheating} here refers to an act of plagiarism and one of the ways to define the verb \emph{plagiarize} is as \say{to steal and pass off (the ideas or words of another) as one's own}\footnote{\url{https://www.merriam-webster.com} Accessed 10th April 2018}, and the person conducting this act is called \emph{a plagiarist}. Source-code plagiarism on other hand, refers to the act of plagiarism that happens between software that is built from various source code documents. This kind of plagiarism can be also defined as \emph{source-code reuse}, which includes the following four facets \cite{TDSCP2008}: copying others work without alterations, copying and changing some parts of the code to fool a human inspector, converting a solution from one language to another and using code-generators to automatically create a solution. 
 
 
-Source-code plagiarism in academia is considered as a serious offence and there often exists a zero tolerance for it \cite{TDSCP2008}. This is often stressed at the start of courses and can lead to serious consequences ranging from rejecting the students current course registration to even suspension. Dick \etal points out that in some cases over 80\% of the students were found guilty of cheating if they were given a good enough opportunity \cite{Dick:2002:ASC:782941.783000}. Usual forms of cheating are related to plagiarism; copying solutions from the web, sharing solutions with friends and excessive collaboration between students. 
+Source-code plagiarism in academia is considered as a serious offence and there often exists a zero tolerance for it \cite{TDSCP2008}. This is often stressed at the start of courses and can lead to serious consequences ranging from rejecting the students current course registration to even suspension. Dick \etal points out that in some cases over 80\% of the students were found guilty of cheating if they were given a good enough opportunity \cite{Dick:2002:ASC:782941.783000}. Usual forms of cheating were also related to plagiarism; copying solutions from the web, sharing solutions with friends and excessive collaboration between students. 
 
-The opinions about cheating motives varies between students and academics \cite{TDSCP2008}. Academics reported that cheating is due to three major factors: external pressure, the ease of sharing solutions and cultural differences. Students on the other hand, gave two major reasons: time pressure and heavy workloads. Pressure is named however a common factor in both groups and given the MOOCs time sensitive weekly assignments with the automatic scoring system, can work as a motivation to cheat if \eg student has many other courses at the same time. 
+The opinions about cheating motives varies between students and academics \cite{TDSCP2008}. Academics reported that cheating is due to three major factors: external pressure, the ease of sharing solutions and cultural differences. Students on the other hand, gave two major reasons: time pressure and heavy workloads. Pressure is named however a common factor in both groups and given the MOOCs time sensitive weekly assignments with the automatic scoring system, can build students motivation to cheat.
 
-In this study, we approach the problem of plagiarism detection with machine learning. We build two classifiers: suspicious authors based on the similarity scores obtained from document similarities and authorship identification. Suspicious authors are clustered together to reveal clusters of possible plagiarists, where as authorship identification is used to detect if a writing style of an author matches to his/her previous work. The intersection of suspicious authors and author candidates is thus believed to reveal information about possible plagiarists, and ultimately solve the problem of plagiarism detection. 
+In this study, we approach the problem of plagiarism detection with machine learning. We build two classifiers: suspicious authors based on the similarity scores obtained from document similarities and authorship identification that is able to predict the most likely author of a document. Suspicious authors are clustered together to reveal clusters of possible plagiarists, where as authorship identification is used to detect if a writing style of an author matches to his/her previous work. The intersection of suspicious authors and author candidates is thus believed to reveal information about possible plagiarists, and ultimately solve the problem of plagiarism detection. 
 
 Following research questions are asked, and answered in this study:
 
@@ -185,7 +196,7 @@ Rest of this study is structured as follows: in chapter 2, more detailed overvie
 
 \newtheorem*{sc-plg}{Plagiarism detection}
 \begin{sc-plg}
-Given a set of documents $D = \{d_1, d_2, ..., d_n\}$ called corpus and a set of authors $A = \{a_1, a_2, ..., a_k\}$ which are writers of these documents, define a function $f$ that is able to classify which document pairs $\{d_i, d_j\} \subset D$ are plagiarized, and who are possible plagiarists from the set of authors $A$.
+Given a set of documents $D = \{d_1, d_2, ..., d_n\}$ called corpus and a set of authors $A = \{a_1, a_2, ..., a_k\}$ who are writers of these documents, define a function $f$ that is able to classify which document pairs $\{d_i, d_j\} \subset D$ are plagiarized, and who are possible plagiarists from the set of authors $A$.
 \end{sc-plg}
 
 Above formalization gives an overview of the problem that is studied in this thesis, where some aspects about the problem have been simplified for this study. For example we don't try to reveal the \emph{direction} of plagiarism, we don't use features gathered from creation process and we only consider authors inside a pre-defined set. To get better understanding of the nuances that are relevant to source-code plagiarism, we define some important themes and terms next.
@@ -207,18 +218,15 @@ Above formalization gives an overview of the problem that is studied in this the
 %\input{liter_review/accuracies.tex}
 
 
-
 \section{Methodology}
-\subsection{Context}
-% Course in Uni helsinki etc.
-\subsection{Data}
-\subsubsection{Preprocessing}
-\subsubsection{}
-\subsection{Research question}
+\input{method/method.tex}
 
 \section{Results}
 
 \section{Discussion}
+
+% pair programming
+% worked example
 
 \section{Conclusion}
 
@@ -267,9 +275,9 @@ Above formalization gives an overview of the problem that is studied in this the
  
 \lstset{style=mystyle}
 
-\section{Sample programs}
+\section{Sample programs} \label{appendix:programs}
 
-These two source codes belong to two authors A and B. They are used throughout the study as examples. The task for both is to create a program that calculates mean between three numbers: 5, 10, 2.
+These three functionally similar source codes belong to three imaginary authors A, B and C. They are used throughout the study as examples. The task for all is to create a program that calculates mean between three numbers: 5, 10, 2.
 
 \begin{lstlisting}[language=Java, caption=Java example belonging to author A]
 public class A{
@@ -278,7 +286,7 @@ public class A{
         int a = 5;
         int b = 10;
         int c = 2;
-        double d = (a + b + c)/3;
+        double d = (a + b + c)/(double)3;
         System.out.println(d);
      }
 }
@@ -291,6 +299,14 @@ public class B{
         int sum = 5 + 10 + 2;
         double res = sum / 3.0;
         System.out.println(res);
+     }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption=Java example belonging to author C]
+public class C{
+     public static void main(String[] b){
+        System.out.println((5 + 10 + 2)/3.0);
      }
 }
 \end{lstlisting}

@@ -1,4 +1,4 @@
-The data used in testing phase of 32 gathered studies is presented next, where the focus is for the similarity detection on following attributes: number of total documents, is there any synthetic data used and the average number of lines of code (Avg. LOC). For the authorship identification we focus on features like documents per author and number of possible authors. The term \emph{document} here refers to the number of source code file samples per author. We summarize the findings from data utilizing the categorization that was made earlier.
+The data used in testing phase of 32 gathered articles is presented next, where the focus is for the similarity detection on following attributes: number of total documents, is there any synthetic data used and the average number of lines of code (Avg. LOC). For the authorship identification we focus on features like documents per author and number of possible authors. The term \emph{document} here refers to the number of source code file samples per author. We summarize the findings from data utilizing the categorization that was made earlier.
 
 \paragraph{Similarity Detection}\mbox{}\\
 Attribute counting study by Moussiades and Vakali in \cite{PACASCD2005} uses two real data sets written in C\texttt{++}. They contain programming assignments and a forged set of programs. The first data set contains 24 programs having an average of 247 lines of code per submission, the second set is 51 programs having an average of 178 lines per source code. The forged data set is two modified versions from one program, trying to deliberately confuse state-of-the-art detectors.
@@ -20,8 +20,6 @@ Studies utilizing $n$-grams are summarized into following table.
 \end{tabular}
 \end{table}
 
-\newpage
-
 \noindent
 It's visible from the table \ref{table-ng-str-data} that there are now a lot more documents used in experimentation and surprisingly synthetic data is not used at all. This is due to the usage of student submissions and competition data sets like \emph{Google Code Jam} submissions, which was for example utilized by Flores \etal in \cite{USCR2014}. 
 
@@ -40,7 +38,7 @@ It's visible from the table \ref{table-ng-str-data} that there are now a lot mor
 \end{table}
 
 \noindent
-One can see from the table \ref{table-ast-str-data} that a study done by Fu \etal in \cite{Fu2017WASTKAW} has a large number of documents, and this due to two facts: they reported the size as pairs of documents and they used a generator to form a lot of forged documents from a small set of 10 original submissions. Ganguly and Jones in \cite{AIR2015} don't explicitly report the statistics of their data set, but refers to a competition test set called \emph{SOurce COde Re-use} (SOCO). This competition offers a set of C and Java files which contains known cases of cross-lingual plagiarism \cite{Flores:2014:DSC:2824864.2824878}. The train set size of SOCO is 338 files. 
+One can see from the table \ref{table-ast-str-data} that a study done by Fu \etal in \cite{Fu2017WASTKAW} has a large number of documents, and this due to two facts: they reported the size as pairs of documents and they used a generator to form a lot of forged documents from a small set of 10 original submissions. Ganguly and Jones in \cite{AIR2015} don't explicitly report the statistics of their data set, but refers to a competition test set called \emph{SOurce COde Re-use} (SOCO). This competition offers a set of C and Java files which contains known cases of cross-lingual plagiarism \cite{saez2014pan}. The train set size of SOCO is 338 files. 
 
 Finally, hybrid study by Xiong \etal utilizes 40 assignments gathered from students \cite{BUAA2009}, Muddu \etal uses 5054 original files that they mutate to introduce copied code \cite{CPDPPD2013} and Ganguly \etal uses both train and test set of the SOCO competition, totaling around 12\,000 files \cite{RCISCP2017}. 
 

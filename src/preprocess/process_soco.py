@@ -6,6 +6,7 @@ import numpy as np
 from antlr.parser import Parser
 from sklearn.feature_extraction import DictVectorizer
 from normalizer import normalize
+from visual.visualizer import dataset_summary
 import glob
 
 
@@ -24,7 +25,7 @@ def parse_source_code_columns(x):
 df = pd.DataFrame(columns=["ID", "source_code"])
 #%%
 
-sc_files = glob.glob("../data/soco/java/*.java")
+sc_files = sorted(glob.glob("../data/soco/java/*.java"))
 
 re_use = [line.rstrip('\n') for line in open('../data/soco/SOCO14-java.txt')]
 re_use = [filepair_to_id(x) for x in re_use]
@@ -42,9 +43,16 @@ for i, fname in enumerate(sc_files):
     content = open(fname).read()
     df = df.append({"ID": i, "source_code": content}, ignore_index=True)
 
-df["source_code"] = df.source_code.apply(normalize)
+#df["source_code"] = df.source_code.apply(normalize)
 #df["ast_repr"] = df.apply(parse_source_code_columns, axis=1)
-#%%
+    
+#%%    
+
+dataset_summary(df)
+
+
+
+#%% FEATURE EXTR
     
     
 from sklearn.feature_extraction.text import CountVectorizer

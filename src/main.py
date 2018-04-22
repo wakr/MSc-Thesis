@@ -2,13 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plot
 import numpy as np
 from antlr.parser import Parser
-
+from visual.visualizer import dataset_summary
 
 def categorize_columns(df):
     df_temp = df.copy()
     df_temp['course'] = df_temp['course'].astype('category')
     df_temp['exercise'] = df_temp['exercise'].astype('category')
     df_temp['student'] = df_temp['student'].astype('category')
+    df_temp['source_code'] = df_temp['source_code'].astype(str)
     return df_temp
 
 def parse_source_code_columns(df):
@@ -28,14 +29,13 @@ df = pd.read_csv('./data/ohpe2016s_processed.csv')
 course_info = {'ohpe': ('hy-s2016-ohpe', 'hy-s2016-ohpe-konekoe-3'),
                'ohja': ('hy-s2016-ohja', 'hy-s2016-ohja-konekoe-3')}
 
-cur_exercise = "viikko07-Viikko07_127.Arvosanajakauma"
-
-subset_df = df[df.course == course_info["ohpe"][0]]
-subset_df = subset_df[subset_df.exercise == cur_exercise]
+subset_df = df[df.course.isin(course_info["ohja"])]
 subset_df = categorize_columns(subset_df)
 
 #%%
 example_code = subset_df.iloc[0].source_code
+
+dataset_summary(subset_df)
 
 #parse_source_code_columns(subset_df)
 
