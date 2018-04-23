@@ -35,6 +35,7 @@ def dataset_summary(df):
     pass
 
 #%%    
+def acgloc_hist():
     plt.style.use('default')
     plt.figure()
     #ax = plt.gca()
@@ -45,11 +46,11 @@ def dataset_summary(df):
     ax.spines["right"].set_visible(False)
     ax.get_xaxis().tick_bottom()  
     ax.get_yaxis().tick_left()
-    plt.xticks(range(0, 600, 50))  
-    plt.yticks(range(0, 70, 10))
+    #plt.xticks(range(0, 400, 10))  
+    #plt.yticks(range(0, 70, 10))
     plt.xlabel("Average LOC")  
     plt.ylabel("Count")
-    plt.hist(list(exer_loc_avg.values), bins=50, edgecolor="black")
+    plt.hist(list(exer_loc_avg.dropna().values), bins=50, edgecolor="black")
     
     tikz_save('fig.tikz',
            figureheight = '\\figureheight',

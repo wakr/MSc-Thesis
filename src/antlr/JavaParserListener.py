@@ -316,7 +316,7 @@ class JavaParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by JavaParser#variableDeclarators.
     def enterVariableDeclarators(self, ctx:JavaParser.VariableDeclaratorsContext):
-        print("Hello: %s" % ctx.ID())
+        pass
 
     # Exit a parse tree produced by JavaParser#variableDeclarators.
     def exitVariableDeclarators(self, ctx:JavaParser.VariableDeclaratorsContext):
@@ -325,7 +325,6 @@ class JavaParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by JavaParser#variableDeclarator.
     def enterVariableDeclarator(self, ctx:JavaParser.VariableDeclaratorContext):
-        print("Hello: %s" % ctx.ID())
         pass
 
     # Exit a parse tree produced by JavaParser#variableDeclarator.
@@ -335,7 +334,6 @@ class JavaParserListener(ParseTreeListener):
 
     # Enter a parse tree produced by JavaParser#variableDeclaratorId.
     def enterVariableDeclaratorId(self, ctx:JavaParser.VariableDeclaratorIdContext):
-        print("Hello: %s" % ctx.ID())
         pass
 
     # Exit a parse tree produced by JavaParser#variableDeclaratorId.

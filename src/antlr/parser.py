@@ -2,6 +2,7 @@ import antlr4
 from antlr.JavaLexer import JavaLexer
 from antlr.JavaParser import JavaParser
 from antlr.JavaParserListener import JavaParserListener
+from MyListener import KeyPrinter
 import pprint
 
 from antlr4 import RuleContext
@@ -41,6 +42,18 @@ class Parser:
         token_stream = antlr4.CommonTokenStream(lexer)
         parser = JavaParser(token_stream)
         tree = parser.compilationUnit()
-        #print("Tree " + tree.toStringTree(recog=parser))
-        return self.ast_walker(parser, tree, 0)
+        
+        printer = KeyPrinter()
+        walker = antlr4.ParseTreeWalker()
+        walker.walk(printer, tree)
+        print(printer.get_result())
+        return ""
         #return tree.toStringTree(recog=parser)
+
+
+with open('example.java', 'r') as myfile:
+  data = myfile.read()
+  from preprocess.normalizer import normalize_for_ast
+  data = normalize_for_ast(data)
+  print(data)
+  print(Parser(0, data).parse_to_ast())

@@ -32,6 +32,14 @@ course_info = {'ohpe': ('hy-s2016-ohpe', 'hy-s2016-ohpe-konekoe-3'),
 subset_df = df[df.course.isin(course_info["ohja"])]
 subset_df = categorize_columns(subset_df)
 
+
+#%% first quartile filter by loc
+
+exer_loc_avg = subset_df.groupby(by="exercise").loc.mean().round(0)
+first_quartile = exer_loc_avg.quantile(q=0.25)
+sensible_exercises = exer_loc_avg[exer_loc_avg > first_quartile].keys().tolist()
+subset_df = subset_df[subset_df.exercise.isin(sensible_exercises)]
+
 #%%
 example_code = subset_df.iloc[0].source_code
 

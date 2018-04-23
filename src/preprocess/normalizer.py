@@ -12,3 +12,7 @@ def normalize(source_code):
     res = re.sub("\d+", "t0", res)
     res = re.sub("(for|while)", "loop", res)
     return res
+
+def normalize_for_ast(source_code):
+    res = re.sub("import.*;", "", source_code)
+    return res
