@@ -91,9 +91,47 @@ class KeyPrinter(JavaParserListener):
     def exitMethodDeclaration(self, ctx):
         self.res = self._add_token("}METHOD ")
             
+    def exitSwitchLabel(self, ctx):
+        self.res = self._add_token("CASE    ")
+
+    def enterConstructorDeclaration(self, ctx):
+        self.res = self._add_token("CONSTR{ ")
+         
+    def exitConstructorDeclaration(self, ctx):
+        self.res = self._add_token("}CONSTR ")
             
+    def enterResource(self, ctx):
+        self.res = self._add_token("TRY_RES ")
             
+    def enterArrayInitializer(self, ctx):
+        self.res = self._add_token("ARRINIT{")
+    
+    def exitArrayInitializer(self, ctx):
+        self.res = self._add_token("ARRINIT}")
             
-            
+    def enterTypeArgument(self, ctx):
+        if isinstance(ctx.parentCtx.parentCtx, JavaParser.CreatedNameContext):
+            pass
+        else:
+            self.res = self._add_token("GENERIC ")
+    
+    def enterDoWhileStmt(self, ctx):
+            self.res = self._add_token("LOOP{ ")
+    
+    def exitDoWhileStmt(self, ctx):
+            self.res = self._add_token("}LOOP ")
+    
+    def enterBreak(self, ctx):
+                self.res = self._add_token("BREAK   ")
+    
+    def enterIfStmt(self, ctx):
+                self.res = self._add_token("IF{     ")
+    
+    def exitIfStmt(self, ctx):
+                self.res = self._add_token("}IF     ")
+    
+
+
+        
     def get_result(self):
         return self.res
