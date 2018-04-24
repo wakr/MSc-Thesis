@@ -5,7 +5,7 @@ import matplotlib.pyplot as plot
 import numpy as np
 from antlr.parser import Parser
 from sklearn.feature_extraction import DictVectorizer
-from normalizer import normalize
+from normalizer import normalize_for_ast
 from visual.visualizer import dataset_summary
 import glob
 
@@ -43,8 +43,8 @@ for i, fname in enumerate(sc_files):
     content = open(fname).read()
     df = df.append({"ID": i, "source_code": content}, ignore_index=True)
 
-#df["source_code"] = df.source_code.apply(normalize)
-#df["ast_repr"] = df.apply(parse_source_code_columns, axis=1)
+df["source_code"] = df.source_code.apply(normalize_for_ast)
+df["ast_repr"] = df.apply(parse_source_code_columns, axis=1)
     
 #%%    
 
@@ -59,14 +59,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 
 ngram_vectorizer = CountVectorizer(analyzer='char', 
-                                   ngram_range=(12,12),
-                                   max_df=0.6,
-                                   min_df=0.1,
+                                   ngram_range=(15,15),
+                                   token_pattern="[\S]+",
                                    strip_accents="ascii")
 
 transformer = TfidfTransformer(smooth_idf=False)
 
-corpus = df.source_code
+corpus = df.ast_repr
 authors = df.ID
 
 X = ngram_vectorizer.fit_transform(corpus)
@@ -115,15 +114,18 @@ plot.scatter(
 
 #%%
 
+treshold_sim = 0.7 # what is the lower limit
+
 plot.imshow(sim_matrix, zorder=2, cmap='Blues', interpolation='nearest')
 plot.colorbar()
 
-
+filtered_sim_matrix = sim_matrix.copy()
+filtered_sim_matrix[filtered_sim_matrix > treshold_sim] = 0
 #%%
 
 from sklearn.cluster import DBSCAN
 
-db = DBSCAN(min_samples=2, metric="precomputed", eps=0.2).fit(dist_matrix)
+db = DBSCAN(min_samples=2, metric="precomputed", eps=0.3).fit(dist_matrix)
 labels = db.labels_ # -1 = noise
 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 unique_labels = set(labels) 

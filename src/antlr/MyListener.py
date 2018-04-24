@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from JavaParserListener import JavaParserListener
-from JavaParser import JavaParser
+from .JavaParserListener import JavaParserListener
+from .JavaParser import JavaParser
 
 class KeyPrinter(JavaParserListener):    
     
@@ -115,23 +115,57 @@ class KeyPrinter(JavaParserListener):
         else:
             self.res = self._add_token("GENERIC ")
     
-    def enterDoWhileStmt(self, ctx):
+    def enterStatement(self, ctx):
+        if ctx.FOR():
             self.res = self._add_token("LOOP{ ")
-    
-    def exitDoWhileStmt(self, ctx):
+        elif ctx.IF():
+            self.res = self._add_token("IF{     ")
+        elif ctx.THROW():
+            self.res = self._add_token("THROW   ")
+        elif ctx.BREAK():
+            self.res = self._add_token("BREAK   ")
+        elif ctx.RETURN():
+            self.res = self._add_token("RETURN  ")
+        elif ctx.CONTINUE():
+            self.res = self._add_token("CONTINUE")
+        elif ctx.DO():
+            self.res = self._add_token("LOOP{ ")
+        elif ctx.SWITCH():
+            self.res = self._add_token("SWITCH{ ")
+        elif ctx.WHILE():
+            self.res = self._add_token("LOOP{ ")
+        
+    def exitStatement(self, ctx):
+        if ctx.FOR():
+            self.res = self._add_token("}LOOP ")
+        elif ctx.IF():
+            self.res = self._add_token("}IF     ")
+        elif ctx.DO():
+            self.res = self._add_token("}LOOP ")
+        elif ctx.SWITCH():
+            self.res = self._add_token("}SWITCH ")
+        elif ctx.WHILE():
             self.res = self._add_token("}LOOP ")
     
-    def enterBreak(self, ctx):
-                self.res = self._add_token("BREAK   ")
+    def enterExpression(self, ctx):
+        if ctx.bop: # has operator
+            exprs = ctx.bop.text
+            if "=" in exprs:
+                self.res = self._add_token("ASSIGN  ")
+            elif "?" in exprs or ":" in exprs:
+                self.res = self._add_token("COND    ")
     
-    def enterIfStmt(self, ctx):
-                self.res = self._add_token("IF{     ")
-    
-    def exitIfStmt(self, ctx):
-                self.res = self._add_token("}IF     ")
-    
-
-
+    def enterMethodCall(self, ctx):
+        self.res = self._add_token("APPLY   ")
+        
+    def enterClassBodyDeclaration(self, ctx):
+        if ctx.STATIC():
+            self.res = self._add_token("INIT{   ")
+            
+    def exitClassBodyDeclaration(self, ctx):
+        if ctx.STATIC():
+            self.res = self._add_token("}INIT   ")
+                
         
     def get_result(self):
         return self.res
