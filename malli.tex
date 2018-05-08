@@ -31,6 +31,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{microtype}
+\usepackage{bbm} % indicator
 \usepackage{amsfonts,amsmath,amssymb,amsthm,booktabs,color,enumitem,graphicx}
 \usepackage[pdftex,hidelinks]{hyperref}
 \usepackage{longtable}
@@ -43,6 +44,17 @@
 \newlength\figureheight
 \newlength\figurewidth
 
+%tikz
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\usepackage{hhline}
+
+\usepackage{parcolumns}
 \usepackage{multicol}
 \usepackage{subcaption}
 
@@ -146,9 +158,32 @@ In this study, automatic authorship identification and plagiarism detection from
 %
 
 
+
 % 10-15 pages abstract
 
 \begin{document}
+
+\lstdefinestyle{mystyle}{
+    tabsize=2,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    keepspaces=true,
+    %numbers=left,
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,
+    numberstyle=\small,
+    frame = L,
+    numbersep=8pt,
+    columns=flexible,
+    %framexleftmargin=15pt,
+    xleftmargin=\parindent,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{red}
+}
+ 
+\lstset{style=mystyle}
+
 
 % --- Front matter ---
 
@@ -171,7 +206,7 @@ In this study, automatic authorship identification and plagiarism detection from
 
 Massive Online Courses (MOOCs) are a popular way to complete undergraduate courses offered by various institutes and universities. For example a course \emph{Circuits and Electronics} led by Massachusetts Institute of Technology and Harvard University, gathered around 155\,000 registered students from all over the world to a website called \emph{edX}\footnote{\url{https://www.edx.org/}} in 2012 \cite{SLWCRFM2013}. The structure of \emph{Circuits and Electronics} consisted of two parts which are now common in majority of MOOCs: theory part and graded tasks which are offered weekly during the timespan of a course. 
 
-The course \emph{Ohjelmoinnin MOOC} is a online course offered by University of Helsinki, having a two-parted structure: introduction and advanced course in Java programming language. Both are mandatory undergraduate-level courses, and split into seven weeks of workload. During these weeks, students follow the material independently and submit their solutions to various programming tasks that are automatically tested and scored. As the nature of this system is heavily score-based and students are free to choose their working hours without any major mandatory attendance, it can create a motivation to cheat among  students. Also the fact that there are over hundred students registered and many submissions per student, makes it practically impossible for course staff to detect possible cheating. 
+The course \emph{Ohjelmoinnin MOOC} is a online course offered by University of Helsinki, having a two-parted structure: introduction and advanced course in Java programming language. Both are mandatory undergraduate-level courses, and split into seven weeks of workload. During these weeks students follow the material independently and submit their solutions to various programming tasks that are automatically tested and scored. If the participant is not registered student in University of Helsinki, he/she can apply for a study right after completing the course and taking an exam, otherwise the student gains total of ten credits to his/her degree. As the nature of this system is heavily score-based and students are free to choose their working hours without any major mandatory attendance, it can create a motivation to cheat among  students. Also the fact that there are over hundred students registered and many submissions per student, makes it practically impossible for course staff to detect possible cheating. 
 
 The word \emph{cheating} here refers to an act of plagiarism and one of the ways to define the verb \emph{plagiarize} is as \say{to steal and pass off (the ideas or words of another) as one's own}\footnote{\url{https://www.merriam-webster.com} Accessed 10th April 2018}, and the person conducting this act is called \emph{a plagiarist}. Source-code plagiarism on other hand, refers to the act of plagiarism that happens between software that is built from various source code documents. This kind of plagiarism can be also defined as \emph{source-code reuse}, which includes the following four facets \cite{TDSCP2008}: copying others work without alterations, copying and changing some parts of the code to fool a human inspector, converting a solution from one language to another and using code-generators to automatically create a solution. 
 
@@ -180,19 +215,24 @@ Source-code plagiarism in academia is considered as a serious offence and there 
 
 The opinions about cheating motives varies between students and academics \cite{TDSCP2008}. Academics reported that cheating is due to three major factors: external pressure, the ease of sharing solutions and cultural differences. Students on the other hand, gave two major reasons: time pressure and heavy workloads. Pressure is named however a common factor in both groups and given the MOOCs time sensitive weekly assignments with the automatic scoring system, can build students motivation to cheat.
 
-In this study, we approach the problem of plagiarism detection with machine learning. We build two classifiers: suspicious authors based on the similarity scores obtained from document similarities and authorship identification that is able to predict the most likely author of a document. Suspicious authors are clustered together to reveal clusters of possible plagiarists, where as authorship identification is used to detect if a writing style of an author matches to his/her previous work. The intersection of suspicious authors and author candidates is thus believed to reveal information about possible plagiarists, and ultimately solve the problem of plagiarism detection. 
+In this study, we approach the problem of plagiarism detection with machine learning. We build two classifiers: identifying suspicious authors based on the similarity scores obtained from document similarities and authorship identification that is able to predict the most likely author of a document. Suspicious authors are clustered together to reveal clusters of possible plagiarists, where as authorship identification is used to detect if a writing style of an author matches to his/her previous work. The intersection of suspicious authors and author candidates is thus believed to reveal information about possible plagiarists, and ultimately solve the problem of plagiarism detection. 
 
 Following research questions are asked, and answered in this study:
 
 \begin{itemize}
-    \item[Q1:] \emph{How plagiarism can be automatically detected?}
-    \item[Q2:] \emph{Can code structure be used as a feature for classification?}
-    \item[Q3:] \emph{Does similarity detection and authorship identification together minimize the rate of false-positives?}
+    \item[Q1:] \emph{What kind of approaches exist to detect source code plagiarism?}
+    \item[Q2:] \emph{What are the possible benefits of using code structure for plagiarism detection?}
+    \item[Q3:] \emph{How one can reduce the amount of false accusations?}
 \end{itemize}
+
+\noindent
+To answer these questions we first conduct a literature review in which we mostly base our method. We will utilize the underlying structure of the code and show if it improves the precision of the model. Finally, we will evaluate our model to see if the rate of false-positives decreases when using similarity detection with authorship identification contrast to using only either one.
 
 Rest of this study is structured as follows: in chapter 2, more detailed overview of source code plagiarism is given with a theory of machine learning methods; chapter 3 presents the results of systematic literature review where we focus on methods applied in current studies; in chapter 4, our method of using two classifiers and the real-life data set are presented; chapter 5 presents the results by comparing our method to two popular baselines and answers to the previous research questions; chapter 6 discusses the results and possible problems when automatic system is used to accuse students from plagiarism. 
 
 \section{Background}
+
+In this chapter we define the problem of plagiarism detection more formally, describe possible plagiarism strategies and give an overview of the similarity detection and authorship identification. We will approach these latter two problems with information retrieval and machine learning. 
 
 \newtheorem*{sc-plg}{Plagiarism detection}
 \begin{sc-plg}
@@ -208,7 +248,7 @@ Above formalization gives an overview of the problem that is studied in this the
 \section{Related Work}
 \input{liter_review/high_results.tex}
 
-\subsection{Descriptive statistics}
+\subsection{Descriptive statistics} \label{subsec-liter-data}
 \input{liter_review/data.tex}
 
 \subsection{Methods}
@@ -255,25 +295,7 @@ Above formalization gives an overview of the problem that is studied in this the
 \appendix
 % 
 
-\lstdefinestyle{mystyle}{
-    tabsize=2,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    keepspaces=true,
-    numbers=left,
-    numbersep=5pt,                  
-    showspaces=false,                
-    showstringspaces=false,
-    showtabs=false,
-    numberstyle=\small,
-    numbersep=8pt,
-    frame = single,
-    framexleftmargin=15pt,
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{red}
-}
- 
-\lstset{style=mystyle}
+
 
 \section{Sample programs} \label{appendix:programs}
 

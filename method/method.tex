@@ -10,7 +10,8 @@ Both of our models are inspired by other studies presented in the literature rev
 \label{alg-toplvl}
 \begin{algorithmic}
 
-\Require Set of authors $A$ and the corpus of source code files $D$
+\Require Set of authors $A$
+\Require Set of source code files $D$ written by various authors $\forall a \in A$
 \Procedure{PLGdetect}{$A, D$}
    \State $D'\gets normalize(D)$
    \State $D'_{train}, D'_{test} \gets split(D')$
@@ -66,21 +67,22 @@ SOCO contains mainly submissions to a single exercise and couple of documents, t
 
 
 \paragraph{Corpus statistics}\mbox{}\\
-We are going to focus to Java language, therefore we only use the Java-specific part of SOCO training set, but fully utilize OHPE and OHJA data sets due to a fact that they only contain Java files. Number of steps has been made beforehand to form the upcoming corpora: 1) leave SOCO as it is, 2) add exams to both OHPE and OHJA, and 3) concatenate submission containing multiple files into one file. In this way we just need to handle one file per submission and we also get the benefit of having submissions to the exam, something where plagiarism is absolutely not allowed. 
+We are going to focus to Java language, therefore we only use the Java-specific part of SOCO training set, but fully utilize OHPE and OHJA data sets due to a fact that they only contain Java files. Number of non-transformative steps has been made beforehand to form the upcoming corpora: 1) leave SOCO as it is, 2) add exams to both OHPE and OHJA, and 3) concatenate submission containing multiple files into one file. This allows us to handle only one file per submission and we also get the benefit of having exam submissions, which is something where plagiarism is absolutely not allowed. 
 
 %As OHPE and OHJA are both real-life courses, we also include the exam which in OHPE is made out of four tasks and in OHJA out of three tasks. 
 
-Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where nine different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), meaning it's the most richest data set when it comes to having a large amount of submissions per author.  
+Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where ten different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for documents per author, character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; and lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
 
 \begin{table}[ht]
 \centering
-\caption{Descriptive statistics for the three corpora. Bold values represents maximum value per metric.}
+\caption{Descriptive statistics for the unprocessed corpora. Bold values represents maximum per metric.}
 \label{tbl-corporastats}
 \begin{tabular}{|c|c|c|c|} \hline
 \backslashbox{\bf Feature}{\bf Corpus}   & SOCO & OHPE & OHJA\\  \hline
 \textbf{Authors}         & 259 & \textbf{316} & 270   \\  \hline
 \textbf{Exercises}       & 1 & \textbf{151} & 92     \\  \hline
 \textbf{Documents}       & 259 & \textbf{33\,363} & 15\,196    \\  \hline
+\textbf{Documents per author $\mu$} & 1 & \textbf{106} & 56\\ \hline
 \textbf{Synthetic}       & Partly & No & No \\  \hline
 \textbf{LOC $\min$}         & \textbf{12} & 1 & 1      \\  \hline
 \textbf{LOC $\mu$}        & \textbf{149} & 44 & 109     \\  \hline
@@ -92,33 +94,35 @@ Descriptive statistics for all three collections without any textual preprocessi
 
 \newpage
 
-A problem however arises when average line count with respect to the exercises is visualized for both OHPE and OHJA. In figure \ref{fig-hists} , it's clear that most of the 
+A problem however arises when average line count with respect to the exercises is visualized for both OHPE and OHJA. Figure \ref{fig-hists} visualizes this by histograms, where both bin sizes are set to 50. 
 
 
 \begin{figure}[!h]
 \centering
 \captionsetup[subfigure]{justification=centering}
 
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{\textwidth}
     \setlength\figureheight{5cm}
-    \setlength\figurewidth{\linewidth}
+    \setlength\figurewidth{\textwidth}
     \input{plots/ohpe_avgloc.tikz}
     \label{fig-ohpeavgloc}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
   \setlength\figureheight{5cm}
-    \setlength\figurewidth{\linewidth}
+    \setlength\figurewidth{\textwidth}
     \input{plots/ohja_avgloc.tikz}
     \label{fig-ohjaavgloc}
 \end{subfigure}
 
-\caption[Two histograms for corpora]{Histograms showing average line of count per exercise for OHPE (left) and OHJA (right)}
+\caption[Two histograms for corpora]{Histograms showing average line of count per exercise for OHPE (top) and OHJA (below)}
 \label{fig-hists}
 \end{figure}
 
-%Even if there exists some differences between corpora, all of them contain similar distribution of tokens. This is visible from following figures, where ten most used tokens are plotted per corpora.
+\noindent
+From figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 50 lines of code. This creates an issue for plagiarism detection, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high. 
 
-% plottaa loc per task
+Consider for example three programs presented in appendix \ref{appendix:programs}. Because the solution to the given task is very limited, the submissions will inevitably have similar solutions, questioning the very fact that can there even exist plagiarism in short tasks. To overcome this problem we filter out all tasks where average line count falls to first quartile \ie under the 25th percentile, which is 21.0 for OHPE and 54.5 for OHJA. We call these filtered out tasks as \emph{trivial tasks} \ie exercises which solution space is very restricted. The intuition behind our filtering is that one cannot simply find plagiarism from too simple exercises which includes given tasks like: printing \say{Hello World} (1st task of OHPE), calculating how many seconds are in a year (6th task of OHPE) or doing simple string concatenation (2nd task of OHJA). 
 
 
 \newpage
@@ -139,6 +143,7 @@ A problem however arises when average line count with respect to the exercises i
 
 \subsection{Similarity detection}
 
+%use t-SNE for visualization!! density is lost https://stats.stackexchange.com/questions/263539/k-means-clustering-on-the-output-of-t-sne?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
 \subsection{Authorship identification}
 
