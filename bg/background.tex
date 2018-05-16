@@ -188,7 +188,7 @@ As we need some form of numerical way \ie vector to represent one document, we u
 \paragraph{Vector space model}
 %Tokenization
 
-One form of vector space model is called \emph{a binary term-document incidence matrix} \cite{Manning:2008:IIR:1394399}, which represents documents as columns of the matrix and terms as the rows. Terms are gathered by tokenization procedure which divides single document into units that are often \emph{words} of the document. Let $\bolditt{M}_{n \times k}$ be this matrix having $n$ terms and $k$ documents, then the value of $\bolditt{M}_{d, t}$ \ie term $t$ appearing in document $d$, is 1 if it appears at all and zero otherwise. Table \ref{tbl-binmatr} shows example matrix build from programs in appendix \ref{appendix:programs}.  
+One form of vector space model is called \emph{a binary term-document incidence matrix} \cite{Manning:2008:IIR:1394399}, which represents documents as columns of the matrix and terms as the rows. Terms are gathered by tokenization procedure which divides single document into units that are often \emph{words} of the document, but can also be \eg adjacent words. Let $\bolditt{M}_{n \times k}$ be this matrix having $n$ terms and $k$ documents, then the value of $\bolditt{M}_{d, t}$ \ie term $t$ appearing in document $d$, is 1 if it appears at all and zero otherwise. Table \ref{tbl-binmatr} shows example matrix build from programs in appendix \ref{appendix:programs}.  
 
 \begin{table}[ht]
 \centering
@@ -236,11 +236,11 @@ Now by taking the product of term frequency and inverse document frequency (tf-i
     tf{\text -}idf_{t, d} = tf_{t, d} \cdot idf_{t}
 \end{equation}
 
-By using tf-idf weighting scheme, we are able to discriminate between documents and diminish the problem of frequently appearing terms that are introduced often in programming, because the language is very structured and defined by a finite amount of keywords and variables. 
+By using tf-idf weighting scheme, we are able to discriminate between documents and diminish the problem of frequently appearing terms that are introduced often in programming, because the language is very structured and defined by a finite amount of keywords and variables. The representation of documents remains similar to Table \ref{tbl-binmatr}, having term weights to ultimately describe the document.
 
 \subsubsection{Document similarity}
 
-Now as we have a way of expressing a document as a vector, we need to somehow be able to calculate similarity between two documents, which is crucial for similarity detection. One way of doing this is by using \emph{cosine similarity}.
+Now as we have a way of expressing a document as a vector, we need to somehow be able to calculate similarity between two documents, which is crucial part for similarity detection. One way of doing this is by using \emph{cosine similarity}.
 
 \paragraph{Cosine similarity}
 
@@ -250,11 +250,11 @@ Cosine similarity measures the similarity between two documents by calculating t
     sim(d_1, d_2) = \cos(\theta) = \dfrac{\bolditt{x} \boldsymbol{\cdot} \bolditt{y}}
                           {\norm{\bolditt{x}}_2 \norm{\bolditt{y}}_2} = 
                           \dfrac{\sum \limits_{i=1}^n x_i y_i}
-                                {\sqrt{\sum \limits_{i}^n {x}_i^2} \sqrt{\sum \limits_{i}^n y_i^2}}
+                                {\sqrt{\sum \limits_{i=1}^n {x}_i^2} \sqrt{\sum \limits_{i=1}^n y_i^2}}
 \end{equation}
 
 \noindent
-As the dot-product is normalized in equation \ref{eq-cosine-orig} with Euclidean norm and by using non-negative weights derived from tf-idf, the cosine similarity gets values between zero to one and values closer to one indicate from high content similarity. The complement of cosine similarity called \emph{cosine distance} can be calculated by $d = 1 - \cos(\theta)$.
+As the dot-product is normalized in equation \ref{eq-cosine-orig} with Euclidean norm and by using non-negative weights derived from tf-idf, the cosine similarity gets values between zero to one and values closer to one indicate from high content similarity. The complement of cosine similarity called \emph{cosine distance} can be calculated by $d = 1 - \cos(\theta)$ \cite{}.
 
 \subsubsection{Retrieval metrics}
 
@@ -285,23 +285,133 @@ $F_1$-score is slightly different metric, giving an average between precision an
     F_1 = 2 \cdot \dfrac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
 \end{equation}
 
-\newpage
+By using these metrics, we are able to evaluate the results of our detection process when we retrieve a set of documents that our model suspects from plagiarism. But to be able to properly evaluate, the data needs to be labeled \ie there must exist some gold standard about the confirmed cases of plagiarism, or the results needs to be confirmed by a human with domain knowledge \eg course administrative staff. 
 
-\subsection{Supervised learning}
+\subsection{Document classification}
 
-Statistical method.
+\begin{itemize}
+    \item Statistical method
+    \item Supervised learning $(x, y)$
+\end{itemize}
 
 \subsubsection{Naive Bayes}
-
-\subsubsection{Classification}
+Blaa
 
 \paragraph{One vs Rest}
+Blaa
+\clearpage
+\clearpage
+
+\subsection{Document clustering}
+
+Document clustering is a process that is able to group the set of documents, so that their similarities is maximized \ie documents belonging to the same group are as similar as possible. This is relatively easy task for a human to do manually for a small set of documents, but in order to perform this task automatically in large scale we resort to \emph{unsupervised learning}. 
+
+Unsupervised learning can divide the observed data \ie documents, into subgroups called \emph{clusters} \cite{hastie_09_elements-of.statistical-learning}. The main difference to supervised learning (classification) is that when the data is represented as a sequence $\bolditt{X} = (\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n)$, where $\bolditt{x}_i \in \mathbb{R}^d$ is $d$-dimensional feature vector which represents the $i$th document, we don't have the sequence of response variables $\bolditt{y} = (y_1, y_2, \cdots, y_n)$ for each document. Thus there is no loss function which is dependent from the true label of the data, requiring the distribution of the data to determine the class \cite{Manning:2008:IIR:1394399}. The performance of the unsupervised model can be very subjective, requiring some kind of prior domain knowledge as there might not exist any ground truth \cite{hastie_09_elements-of.statistical-learning}. 
+
+The Figure \ref{fig-clust-example} visualizes data generated from three separate distributions. It's clear that as we know how the data was generated, it would be easy by prior knowledge and by visually, to divide the space into three regions. However, if the data would be more uniformly distributed, this task requires more knowledge about how two data points are able to have similar location.
+
+\begin{figure}[!h]
+\centering
+\setlength\figureheight{8cm}
+\setlength\figurewidth{8cm}
+\input{plots/example_datadistr_clust.tikz}
+\caption{Data drawn from three different distributions. Three major clusters are clearly visible.} \label{fig-clust-example}
+\end{figure}
+
+When considering for example plagiarism between documents, we are highly interest of cases where two or more documents are too similar to each others. In Figure \ref{fig-clust-example} these would mean for example all data points that are touching each others; a more fine grained classification with a lot more clusters than just three. The normalized similarity value $s \in [0, 1]$, or respectively distance value $d = 1 - s$, is known before the clustering algorithm and can be precomputed into matrix of documents $\bolditt{M}_{d \times d}$, where $\bolditt{M}_{i, j}$ is the similarity/distance value between two documents. However, the clustering algorithm is completely unaware about the real plagiarism cases \ie labels and works more as a way to gather groups for further inspection. If there are no suspicious similarity between documents, no clusters should emerge.
+
+We define the problem of clustering first formally and then show two different unsupervised algorithms: \emph{K-means clustering} and \emph{DBSCAN}.
+
+\newtheorem*{docclus}{Document clustering}
+\begin{docclus}
+Given a set of datapoints $X = \{\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n\}  \; \bolditt{x}_i \in \mathbb{R}^d$ representing the documents, define assignment $\gamma: X \rightarrow \{1, \cdots, k\}$, where $k$ is the total amount of clusters formed in the end \cite{Manning:2008:IIR:1394399}. The set of clusters can be notated by $\Omega = \{\omega_1, \omega_2, \cdots, \omega_k\}$ and each document belongs to some cluster $\forall d \in \omega_i$. 
+\end{docclus}
+
+\paragraph{K-means clustering}
+
+K-means clustering requires the $k$ parameter to be predefined and it assumes there exists a \emph{centroid} \ie a mean point, for every cluster $C = (\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \cdots, \boldsymbol{\mu}_k), \; \boldsymbol{\mu}_i \in \mathbb{R}^d$ \cite{Manning:2008:IIR:1394399}. To assign a point to a cluster, one calculates the \emph{squared Euclidean distance} to a centroid $\norm{\bolditt{x}_i - \boldsymbol{\mu}}^2$, and minimizes this distance \ie assigns data point to the same cluster as the nearest centroid. The algorithm works iteratively updating the cluster assignments for each point and calculating new centroids until the algorithm converges. The following pseudocode shows the complete algorithm
+
+\begin{algorithm}[ht]
+\caption{K-means algorithm \cite{Manning:2008:IIR:1394399}}
+\label{alg-kmeans}
+\begin{algorithmic}
+
+\Require Set of datapoints $X$
+\Require Amount of clusters $k$
+\Procedure{K-means}{$X, k$}
+   \State $C  \leftarrow $ \Call{InitCentroids}{$X,k$}
+   \While{stop criterion has not been met}
+       \For{$i=1$ to $k$}
+            \State $\omega_i \gets \{\} $
+       \EndFor
+        \For{$j=1$ to $|X|$}
+            \State $l \gets \argmin_{l} \norm{\bolditt{x}_j - \boldsymbol{\mu}_l}^2$
+            \State $\omega_l \gets \omega_l \cup \bolditt{x}_j$
+        \EndFor
+       \State $C \gets $ \Call{UpdateCentroids}{$\Omega$}
+   \EndWhile
+\State \textbf{return} $C$
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+
+\noindent 
+The stopping criteria in Algorithm \ref{alg-kmeans}, can simply be when no updates has been done prior to $C$, or when the centroids are same as in previous loop. Visualization of the clustering result for the same data as in Figure \ref{fig-clust-example} is seen below.
+
+\begin{figure}[!h]
+\centering
+\setlength\figureheight{8cm}
+\setlength\figurewidth{8cm}
+\input{plots/example_kmeans.tikz}
+\caption{Result of K-means clustering after converge; red crosses indicate the cluster centroids and colors cluster assignments. Parameter $k$ is set to 3.} \label{fig-kmeans-example}
+\end{figure}
 
 
+%https://www.youtube.com/watch?v=0MQEt10e4NM
 
-\subsection{Unsupervised learning}
-
-\paragraph{K-means}
+The drawback with K-means clustering is that one must specify the parameter $k$ before the clustering, and when detecting plagiarism, there is no indication beforehand that how many documents should be grouped together. Therefore pre-estimating number of clusters can be hard. One solution is to utilize the density rather than direct distance, which is what DBSCAN is cabable of doing.
 
 \paragraph{DBSCAN}
+
+Density-based spatial clustering of applications with noise (DBSCAN), can produce clustering by using only the density information, label some data points as noise, produce arbitrary sized clusters and use any distance function \cite{Ester:1996:DAD:3001460.3001507}. It requires two parameters $\varepsilon$ which controls the neighbour search radius, and $MinPts$ which defines the minimum number of points needed to form a cluster. To form a cluster a point $q$ must be reachable from point $p$ \ie there must be a path $p \leadsto q$ which fulfills two constraints given as the parameters. To form this path, some points are labeled as core points satisfying two parameters simultaneously, and some as border points which have at least one core point in its $\varepsilon$-range. The pseudocode for DBSCAN is given in Algorithm \ref{alg-dbscan}.
+
+
+\begin{algorithm}[ht]
+\caption{DBSCAN algorithm \cite{Ester:1996:DAD:3001460.3001507, Schubert:2017:DRR:3129336.3068335}}
+\label{alg-dbscan}
+\begin{algorithmic}
+
+\Require Set of datapoints $X$
+\Require Distance radius $\varepsilon$
+\Require Minimum neighbour count $MinPts$
+\Require Distance function $dist: X \times X \rightarrow \mathbb{R}$
+\Procedure{DBSCAN}{$X, \varepsilon, MinPts, dist$}
+   \State $k \gets 0$
+   \For{$i = 1$ to $|X|$}
+    \State $N \gets $ \Call{DiscoverNeighbours}{$X, dist, \bolditt{x}_i ,\varepsilon, MinPts$}
+    \If{$\bolditt{x}_i$ is a core point}
+        \State $k \gets k + 1$
+        \State $\omega_k \gets N \cup \bolditt{x}_i$
+    \Else
+        \State $\bolditt{x}_i$ is noise
+    \EndIf
+   \EndFor
+   \State \textbf{return} $\{\omega_1, \omega_2, \cdots, \omega_k\}$
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+
+Using parameters $\varepsilon = 0.5, MinPts = 15$ and setting distance function as Euclidean distance, DBSCAN learns more denser clusters than K-means and is able to label some data as noise, which is visible in Figure \ref{fig-dbscan-example} as black data points.
+
+\begin{figure}[!h]
+\centering
+\setlength\figureheight{8cm}
+\setlength\figurewidth{8cm}
+\input{plots/example_dbscan.tikz}
+\caption{Result of DBSCAN by setting parameters $\varepsilon = 0.5, MinPts = 15$. Some data has been labeled as noise, as they are too far away from core points.} \label{fig-dbscan-example}
+\end{figure}
 

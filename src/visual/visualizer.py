@@ -18,6 +18,10 @@ import matplotlib
 #           figurewidth = '\\figurewidth')
 
 
+#%%
+
+
+
 def dataset_summary(df):
     
     tasks = len(df.exercise.cat.categories)

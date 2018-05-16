@@ -1,23 +1,25 @@
 
-We base our model in this thesis to a claim that building a two phase model can reduce the amount of false-positives found in source code plagiarism detection. False-positives are problematic, as it would mean an innocent author would be considered as a possible plagiarist, thus having too sensitive models introduces a lot of extra work. These two phases of our model are similarity detection and authorship identification, where both of them are able to define a set of authors; similarity detection reveals suspicious authors based on the file similarity and authorship identification predicts candidate authors for a document $d$. 
+In this thesis, we explore the possibility of using a two-phase model that combines both similarity detection and authorship identification, and believe that such model increases the precision of the detection process. It is noticeable that none of the studies that were part of the literature review in Chapter \ref{chap-liter-review} combines these two approaches when making the final decision, even though methods that are being used share a common target; to detect plagiarism. 
+
+Thus we base our model to a two phase model which could reduce the amount of false-positives found in source code plagiarism detection. False-positives are problematic as it means an innocent author is considered to be a possible plagiarist, and therefore having too sensitive model introduces a lot of extra work. Two phases of our model are similarity detection and authorship identification, where both of them are able to define a set of authors; similarity detection reveals suspicious authors based on the file similarity and authorship identification predicts candidate authors for a document $d$. 
 
 %pre-process documents, tokenize documents, exclude templates, calculate similarities and finding suspects using these similarity scores.
 
-Both of our models are inspired by other studies presented in the literature review and combine the high-level approach used in many tools \cite{RSCAD2016}: preprocess, normalize, calculate metrics and predict. The generalization of the proposed model is given below.
+Both of our models are inspired by other studies presented in the literature review and combine the high-level approach used in many tools \cite{RSCAD2016}: preprocess, normalize, evaluate and predict. For similarity detection we use lower level features that capture the structure and are resilient against transformations introduced in Chapter \ref{chap-liter-review-methods}, and for authorship identification we use higher level features which can capture the style of an author. The generalization of the proposed model is given below.
 
 \begin{algorithm}[ht]
-\caption{Detecting plagiarism between a set of source code files}
+\caption{Detecting plagiarism between a set of source code files.}
 \label{alg-toplvl}
 \begin{algorithmic}
 
 \Require Set of authors $A$
 \Require Set of source code files $D$ written by various authors $\forall a \in A$
 \Procedure{PLGdetect}{$A, D$}
-   \State $D'\gets normalize(D)$
-   \State $D'_{train}, D'_{test} \gets split(D')$
-   \State $\mathcal{M} \gets train(A, D'_{train})$
+   \State $D'\gets$ \Call{normalize}{$D$}
+   \State $D'_{train}, D'_{test} \gets$ \Call{split}{$D'$}
+   \State $\mathcal{M} \gets$ \Call{trainModel}{A, $D'_{train}$}
    \State $A_{auth} \gets \mathcal{M}(D'_{test})$
-   \State $A_{susp} \gets detectSim(A, D'_{test})$
+   \State $A_{susp} \gets$ \Call{detectSim}{$A$, $D'_{test}$}
    \State \textbf{return} $A_{auth} \cap A_{susp}$
 \EndProcedure
 
@@ -25,12 +27,12 @@ Both of our models are inspired by other studies presented in the literature rev
 \end{algorithm}
 
 \noindent
-In algorithm \ref{alg-toplvl}, the source codes are first normalized to reduce the noise caused by \eg comments and repeated whitespace. We train a supervised learning model $\mathcal{M}$ that is able to classify the author of a document. We retrieve the top $n$ predictions called a set of candidate authors $A_{auth}$ for a document $d$. Similarity detection is calculated for the same set of documents to find suspicious authors $A_{susp}$. The word \emph{suspicious} refers here to too similar documents that are written by different authors. Finally, intersection between candidate authors and suspicious authors is taken, to provide a set of possible plagiarists. Both parts of our model are validated against real-life tools; plagiarism detection is evaluated against JPlag \cite{prechelt2002finding} which has been used as a baseline model in a SOCO competition \cite{saez2014pan}, and authorship identification against SCAP method.
+In algorithm \ref{alg-toplvl}, the source codes are first normalized to reduce the noise caused by \eg comments and repeated whitespace. We train a supervised learning model $\mathcal{M}$ that is able to classify the author of a document, and retrieve the top $n$ predictions called a set of candidate authors $A_{auth}$ for a document $d$. Similarity detection is calculated for the same set of documents to find suspicious authors $A_{susp}$. The word \emph{suspicious} refers here to too similar documents that are written by different authors. Finally, intersection between candidate authors and suspicious authors is taken, to provide a set of possible plagiarists. Both parts of our model are validated against real-life tools; plagiarism detection is evaluated against JPlag \cite{prechelt2002finding} which has been used as a baseline model in a SOCO competition \cite{saez2014pan}, and authorship identification against SCAP method which was found to be commonly used by other studies in Chapter \ref{chap-liter-review-methods}.
 
 \subsection{Assumptions}
 
 We mainly focus on academia and especially to programming courses that are offered by 
-universities. Following four assumptions are defined to simplify the problem of plagiarism
+universities. Following five assumptions are defined to simplify the problem of plagiarism
 detection by allowing us to concern only plagiarism that happens in a closed environment and within a closed set of documents. 
 
 \paragraph{In-class plagiarism} Plagiarism has occured only inside a 
@@ -41,23 +43,26 @@ specific course implementation. Let $\mathcal{P}(A)$ be a powerset of students w
 Let $E_c = \{e_1, e_2, ..., e_n\}$ be a set of exercises for a course $c$, then submissions for a single exercise is represented by a subset $D_{c,e} \subseteq D_c$. With this assumption, we focus the plagiarism detection to submissions done to a single exercise at a time \ie plagiarism can happen only between submissions to a single exercise.
 
 \paragraph{Single author} 
-Every source code $d \in D_c$ is assumed to have a single author $a = auth(d), a \in A_c$. This allows us to assume that every source code submissions is done as a individual work, and all results that suggests otherwise implies about the case of excessive collaboration. 
+Every source code $d \in D_c$ is assumed to have a single author $a = auth(d), a \in A_c$. This allows us to assume that every source code submissions is done as a individual work, and all results that suggests otherwise implies about the case of excessive collaboration \ie plagiarism. 
 
 \paragraph{Plagiarism direction} 
-Let a file $d_i$ be plagiarized from $d_j$ \ie $d_i \xrightarrow{plag} d_j$, we treat this as same as the opposite direction $d_i \xleftarrow{plag} d_j$, making the direction of plagiarism unimportant. Thus the goal of our model is to give a set suspicious authors given the file and the claimed author.
+Let a file $d_i$ be plagiarized from $d_j$ \ie $d_i \xrightarrow{plag} d_j$, we treat this as same as the opposite direction $d_i \xleftarrow{plag} d_j$, making the direction of plagiarism unimportant. This means that we treat both cases; sharing and copying as an act of supporting plagiarism. 
 
 \paragraph{Expert interference}
-We believe that no system can be accurate enough to autonomously accuse students about plagiarism. However, this is doable when some form of human judgment is added to the model. In principal this means that the model can make predictions about cases of plagiarisms which we call \emph{suspects}, but the human expert must make the \emph{allegation} of plagiarism based on the results and after questioning the students.  
+We believe that no system can be accurate enough to autonomously accuse students about plagiarism. However, this is doable when some form of human judgment is added to the model. In principal this means that the model can make predictions about cases of plagiarisms which we call \emph{suspects}, but the human expert must make the \emph{allegation} of plagiarism based on the results and after questioning the students. Every university should however have a guideline about what is considered as plagiarism and how such cases are handled, like the University of Helsinki has done\footnote{\url{https://blogs.helsinki.fi/alakopsaa/?lang=en} Accessed 9th May 2018}.
 
 \subsection{Data set}
 
-Our model is aimed to the traditional MOOC setting which is for example used by  undergraduate-level programming courses \emph{Introduction to Programming} (OHPE) and \emph{Advanced course in Programming} (OHJA) in University of Helsinki. We use all three real-life data sets; students submissions done to both of latter courses during the implementation in fall 2016 and a train data from SOCO task from 2014. All source code files are written in Java programming language. 
+Our model is aimed to the traditional MOOC setting which is for example used by  undergraduate-level programming courses \emph{Introduction to Programming} (OHPE) and \emph{Advanced course in Programming} (OHJA) in University of Helsinki. We use three authentic data sets; students submissions done to both of latter courses during the implementation in fall 2016 and a train data from SOCO task from 2014. All source code files are written in Java programming language. 
 
-To implement our model, we first use SOCO to train and evaluate our similarity detection model, then train and test authorship identification with OHPE and OHJA. Our proposed model is built based on these results and plagiarism is detected individually for both courses. The reason to use train set of SOCO for similarity detection, is simply that it's the only data set that contains fully labeled cases of plagiarism, but unfortunately contains only one file per author. OHPE and OHJA on the other hand, contains multiple files per author making author identification possible, but only a few \emph{known} cases of plagiarism. Therefore we make use of both sets and consider our model to be successful if it finds at least every known case of plagiarism from OHPE and OHJA.
+Both OHPE and OHJA includes proven cases of plagiarism, however to avoid any bias, more specific information about them is kept hidden as a golden standard by the courses administrative staff Arto Hellas until the final evaluation of our model. SOCO dataset on the other hand, contains prelabeled document pairs that have conducted plagiarism \cite{saez2014pan}.
 
-% TODO: add references from laptop
+To implement our model, we first use SOCO to train and evaluate our similarity detection model, then train and test authorship identification with OHPE and OHJA. Our proposed model is built based on these results and plagiarism is detected individually for both courses. The reason to use train set of SOCO for similarity detection, is simply that it's the only data set that contains fully labeled cases of plagiarism, but unfortunately contains only one file per author. OHPE and OHJA on the other hand, contains multiple files per author making author identification possible, but only a few known cases of plagiarism. Therefore we make use of both sets and consider our model to be successful if it has a high precision, minimizing the amount of false-positives. 
+
 \paragraph{Course overview}\mbox{}\\
-As courses, OHPE and OHJA shares the same structure; students first register to automatic scoring system called \emph{Test My Code} (TMC) which also distributes the exercises as an plugin to \emph{NetBeans IDE}, then independently work during seven weeks by completing programming exercises within deadlines. Students earn one point per exercise depending if all tests were successfully passed and complete an exam at end of the course, which is a programming exam that ultimately decides if a student has at least learned the minimum level required. There are no mandatory lectures, thus students are able to earn credits by working individually without any physical attendance. Also the exam in fall 2016 was a home exam, meaning that students were able to do it individually wherever they wanted to. 
+OHPE and OHJA shares the same structure; students first register to automatic scoring system called \emph{Test My Code} (TMC) \cite{Vihavainen:2013:SSL:2462476.2462501} which also distributes the exercises as an plugin to \emph{NetBeans IDE}, then independently work during seven weeks by completing programming exercises within deadlines \cite{Vihavainen:2012:MSM:2380552.2380603}. Both of these courses follow \emph{Extreme Apprenticeship method} \cite{Vihavainen:2011:EAM:1953163.1953196}; theoretical material is available online for students, students learn by doing \ie there exists mandatory programming exercises, weekly exercise sessions are available for those who require assistance, instructors can give feedback and students are able to track their process. 
+
+Students earn points from exercises depending if all tests were successfully passed via TMC, and complete an exam at end of the course which is a programming exam that ultimately decides if a student has learned the minimum level required. The exam in fall 2016 was a home exam, meaning that students were able to do it individually wherever they wanted to. There are also no mandatory lectures, thus students are able to earn these credits by working individually without any physical attendance. 
 
 \paragraph{SOCO overview}\mbox{}\\
 Source code reuse (SOCO) data is from a 2014 competition \emph{PAN@FIRE}, where two sets were given to detect monolingual source code re-use \cite{saez2014pan}. SOCO2014 offered a train and a test set for competitors, which contained files written in \cpp\, and Java by various authors. The train set contains the source code files and annotations which are made by three experts flagging which pairs are considered as plagiarism. Competitors were then asked to retrieve which pairs are plagiarized. For example pair $(d_i, d_j)$ refers that there exists plagiarism between these two files, and because the direction was completely ignored, it was sufficient to retrieve just the predicted pairs.
@@ -67,30 +72,32 @@ SOCO contains mainly submissions to a single exercise and couple of documents, t
 
 
 \paragraph{Corpus statistics}\mbox{}\\
-We are going to focus to Java language, therefore we only use the Java-specific part of SOCO training set, but fully utilize OHPE and OHJA data sets due to a fact that they only contain Java files. Number of non-transformative steps has been made beforehand to form the upcoming corpora: 1) leave SOCO as it is, 2) add exams to both OHPE and OHJA, and 3) concatenate submission containing multiple files into one file. This allows us to handle only one file per submission and we also get the benefit of having exam submissions, which is something where plagiarism is absolutely not allowed. 
+We are going to focus to Java language, therefore we only use the Java-specific part of SOCO training set, but fully utilize OHPE and OHJA data sets due to a fact that they only contain Java files. Number of non-transformative steps has been made beforehand to form the upcoming corpora: 1) leave SOCO as it is, 2) add exams to both OHPE and OHJA, and 3) concatenate submission containing multiple files into one file. This allows us to assume only one file per submission and we also get the benefit of having exam submissions, which is something where plagiarism is absolutely not allowed. 
 
 %As OHPE and OHJA are both real-life courses, we also include the exam which in OHPE is made out of four tasks and in OHJA out of three tasks. 
 
-Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where ten different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for documents per author, character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; and lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
+Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where ten different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for documents per author, character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; and lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. 
 
 \begin{table}[ht]
 \centering
 \caption{Descriptive statistics for the unprocessed corpora. Bold values represents maximum per metric.}
 \label{tbl-corporastats}
-\begin{tabular}{|c|c|c|c|} \hline
-\backslashbox{\bf Feature}{\bf Corpus}   & SOCO & OHPE & OHJA\\  \hline
+\begin{tabular}{|l||l|l|l|} \hline
+\backslashbox{\bf Metric}{\bf Corpus}   & SOCO & OHPE & OHJA\\  \hhline{|=|=|=|=|}
 \textbf{Authors}         & 259 & \textbf{316} & 270   \\  \hline
 \textbf{Exercises}       & 1 & \textbf{151} & 92     \\  \hline
 \textbf{Documents}       & 259 & \textbf{33\,363} & 15\,196    \\  \hline
-\textbf{Documents per author $\mu$} & 1 & \textbf{106} & 56\\ \hline
+\textbf{Average documents per author} & 1 & \textbf{106} & 56\\ \hline
 \textbf{Synthetic}       & Partly & No & No \\  \hline
 \textbf{LOC $\min$}         & \textbf{12} & 1 & 1      \\  \hline
-\textbf{LOC $\mu$}        & \textbf{149} & 44 & 109     \\  \hline
+\textbf{LOC AVG.}        & \textbf{149} & 44 & 109     \\  \hline
 \textbf{LOC $\max$}         & \textbf{1696} & 679 & 637   \\  \hline
-\textbf{Expression $\mu$}       & \textbf{63} & 17 & 38 \\ \hline
-\textbf{Character $\mu$} & \textbf{3898} & 1139 & 2794   \\  \hline
+\textbf{Expression AVG.}       & \textbf{63} & 17 & 38 \\ \hline
+\textbf{Character AVG.} & \textbf{3898} & 1139 & 2794   \\  \hline
 \end{tabular}
 \end{table}
+
+When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
 
 \newpage
 
