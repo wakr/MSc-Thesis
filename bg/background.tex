@@ -1,4 +1,4 @@
-\subsection{Source-code plagiarism}
+\subsection{Source-code plagiarism} \label{chap-bg-sc-plag}
 
 Source-code plagiarism refers to a plagiarism that happens between source code files. This 
 scenario is common in academic programming courses and in software industry, where detection can be impossible due to time constraints. In academia, the underlying motives behind source code plagiarism include things like \cite{DPPA2008}; ambiguity about what is considered as excessive collaboration between students, using other students work to gain grades and minimizing the work needed to complete the course. Also, some students have problems to define what they consider as source-code plagiarism, and thus three common guidelines can be given \cite{Pieterse2014DecodingCP}:
@@ -71,9 +71,9 @@ Source code is a structured text, made of keywords and user-defined variables. T
 Pruning the leaves of diagram \ref{diag-parse} leads to a more general expression that captures the logic of the source code, becoming resistant against most of the transformations given in table \ref{tbl-plag-transf}. This gives ability to detect similar \emph{structure} rather than similar \emph{tokens}, which are more vulnerable to simple transformations.
 
 \paragraph{Tools}\mbox{}\\
-Because plagiarism is kept as a serious offence in academia, a lot of various detection software has been made for it. Novak lists seven of the most well-known tools in a review and explains some common properties \cite{RSCAD2016}: \emph{MOSS, JPlag, SPLaT, SIM, Marble, Plaggie} and \emph{Sherlock}. These tools can be classified into five different categories based on methods used: text, token, graph, tree and hybrid. Among these tools, the most common way to detect plagiarism is a five step approach: pre-process documents, tokenize documents, exclude templates, calculate similarities and finding suspects using these similarity scores.
+Because plagiarism is kept as a serious offence in academia, a lot of various detection software has been made for it. Novak lists seven of the most well-known tools in a review \cite{RSCAD2016}: \emph{MOSS, JPlag, SPLaT, SIM, Marble, Plaggie} and \emph{Sherlock}. These tools can be classified into five different categories based on methods used: text, token, graph, tree and hybrid. Among these tools, the most common way to detect plagiarism is a five step approach: pre-process documents, tokenize documents, exclude templates, calculate similarities and find suspects using the similarity scores.
 
-\newpage
+For example JPlag is tool targeted for Java code \cite{prechelt2002finding}. It works by utilizing the program structure, transforming the program code into sequence of tokens by traversing the parse tree of a program and using predefined token correspondence to form a token stream which represents the source code. To form similarity score between two programs, a string matching algorithm \emph{Greedy String Tiling} \cite{SSGST1993} is applied and the summed length of all matches is calculated. Resulting a similarity score of 1.0, if two programs are exact copies. Makers of JPlag also claim that it is resilient against most common obfuscations made by plagiarists. 
 
 \subsection{Similarity detection} \label{chap-sd}
 
@@ -111,7 +111,7 @@ The core process to detect similarity can be visualized as in figure \ref{fig-sd
     
     \end{tikzpicture}
 }
-\caption{Similarity detection process}
+\caption{Similarity detection process. Corpus is transformed into a intermediate form so similarity scores can be calculated.}
 \label{fig-sd-flow}
 \end{figure}
 
@@ -173,14 +173,14 @@ In natural language authorship analysis, statistical methods are often being use
 Whichever the choice is, one is able to reduce the problem into multiclass classification \cite{Stamatatos:2009:SMA:1527090.1527102}, where author pool of size $n$ can be encoded into binary vector $\bolditt{y} = [y_1, y_2, \cdots, y_n], y_i \in \{0, 1\}$. With this representation if the $i$th candidate is the actual author, the value of that field will be one and the rest are zeroes. 
 
 
-\subsection{Information retrieval}
+\subsection{Information retrieval} \label{chap-IR}
 
 Information retrieval (IR) is a collection of strategies of finding documents from large collections \cite{Manning:2008:IIR:1394399}. These documents are often represented as unstructured text and possible methods covers topic like: clustering documents to find similar groups, classifying documents based on their content, ranking text for query search and building search engines. In this thesis as we mainly focus on finding similarities between documents and how to classify the author, we disregard some of the query-based focus of IR and use techniques that are relevant to plagiarism study \ie how document can be represented for machine learning models and how distance between two documents can be calculated.
 
 
 
 
-\subsubsection{Document representation}
+\subsubsection{Document representation} \label{chap-IR-document-repr}
 
 As we need some form of numerical way \ie vector to represent one document, we use following IR-related concepts to express the documents in our corpus: \emph{vector space model} which captures algebraically the representation of the document and a \emph{weighting scheme} which helps to give more importance to specific terms.
 
@@ -289,43 +289,95 @@ By using these metrics, we are able to evaluate the results of our detection pro
 
 \subsection{Document classification}
 
-\begin{itemize}
-    \item Statistical method
-    \item Supervised learning $(x, y)$
-\end{itemize}
+The problem of classification can be formulated as $\gamma: \mathbb{X} \rightarrow \mathbb{C}$ \cite{Manning:2008:IIR:1394399}, approximating a function $\gamma$ that maps data $\bolditt{x} \in \mathbb{X}$ to class $c \in \mathbb{C}$. For example a \emph{binary classifier} would choose between a positive and a negative class $\mathbb{C} = \{+, -\}$, and \emph{multiclass classifier} between multiple classes $\mathbb{C} = \{c_1, c_2, \cdots, c_n\}$.
 
-\subsubsection{Naive Bayes}
-Blaa
+To be able to classify documents algorithmically into some predefined classes, the classifier must learn a way to predict outputs from inputs \cite{hastie_09_elements-of.statistical-learning}. That is, given some $d$-dimensional data $\bolditt{x} \in \mathbb{R}^d$, it must predict the response variable $y$ which can be encoded into binary vector. To make the prediction, the classifier must be supported with some observed data as a training data represented in matrix format $\bolditt{X}_{n \times d}$ and predefined response variables in a column vector $\bolditt{y}_{n \times 1}$. 
 
-\paragraph{One vs Rest}
-Blaa
-\clearpage
-\clearpage
+As we know the output $y$ of each observed point $\bolditt{x}$, we want to have similar data to be predicted with the same output. The prediction the algorithm gives can be noted as $\hat{y}$ for $\bolditt{x}$, and because this value is just a prediction, evaluation is needed for the algorithm to be able to chance its learning into right direction. This evaluation happens by penalizing wrong predictions with a loss function $L: \hat{\theta} \times \theta \rightarrow \mathbb{R}$ \cite{hastie_09_elements-of.statistical-learning}. For example one loss function able to penalize categorical predictions, is called \emph{0-1 loss} and formulated as $L(\hat{y}, y) = I(\hat{y} \neq y)$. This kind of setting is also called as \emph{supervised learning} as we have some data that can guide the algorithm into right direction, the analogue for supervised learning can be thought as learning with a teacher \cite{hastie_09_elements-of.statistical-learning}.
+
+
+%IR pgs. 259 - 273, Element. stat pgs. 37, 21
+
+\paragraph{Naïve Bayes}
+
+%A Comparison of Event Models for Naive Bayes Text Classification
+
+Naïve Bayes is a probabilistic model, which is often used as a baseline model in text classification \cite{acemNBtc2001}. It applies the \emph{Bayes theorem} to estimate the parameters of the classifier \ie conditional probabilities with respect to data. Bayes theorem is generally given for events $A, B$ as 
+
+\begin{equation} \label{eq-naive-bayes}
+    P(A \mid B) = \dfrac{P(A \cap B)}{P(B)} = \dfrac{P(A)P(B \mid A)}{P(B)}
+\end{equation}
+
+\noindent
+Where $P(B)$ can be expressed with the law of total probability
+\begin{equation}
+    P(B) = P(B \mid A)P(A) + P(B \mid \lnot A)P(\lnot A)
+\end{equation}
+
+When the area of interest is classification, we denote the probabilities of events $A,B$ as the \emph{prior} and \emph{likelihood}. Prior being in this case $P(y=c), \; c \in \mathbb{C}$; the probability of a class appearing in data and likelihood $P(\bolditt{x} \mid y=c)$; the likeliness of a document belonging to a class. Equation \ref{eq-naive-bayes} can be therefore rewritten for classification as \cite{Zhang04theoptimality, acemNBtc2001}
+
+\begin{equation} \label{eq-naive-bayes-class}
+    P(y \mid \bolditt{x}) = \dfrac{P(y)P(\bolditt{x} \mid y)}{P(\bolditt{x})} = \dfrac{P(y)P(\bolditt{x} \mid y)}{\sum \limits_{c \in \mathbb{C}} P(y=c)P(\bolditt{x} \mid y=c)}
+\end{equation}
+
+In Equation \ref{eq-naive-bayes-class}, the denominator remains constant because $\bolditt{x}$ is kept unchanged, and therefore it is proportional to product between prior and likelihood
+
+\begin{equation}
+    P(y \mid \bolditt{x}) \propto P(y)P(\bolditt{x} \mid y)
+\end{equation}
+
+Because the underlying real distribution is unknown, we need to estimate the prior and likelihood from the training data \ie data we are keeping as observations. Estimated prior can be calculated from the relative frequency $\hat{P}(c) = \frac{\#c}{|\mathbb{X}|}$, number of samples belonging to the class $c$ divided by the total number of observations \cite{Manning:2008:IIR:1394399}. To calculate the estimated likelihood $\hat{P}(\bolditt{x} \mid y)$, one uses the assumption that features represented in $\bolditt{x}$ are conditionally independent with respect to each other. Therefore likelihood can be simplified by using the chain rule \cite{Manning:2008:IIR:1394399}
+
+\begin{equation}
+    \hat{P}(\bolditt{x} \mid y) = \hat{P}(x_1, x_2, \cdots, x_n \mid y) = \prod \limits_i^n \hat{P}(x_i \mid y)
+\end{equation}
+
+To assign data into a class, the most probable class is chosen \cite{Zhang04theoptimality, acemNBtc2001, Manning:2008:IIR:1394399}. This is referred to also as \emph{maximum a posteriori} (MAP), and the final class assignment \ie the result of classifier $\gamma$ is expressible as
+
+\begin{equation} \label{eq-mapp}
+    \hat{y} = c_{\text{map}} = \argmax \limits_{c \in \mathbb{C}} \hat{P}(c) \prod \limits_i^n \hat{P}(x_i \mid c)
+\end{equation}
+
+\noindent
+That is, the most likely class for a data point is the class which maximizes the posterior, which is proportional to calculating product between prior and posterior.  
+
+A variant of Naive Bayes called \emph{Multinomial Naïve Bayes}, is able to form the likelihood by assuming underlying multinomial distribution \cite{acemNBtc2001}. Given the problem of document classification and that the feature vector $\bolditt{x}$ represents term frequencies of vocabulary $\mathbb{V}$ built from the training data, the conditional probability of Equation \ref{eq-mapp} can be given in similar way as term-frequency function in Equation \ref{eq-tf}. Contrast to it we also add a smoothing called \emph{Laplace smoothing}, to eliminate the problem with terms appearing zero times \cite{Manning:2008:IIR:1394399}
+
+\begin{equation} \label{eq-laplace}
+    \hat{P}(x \mid c) = \hat{P}(t \mid c) = \dfrac{f_{t, c} + 1}{\sum \limits_{t' \in \mathbb{V}} (f_{t', c} + 1)} 
+\end{equation}
+
+\noindent
+In Equation \ref{eq-laplace} $f_{t, c}$ is the frequency of term $t \in \mathbb{V}$ appearing in class $c \in \mathbb{C}$, so the conditional probability of a data point given class can be calculated with smoothed relative frequency of the term that the point represents. However, it has been shown that using tf-idf weigthing scheme can improve the classification results even though the values are non-discrete \cite{Kibriya:2004:MNB:2146834.2146882}.
+
 
 \subsection{Document clustering}
 
 Document clustering is a process that is able to group the set of documents, so that their similarities is maximized \ie documents belonging to the same group are as similar as possible. This is relatively easy task for a human to do manually for a small set of documents, but in order to perform this task automatically in large scale we resort to \emph{unsupervised learning}. 
 
-Unsupervised learning can divide the observed data \ie documents, into subgroups called \emph{clusters} \cite{hastie_09_elements-of.statistical-learning}. The main difference to supervised learning (classification) is that when the data is represented as a sequence $\bolditt{X} = (\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n)$, where $\bolditt{x}_i \in \mathbb{R}^d$ is $d$-dimensional feature vector which represents the $i$th document, we don't have the sequence of response variables $\bolditt{y} = (y_1, y_2, \cdots, y_n)$ for each document. Thus there is no loss function which is dependent from the true label of the data, requiring the distribution of the data to determine the class \cite{Manning:2008:IIR:1394399}. The performance of the unsupervised model can be very subjective, requiring some kind of prior domain knowledge as there might not exist any ground truth \cite{hastie_09_elements-of.statistical-learning}. 
+Unsupervised learning can divide the observed data \ie documents, into subgroups called \emph{clusters} \cite{hastie_09_elements-of.statistical-learning}. The main difference to supervised learning (classification) is that when the data is represented as a sequence $X = (\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n)$, where $\bolditt{x}_i \in \mathbb{R}^d$ is $d$-dimensional feature vector which represents the $i$th document, we don't have the sequence of response variables $\bolditt{y} = (y_1, y_2, \cdots, y_n)$ to guide the process. Thus there is no loss function which is dependent from the true label of the data, requiring the distribution of the data to determine the class \cite{Manning:2008:IIR:1394399}. The performance of the unsupervised model can be very subjective, requiring some kind of prior domain knowledge as there might not exist any ground truth for the data \cite{hastie_09_elements-of.statistical-learning}. 
 
-The Figure \ref{fig-clust-example} visualizes data generated from three separate distributions. It's clear that as we know how the data was generated, it would be easy by prior knowledge and by visually, to divide the space into three regions. However, if the data would be more uniformly distributed, this task requires more knowledge about how two data points are able to have similar location.
+The Figure \ref{fig-clust-example} visualizes data generated from three separate distributions. If we know how the data was generated, it would be easy by prior knowledge and by visually, to divide the space into three regions. However, if the data would be more uniformly distributed and one could not say the exact amount of regions, then this task requires more knowledge about how two data points are able to have similar location. When considering for example plagiarism between documents, we are highly interest of cases where just two or more documents are too similar to each others. In Figure \ref{fig-clust-example} these would mean for example all data points that are touching each others; a more fine grained classification with a lot more clusters than just three. 
 
 \begin{figure}[!h]
 \centering
-\setlength\figureheight{8cm}
-\setlength\figurewidth{8cm}
+\setlength\figureheight{7cm}
+\setlength\figurewidth{7cm}
 \input{plots/example_datadistr_clust.tikz}
-\caption{Data drawn from three different distributions. Three major clusters are clearly visible.} \label{fig-clust-example}
+\caption{Data drawn from three different distributions. Three major clusters are clearly visible as they are formed from three different distributions.} \label{fig-clust-example}
 \end{figure}
 
-When considering for example plagiarism between documents, we are highly interest of cases where two or more documents are too similar to each others. In Figure \ref{fig-clust-example} these would mean for example all data points that are touching each others; a more fine grained classification with a lot more clusters than just three. The normalized similarity value $s \in [0, 1]$, or respectively distance value $d = 1 - s$, is known before the clustering algorithm and can be precomputed into matrix of documents $\bolditt{M}_{d \times d}$, where $\bolditt{M}_{i, j}$ is the similarity/distance value between two documents. However, the clustering algorithm is completely unaware about the real plagiarism cases \ie labels and works more as a way to gather groups for further inspection. If there are no suspicious similarity between documents, no clusters should emerge.
+\newpage
 
-We define the problem of clustering first formally and then show two different unsupervised algorithms: \emph{K-means clustering} and \emph{DBSCAN}.
+The normalized similarity value $s \in [0, 1]$, or respectively distance value $d = 1 - s$, is defined before the clustering algorithm is executed, and it ultimately controls what kind of cluster are being formed. Distances between data points can be precomputed into matrix of documents $\bolditt{M}_{d \times d}$, where $\bolditt{M}_{i, j}$ is the similarity, or distance value between two documents. 
+
+We define the problem of clustering first formally and then show two different unsupervised clustering algorithms: \emph{K-means clustering} and \emph{DBSCAN}.
 
 \newtheorem*{docclus}{Document clustering}
 \begin{docclus}
-Given a set of datapoints $X = \{\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n\}  \; \bolditt{x}_i \in \mathbb{R}^d$ representing the documents, define assignment $\gamma: X \rightarrow \{1, \cdots, k\}$, where $k$ is the total amount of clusters formed in the end \cite{Manning:2008:IIR:1394399}. The set of clusters can be notated by $\Omega = \{\omega_1, \omega_2, \cdots, \omega_k\}$ and each document belongs to some cluster $\forall d \in \omega_i$. 
+Given a set of datapoints $X = \{\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n\},  \; \bolditt{x}_i \in \mathbb{R}^d$, representing the documents, define assignment $\gamma: X \rightarrow \{1, \cdots, k\}$ where $k$ is the total amount of clusters \cite{Manning:2008:IIR:1394399}. The set of clusters can be notated by $\Omega = \{\omega_1, \omega_2, \cdots, \omega_k\}$ and each document belongs to some cluster $\forall d \in \omega$. 
 \end{docclus}
+
 
 \paragraph{K-means clustering}
 
@@ -357,25 +409,30 @@ K-means clustering requires the $k$ parameter to be predefined and it assumes th
 \end{algorithm}
 
 \noindent 
-The stopping criteria in Algorithm \ref{alg-kmeans}, can simply be when no updates has been done prior to $C$, or when the centroids are same as in previous loop. Visualization of the clustering result for the same data as in Figure \ref{fig-clust-example} is seen below.
 
-\begin{figure}[!h]
+In Algorithm \ref{alg-kmeans} centroids are first initialized randomly from the set of data points. Then iteratively until stop criterion is met, which is that there were no updates to centroids $C$, $k$ clusters are first initialized and then from the set of data points cluster assignments are calculated. Data point is assigned to nearest cluster with respect to Euclidean distance. After every loop, new centroids are calculated by taking the mean of assigned data points per cluster. 
+
+Visualization of the clustering result using K-means for the same data as in Figure \ref{fig-clust-example} is seen below.
+
+\begin{figure}[ht]
 \centering
-\setlength\figureheight{8cm}
-\setlength\figurewidth{8cm}
+\setlength\figureheight{7cm}
+\setlength\figurewidth{7cm}
 \input{plots/example_kmeans.tikz}
-\caption{Result of K-means clustering after converge; red crosses indicate the cluster centroids and colors cluster assignments. Parameter $k$ is set to 3.} \label{fig-kmeans-example}
+\caption{Result of K-means clustering after converge. Crosses indicate the cluster centroids, other colors cluster assignments. Parameter $k$ is set to 3 so three different clusters have been discovered by the algorithm.} \label{fig-kmeans-example}
 \end{figure}
 
 
 %https://www.youtube.com/watch?v=0MQEt10e4NM
 
-The drawback with K-means clustering is that one must specify the parameter $k$ before the clustering, and when detecting plagiarism, there is no indication beforehand that how many documents should be grouped together. Therefore pre-estimating number of clusters can be hard. One solution is to utilize the density rather than direct distance, which is what DBSCAN is cabable of doing.
+The drawback with K-means clustering is that one must specify the parameter $k$ before the clustering, and when detecting plagiarism, there is no indication beforehand that how many documents should be grouped together. Therefore pre-estimating number of clusters can be hard. One solution is to utilize the density of the points rather than direct distance, which is what DBSCAN is cabable of doing.
 
 \paragraph{DBSCAN}
 
-Density-based spatial clustering of applications with noise (DBSCAN), can produce clustering by using only the density information, label some data points as noise, produce arbitrary sized clusters and use any distance function \cite{Ester:1996:DAD:3001460.3001507}. It requires two parameters $\varepsilon$ which controls the neighbour search radius, and $MinPts$ which defines the minimum number of points needed to form a cluster. To form a cluster a point $q$ must be reachable from point $p$ \ie there must be a path $p \leadsto q$ which fulfills two constraints given as the parameters. To form this path, some points are labeled as core points satisfying two parameters simultaneously, and some as border points which have at least one core point in its $\varepsilon$-range. The pseudocode for DBSCAN is given in Algorithm \ref{alg-dbscan}.
+Density-based spatial clustering of applications with noise (DBSCAN), can produce clustering by using only the density information, label some data points as noise, produce arbitrary sized clusters and use any distance function \cite{Ester:1996:DAD:3001460.3001507}. It requires two parameters $\varepsilon$ which controls the neighbour search radius, and $MinPts$ which defines the minimum number of points needed to form a cluster. To form a cluster a point $q$ must be reachable from point $p$ \ie there must be a path $p \leadsto q$ which fulfills the two parameter contraints. To form this path, some points are labeled as core points satisfying parameters simultaneously, and some as border points which have at least one core point in its $\varepsilon$-range. If a data points is neither above, it is labeled as noise \ie unassigned point.
 
+
+The pseudocode for DBSCAN is given in Algorithm \ref{alg-dbscan}, where \textproc{DiscoverNeighbours} is a recursive function that finds the neighbourhood space by forming the radius based on the distance function, and retrieves all reachable points. The algorithm forms the amount of clusters itself if there are just data points to label as core points.
 
 \begin{algorithm}[ht]
 \caption{DBSCAN algorithm \cite{Ester:1996:DAD:3001460.3001507, Schubert:2017:DRR:3129336.3068335}}
@@ -403,14 +460,13 @@ Density-based spatial clustering of applications with noise (DBSCAN), can produc
 \end{algorithmic}
 \end{algorithm}
 
-\newpage
 
-Using parameters $\varepsilon = 0.5, MinPts = 15$ and setting distance function as Euclidean distance, DBSCAN learns more denser clusters than K-means and is able to label some data as noise, which is visible in Figure \ref{fig-dbscan-example} as black data points.
+Using parameters $\varepsilon = 0.5, MinPts = 15$ and setting distance function as Euclidean distance, DBSCAN learns more denser clusters than K-means and is able to label some data as noise, which is visible in Figure \ref{fig-dbscan-example} as black data points. If these data points would be document representation in Euclidean space, we can interpret noise points as documents which are free from plagiarism \ie they are unique programs which are not similar to other authors work. These three clusters then shows the possible plagiarists using three different approaches and might result to three different real life groups who have worked collaboratively. 
 
-\begin{figure}[!h]
+\begin{figure}[ht]
 \centering
-\setlength\figureheight{8cm}
-\setlength\figurewidth{8cm}
+\setlength\figureheight{7cm}
+\setlength\figurewidth{7cm}
 \input{plots/example_dbscan.tikz}
 \caption{Result of DBSCAN by setting parameters $\varepsilon = 0.5, MinPts = 15$. Some data has been labeled as noise, as they are too far away from core points.} \label{fig-dbscan-example}
 \end{figure}

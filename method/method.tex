@@ -78,9 +78,13 @@ We are going to focus to Java language, therefore we only use the Java-specific 
 
 Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where ten different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for documents per author, character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; and lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. 
 
+When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
+
+\newpage
+
 \begin{table}[ht]
 \centering
-\caption{Descriptive statistics for the unprocessed corpora. Bold values represents maximum per metric.}
+\caption{Descriptive statistics for the unprocessed corpora. Bold values represents maximum value per metric.}
 \label{tbl-corporastats}
 \begin{tabular}{|l||l|l|l|} \hline
 \backslashbox{\bf Metric}{\bf Corpus}   & SOCO & OHPE & OHJA\\  \hhline{|=|=|=|=|}
@@ -97,9 +101,7 @@ Descriptive statistics for all three collections without any textual preprocessi
 \end{tabular}
 \end{table}
 
-When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
 
-\newpage
 
 A problem however arises when average line count with respect to the exercises is visualized for both OHPE and OHJA. Figure \ref{fig-hists} visualizes this by histograms, where both bin sizes are set to 50. 
 
@@ -122,31 +124,133 @@ A problem however arises when average line count with respect to the exercises i
     \label{fig-ohjaavgloc}
 \end{subfigure}
 
-\caption[Two histograms for corpora]{Histograms showing average line of count per exercise for OHPE (top) and OHJA (below)}
+\caption[Two histograms for corpora]{Histograms showing average line of count per exercise for OHPE (top) and OHJA (below). OHJA has more evenly distributed submissions, where as OHPEs submissions are mostly under 100 lines in length.}
 \label{fig-hists}
 \end{figure}
 
 \noindent
-From figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 50 lines of code. This creates an issue for plagiarism detection, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high. 
+From Figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 100 lines of code. This creates an issue for plagiarism detection, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high. 
 
 Consider for example three programs presented in appendix \ref{appendix:programs}. Because the solution to the given task is very limited, the submissions will inevitably have similar solutions, questioning the very fact that can there even exist plagiarism in short tasks. To overcome this problem we filter out all tasks where average line count falls to first quartile \ie under the 25th percentile, which is 21.0 for OHPE and 54.5 for OHJA. We call these filtered out tasks as \emph{trivial tasks} \ie exercises which solution space is very restricted. The intuition behind our filtering is that one cannot simply find plagiarism from too simple exercises which includes given tasks like: printing \say{Hello World} (1st task of OHPE), calculating how many seconds are in a year (6th task of OHPE) or doing simple string concatenation (2nd task of OHJA). 
 
+\subsection{Document normalization}
 
-\newpage
+We utilize same approaches as studies reviewed in Chapter \ref{chap-liter-review-methods} to minimize the variance between documents. The benefit of normalization has been, that it reduces the noise and allows to capture only the information which is crucial. In case of similarity detection the structure information must be preserved, and in case of similarity detection the stylistic preferences must be captured.
+
+For similarity detection we transform every document into a token stream by first parsing the program with a parser and turning it into abstract syntax tree, then traversing the structure to get the stream as a string format. This method allows to capture the higher-level structure of the program, and still allows to handle it as a text. Also, it works against obfuscation strategies which were stated in Tables \ref{tbl-plag-strat}, \ref{tbl-plag-transf} in Chapter \ref{chap-bg-sc-plag}, by ignoring certain aspects. For example the parses will ignore all white spaces, comments, identifier names and standardizes loop names, working against levels 1,2 and 5 of Table \ref{tbl-plag-transf}. The parser itself only works with Java and is heavily inspired by the one used in JPlag \cite{prechelt2002finding} and the complete list of tokens is seen in Appendix \ref{appendix:token-list}, which shows also the equivalencies to generate certain tokens. For example all loop constructs generate a single token "LOOP\{" to indicate start of the loop. This normalizes the documents to preserve the underlying logic behind them, so even if the plagiarists would use a different looping construct like while instead of for, two programs would still share a common token stream. 
+
+Table \ref{tbl-token-stream} shows the corresponding token stream for program A in Appendix \ref{appendix:programs}, where one can see how much information is discarded from the source code as we only keep the crucial structural information.
+
+\clearpage
+
+\begin{table}[ht]
+\centering
+\caption{Token stream generated from the example source code.}
+\label{tbl-token-stream}
+\begin{tabular}{|l|l|} \hline
+\bf Original source code & \bf Token stream \\ \hline
+\begin{lstlisting}
+public class A{
+
+     public static void main(String[] args){
+        int a = 5;
+        int b = 10;
+        int c = 2;
+        double d = (a + b + c)/(double)3;
+        System.out.println(d);
+     }
+}
+\end{lstlisting}                     &
+
+\begin{lstlisting}
+CLASS{  
+VOID    
+METHOD{ 
+VARDEF 
+ASSIGN  
+VARDEF 
+ASSIGN  
+VARDEF 
+ASSIGN  
+VARDEF 
+ASSIGN  
+APPLY   
+}METHOD 
+}CLASS
+\end{lstlisting}
+\\ \hline      
+\end{tabular}
+\end{table}
+
+For the authorship identification, normalization method we apply uses the same idea as in \cite{AIRTSCAA2009, SCANG2007}. We discard all comments and normalize literal values to remove any possible notion of the original author, like unique student number or name in comments. The reason behind normalization for authorship identification is therefore to leave the original document as intact as possible, maintaining the preferences that the programmer might have for \eg variable naming or spacing. An example of the normalization procedure is given in Table \ref{tbl-ai-normalization} for the same program used in Table \ref{tbl-token-stream}, where one can see that all numerical values have been transformed under a single dollar token \texttt{\$}.
+
+\begin{table}[ht]
+\centering
+\caption{The result of normalization procedure for authorship identification.}
+\label{tbl-ai-normalization}
+\begin{tabular}{|l|} \hline
+\bf Normalized code \\ \hline
+\begin{lstlisting}
+public class A{
+
+     public static void main(String[] args){
+        int a = $;
+        int b = $;
+        int c = $;
+        double d = (a + b + c)/(double)$; 
+        System.out.println(d);
+     }
+}
+\end{lstlisting} 
+
+\\ \hline      
+\end{tabular}
+\end{table}
 
 \subsection{Document representation}
 
+To represent every documents as vector, we use information retrieval techniques introduced in Chapter \ref{chap-IR}. Plagiarism detection is therefore done first by converting document into vector space model after the normalization of documents. In both similarity detection and authorship identification documents terms are first extracted, which in our case means all possible $n$-grams with respect to vocabulary $\mathbb{V}$. The only difference being that in similarity detection the vocabulary is formed using every document as a token stream, where as authorship identification uses only the training data to form the available vocabulary. 
 
-\begin{figure}[!h]
+To overcome the problem with varying document length and frequently appearing terms, we apply tf-idf weighting introduced in Chapter \ref{chap-IR-document-repr}. Table \ref{tbl-ngram-sd} shows example of the term extraction using word level 2-grams for program A in Appendix \ref{appendix:programs}. All tf-idf weights have been normalized using Euclidean norm 
+
+\begin{equation}
+    \dfrac{\bolditt{x}}
+          {\sqrt{\sum \limits_i^{|\mathbb{V}|} x_i^2}}
+\end{equation}
+
+
+\begin{table}[ht]
 \centering
-\setlength\figureheight{5cm}
-\setlength\figurewidth{8cm}
-\input{plots/fig.tikz}
+\caption{Similarity detection term extraction for document A. Terms are 2-grams extracted from token stream.}
+\label{tbl-ngram-sd}
+\begin{tabular}{l|c|c}
+\bf Term & \bf Raw frequency & \bf TF-IDF weight \\ \hline
+    \texttt{APPLY \}METHOD} & 1 & 0.13\\
+    \texttt{ASSIGN APPLY} & 1 & 0.19\\
+    \texttt{ASSIGN VARDEF} & 3 & 0.56\\
+    \texttt{CLASS\{ VOID} & 1 & 0.13\\
+    \texttt{METHOD\{ APPLY} & 0 & 0.00\\
+    \texttt{METHOD\{ VARDEF} & 1 & 0.19\\
+    \texttt{VARDEF ASSIGN} & 4 & 0.75\\
+    \texttt{VOID METHOD\{} & 1 & 0.13\\
+    \texttt{\}METHOD \}CLASS} & 1 & 0.13\\
+\end{tabular}
+\end{table}
 
-\caption{TEST} \label{fig:M1}
-\end{figure}
+\noindent
+The vocabulary $\mathbb{V}$ that forms the possible tokens in Table \ref{tbl-ngram-sd}, is the union between every token appearing in three example documents \ie $\bigcup_{i=1}^{3} V_i$ where $V_i = \{t_1, t_2, \cdots, t_n\}$. Therefore some terms may appear zero like the term \texttt{METHOD\{ APPLY} for document A in Table \ref{tbl-ngram-sd}. Terms like \texttt{ASSIGN VARDEF} and \texttt{VARDEF ASSIGN} have a high weight as they mostly appear in document A, \ie document A has more variable assignments than document B or C. 
 
-\subsection{Normalization}
+%\begin{figure}[!h]
+%\centering
+%\setlength\figureheight{5cm}
+%\setlength\figurewidth{8cm}
+%\input{plots/fig.tikz}
+%
+%\caption{TEST} \label{fig:M1}
+%\end{figure}
+
+\newpage
+
 
 \subsection{Similarity detection}
 

@@ -37,6 +37,7 @@
 \usepackage{longtable}
 \usepackage{listings}
 \usepackage{diagbox}
+\usepackage{array}
 
 
 \usepackage{pgfplots}
@@ -174,7 +175,6 @@ In this study, automatic authorship identification and plagiarism detection from
     showstringspaces=false,
     showtabs=false,
     numberstyle=\small,
-    frame = L,
     numbersep=8pt,
     columns=flexible,
     %framexleftmargin=15pt,
@@ -296,42 +296,8 @@ Above formalization gives an overview of the problem that is studied in this the
 \appendix
 % 
 
+\input{appendix/appendix.tex}
 
 
-\section{Sample programs} \label{appendix:programs}
-
-These three functionally similar source codes belong to three imaginary authors A, B and C. They are used throughout the study as examples. The task for all is to create a program that calculates mean between three numbers: 5, 10, 2.
-
-\begin{lstlisting}[language=Java, caption=Java example belonging to author A]
-public class A{
-
-     public static void main(String[] args){
-        int a = 5;
-        int b = 10;
-        int c = 2;
-        double d = (a + b + c)/(double)3;
-        System.out.println(d);
-     }
-}
-\end{lstlisting}
-
-\begin{lstlisting}[language=Java, caption=Java example belonging to author B]
-public class B{
-
-     public static void main(String[] b){
-        int sum = 5 + 10 + 2;
-        double res = sum / 3.0;
-        System.out.println(res);
-     }
-}
-\end{lstlisting}
-
-\begin{lstlisting}[language=Java, caption=Java example belonging to author C]
-public class C{
-     public static void main(String[] b){
-        System.out.println((5 + 10 + 2)/3.0);
-     }
-}
-\end{lstlisting}
 
 \end{document}

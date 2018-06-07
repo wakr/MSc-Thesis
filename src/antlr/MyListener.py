@@ -60,7 +60,7 @@ class KeyPrinter(JavaParserListener):
         
     def enterVariableInitializer(self, ctx):
         if not isinstance(ctx.parentCtx, JavaParser.ArrayInitializerContext):
-            self.res = self._add_token("APPLY   ")
+            self.res = self._add_token("ASSIGN  ")
             
     def enterCreator(self, ctx):
         if ctx.classCreatorRest():

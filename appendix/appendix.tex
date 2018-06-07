@@ -1,0 +1,80 @@
+\section{Sample programs} \label{appendix:programs}
+
+These three functionally similar source codes belong to three imaginary authors A, B and C. They are used throughout the study as examples. The task for all is to create a program that calculates mean between three numbers: 5, 10, 2.
+
+\begin{lstlisting}[language=Java, caption=Java example belonging to author A]
+public class A{
+
+     public static void main(String[] args){
+        int a = 5;
+        int b = 10;
+        int c = 2;
+        double d = (a + b + c)/(double)3;
+        System.out.println(d);
+     }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption=Java example belonging to author B]
+public class B{
+
+     public static void main(String[] b){
+        int sum = 5 + 10 + 2;
+        double res = sum / 3.0;
+        System.out.println(res);
+     }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Java, caption=Java example belonging to author C]
+public class C{
+     public static void main(String[] b){
+        System.out.println((5 + 10 + 2)/3.0);
+     }
+}
+\end{lstlisting}
+
+\newpage
+
+\section{Token list} \label{appendix:token-list}
+
+\begin{table}[ht]
+\centering
+\caption{Token list for Java.}
+\label{tbl-token-list}
+\def\arraystretch{1.5}
+\scalebox{0.75}{
+    \begin{tabular}{c l p{7cm} l} 
+     &  \bf Token  & \bf Equivalency          & \bf Example    \\ \hline
+    1 & IMPORT & Import declaration & \texttt{import java.awt.*;} \\ \hline
+    2 & PACKAGE & Package declaration & \texttt{package foo;} \\ \hline
+    3 & VARDEF & Variable declaration & \texttt{int a;} \\ \hline
+    4 & CLASS\{      &  Enter class declaration   &  \texttt{public class A\{} \\ \hline
+    5 & CATCH\{ & Enter catch clause & \texttt{try \{\underline{catch (...)\{}\} \}} \\ \hline
+    6 & INCLASS\{ & Statement inside a class & - \\ \hline
+    7 & ENUM\{ & Enter enum declaration & \texttt{public enum Day \{} \\ \hline
+    8 & APPLY & Method call, Explicit constructor invocation, Generic invocation  & \texttt{System.out.print(...);} \\ \hline
+    9 & NEWCLASS & Create object & \texttt{new A(...);} \\ \hline
+    10 & NEWARRAY & Create array object & \texttt{new int[5];} \\ \hline
+    11 & TRY\{ & Enter try declaration & \texttt{try \{ } \\ \hline
+    12 & INTERF\{ & Enter interface declaration & \texttt{interface Foo \{} \\ \hline
+    13 & METHOD\{ & Enter method declaration & \texttt{void foo(int a) \{} \\ \hline
+    14 & VOID & Void method & \texttt{void main(String[] args)} \\ \hline
+    15 & CASE & Case in switch statement & \texttt{case MONDAY:} \\ \hline
+    16 & CONSTR\{ & Enter constructor declaration & \texttt{public A(int a, int b) \{} \\ \hline
+    17 & ARRINIT\{ & Enter array initialization & \texttt{new int[] \{1, 2\};} \\ \hline
+    18 & ASSIGN & Variable assignment & \texttt{a += 5;} \\ \hline
+    19 & COND & Conditional expression & \texttt{(a > b) ? a : b;} \\ \hline
+    20 & LOOP\{ & Enter for, while, do statement & \texttt{for(...) \{}\\ \hline
+    21 & IF\{ & Enter if clause & \texttt{if(...) \{} \\ \hline
+    22 & THROW & Throw statement & \texttt{throw new Exception();} \\ \hline
+    23 & BREAK & Break statement in loop & \texttt{break;} \\ \hline
+    24 & CONTINUE & Continue statement in loop & \texttt{continue;} \\ \hline
+    25 & RETURN & Return statement & \texttt{return a + b;} \\ \hline
+    26 & SWITCH\{ & Enter switch statement & \texttt{switch(...) \{} \\ \hline
+    \end{tabular}
+}
+\end{table}
+
+\noindent
+Table \ref{tbl-token-list} shows the token list used to transform a parse tree into a continuous string of tokens. Every token with ending bracket also has a reserved token when exiting the statement.
