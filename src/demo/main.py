@@ -48,7 +48,7 @@ ngram_vectorizer = CountVectorizer(analyzer='word',
                                    lowercase= False,
                                    strip_accents="ascii")
 
-transformer = TfidfTransformer(smooth_idf=False)
+transformer = TfidfTransformer(smooth_idf=True, norm=None)
 
 X = ngram_vectorizer.fit_transform(df.token_stream)
 tfidf = transformer.fit_transform(X)
@@ -56,3 +56,27 @@ tfidf = transformer.fit_transform(X)
 res_tf = pd.DataFrame(X.A, columns=ngram_vectorizer.get_feature_names())
 
 res_idf = pd.DataFrame(tfidf.A, columns=ngram_vectorizer.get_feature_names())
+
+#%% t-SNE visual
+
+from sklearn.manifold import TSNE
+import matplotlib.pylab as plt
+from sklearn.decomposition import TruncatedSVD
+
+from matplotlib2tikz import save as tikz_save
+
+X_reduced = TruncatedSVD(n_components=2, random_state=0).fit_transform(tfidf.todense())
+
+plt.xlim(-0.5, 1.5)
+plt.ylim(-0.5, 1.5)
+
+example_code_classes = ["A", "B", "C"]
+
+for i in range(0, 3):
+    plt.annotate(example_code_classes[i],
+            xy=(0, 0), xycoords='data',
+            xytext=(X_reduced[i, 0], X_reduced[i, 1]), textcoords='data',
+            arrowprops=dict(arrowstyle="<-",
+                            connectionstyle="arc3"),
+            )
+            

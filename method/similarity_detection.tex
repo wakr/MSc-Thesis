@@ -1,0 +1,32 @@
+\subsection{Similarity detection}
+
+
+After submissions for a given exercise have been normalized to a token stream, we apply the \textproc{DetectSim} function of the Algorithm \ref{alg-toplvl}, which retrieves set of authors we call suspicious authors. These authors share a lot of structural similarity to each others within a given task, implying that there is a high chance that plagiarism might be occurred within this set. 
+
+The \textproc{DetectSim} in other words is the similarity detection method of our study, where we first calculate the vector similarity to form a distance matrix $\bolditt{M}$. In this matrix $\bolditt{M}_{i,j}$ implicates the similarity between documents $d_i$ and $d_j$. Then, we calculate the similarity by using cosine similarity introduced in Chapter \ref{chap-bg-sim}, which was also extensively utilized by other studies in Chapter \ref{chap-liter-review-methods}. Lastly, we apply DBSCAN clustering to the values in similarity matrix $\bolditt{M}$ to form a groups of suspicious authors. The pseudocode for the \textproc{DetectSim} function can be seen in Algorithm \ref{alg-detectSim}.
+
+\begin{algorithm}[ht]
+\caption{Detecting suspicious authors.}
+\label{alg-detectSim}
+\begin{algorithmic}
+
+\Require Set of authors $A$
+\Require Set of documents $D$ belonging to authors $A$
+\Require Every document $d \in D$ is represented as a token stream
+\Require Preferred length of word level $n$-grams $n$
+\Require Minimum rate of similarity $\varepsilon$
+\Procedure{DetectSim}{$A, D, n, \varepsilon$}
+   \State $\bolditt{X} \gets$ \Call{ExctractNgrams}{$D, n$}
+   \State $\bolditt{W} \gets$ \Call{TFIDF}{$\bolditt{X}$}
+   \State $\bolditt{M} \gets$ \Call{COS}{$\bolditt{W}$}
+   \State $MinPts \gets 2$
+   \State $\Omega \gets$ \Call{DBSCAN}{$\bolditt{M}, \varepsilon, MinPts$}
+   \State \textbf{return} $\Omega$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+The Algorithm \ref{alg-detectSim} is dependant from two parameters: length of $n$-grams and similarity threshold $\varepsilon$. These two hyperparameters are tuned with SOCO data set before the final evaluation. Overall flow of operations is following: first we extract all word level $n$-grams and turn the documents into raw of frequencies of terms, then terms are weighted using tf-idf and cosine similarity is calculated between every document, finally DBSCAN clustering algorithm is used to form clusters of similar documents. As we know every author of each document and we assume single authorship, these clusters are identical to clusters of authors. 
+
+Note that the value of $MinPts$ is fixed to value 2, as only two documents is needed to form a cluster of suspicious documents. This refers to real life situation where two students have shared source code between each others. 

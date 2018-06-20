@@ -14,12 +14,14 @@ Both of our models are inspired by other studies presented in the literature rev
 
 \Require Set of authors $A$
 \Require Set of source code files $D$ written by various authors $\forall a \in A$
-\Procedure{PLGdetect}{$A, D$}
+\Require Index of the exercise of interest $i$
+\Require Length of word level $n$-grams $n_w \in \mathbb{N}$
+\Require Length of character level $n$-grams $n_c \in \mathbb{N}$
+\Require Minimum rate of similarity $\varepsilon \in [0, 1]$
+\Procedure{PLGdetect}{$A, D, i, n_w, n_c, \varepsilon$}
    \State $D'\gets$ \Call{normalize}{$D$}
-   \State $D'_{train}, D'_{test} \gets$ \Call{split}{$D'$}
-   \State $\mathcal{M} \gets$ \Call{trainModel}{A, $D'_{train}$}
-   \State $A_{auth} \gets \mathcal{M}(D'_{test})$
-   \State $A_{susp} \gets$ \Call{detectSim}{$A$, $D'_{test}$}
+   \State $A_{susp} \gets$ \Call{detectSim}{$A$, $D'_i, n_w, \varepsilon$}
+   \State $A_{auth} \gets$ \Call{trainAndPredictNB}{$A, D', i, n_c$}
    \State \textbf{return} $A_{auth} \cap A_{susp}$
 \EndProcedure
 
@@ -27,7 +29,9 @@ Both of our models are inspired by other studies presented in the literature rev
 \end{algorithm}
 
 \noindent
-In algorithm \ref{alg-toplvl}, the source codes are first normalized to reduce the noise caused by \eg comments and repeated whitespace. We train a supervised learning model $\mathcal{M}$ that is able to classify the author of a document, and retrieve the top $n$ predictions called a set of candidate authors $A_{auth}$ for a document $d$. Similarity detection is calculated for the same set of documents to find suspicious authors $A_{susp}$. The word \emph{suspicious} refers here to too similar documents that are written by different authors. Finally, intersection between candidate authors and suspicious authors is taken, to provide a set of possible plagiarists. Both parts of our model are validated against real-life tools; plagiarism detection is evaluated against JPlag \cite{prechelt2002finding} which has been used as a baseline model in a SOCO competition \cite{saez2014pan}, and authorship identification against SCAP method which was found to be commonly used by other studies in Chapter \ref{chap-liter-review-methods}.
+In Algorithm \ref{alg-toplvl}, source code files are first normalized for similarity and author detection separately \ie different strategies are used for both. Then similarity is detected for a collection of documents belonging under same exercise with the function \textproc{DetectSim}, which ultimately forms a group of suspicious authors noted as $A_susp$. The process is controlled by the parameter $\varepsilon$ which acts as a threshold for the detection. For example $\varepsilon = 1.0$ means that documents must be exact copies in order to group them together. Another function is the \textproc{trainAndPredictNB} that trains the model with previous documents that the author has written, and then predicts who are the most likely authors from the set $A$ for exercise number $i$ noted as $A_{auth}$. Finally, intersection between candidate authors and suspicious authors is taken, to provide a set of possible plagiarists. 
+
+Both parts of our model are validated against real-life tools; plagiarism detection is evaluated against JPlag \cite{prechelt2002finding} which has been used as a baseline model in a SOCO competition \cite{saez2014pan}, and authorship identification against SCAP method which was found to be commonly used by other studies in Chapter \ref{chap-liter-review-methods}.
 
 \subsection{Assumptions}
 
@@ -51,87 +55,12 @@ Let a file $d_i$ be plagiarized from $d_j$ \ie $d_i \xrightarrow{plag} d_j$, we 
 \paragraph{Expert interference}
 We believe that no system can be accurate enough to autonomously accuse students about plagiarism. However, this is doable when some form of human judgment is added to the model. In principal this means that the model can make predictions about cases of plagiarisms which we call \emph{suspects}, but the human expert must make the \emph{allegation} of plagiarism based on the results and after questioning the students. Every university should however have a guideline about what is considered as plagiarism and how such cases are handled, like the University of Helsinki has done\footnote{\url{https://blogs.helsinki.fi/alakopsaa/?lang=en} Accessed 9th May 2018}.
 
-\subsection{Data set}
-
-Our model is aimed to the traditional MOOC setting which is for example used by  undergraduate-level programming courses \emph{Introduction to Programming} (OHPE) and \emph{Advanced course in Programming} (OHJA) in University of Helsinki. We use three authentic data sets; students submissions done to both of latter courses during the implementation in fall 2016 and a train data from SOCO task from 2014. All source code files are written in Java programming language. 
-
-Both OHPE and OHJA includes proven cases of plagiarism, however to avoid any bias, more specific information about them is kept hidden as a golden standard by the courses administrative staff Arto Hellas until the final evaluation of our model. SOCO dataset on the other hand, contains prelabeled document pairs that have conducted plagiarism \cite{saez2014pan}.
-
-To implement our model, we first use SOCO to train and evaluate our similarity detection model, then train and test authorship identification with OHPE and OHJA. Our proposed model is built based on these results and plagiarism is detected individually for both courses. The reason to use train set of SOCO for similarity detection, is simply that it's the only data set that contains fully labeled cases of plagiarism, but unfortunately contains only one file per author. OHPE and OHJA on the other hand, contains multiple files per author making author identification possible, but only a few known cases of plagiarism. Therefore we make use of both sets and consider our model to be successful if it has a high precision, minimizing the amount of false-positives. 
-
-\paragraph{Course overview}\mbox{}\\
-OHPE and OHJA shares the same structure; students first register to automatic scoring system called \emph{Test My Code} (TMC) \cite{Vihavainen:2013:SSL:2462476.2462501} which also distributes the exercises as an plugin to \emph{NetBeans IDE}, then independently work during seven weeks by completing programming exercises within deadlines \cite{Vihavainen:2012:MSM:2380552.2380603}. Both of these courses follow \emph{Extreme Apprenticeship method} \cite{Vihavainen:2011:EAM:1953163.1953196}; theoretical material is available online for students, students learn by doing \ie there exists mandatory programming exercises, weekly exercise sessions are available for those who require assistance, instructors can give feedback and students are able to track their process. 
-
-Students earn points from exercises depending if all tests were successfully passed via TMC, and complete an exam at end of the course which is a programming exam that ultimately decides if a student has learned the minimum level required. The exam in fall 2016 was a home exam, meaning that students were able to do it individually wherever they wanted to. There are also no mandatory lectures, thus students are able to earn these credits by working individually without any physical attendance. 
-
-\paragraph{SOCO overview}\mbox{}\\
-Source code reuse (SOCO) data is from a 2014 competition \emph{PAN@FIRE}, where two sets were given to detect monolingual source code re-use \cite{saez2014pan}. SOCO2014 offered a train and a test set for competitors, which contained files written in \cpp\, and Java by various authors. The train set contains the source code files and annotations which are made by three experts flagging which pairs are considered as plagiarism. Competitors were then asked to retrieve which pairs are plagiarized. For example pair $(d_i, d_j)$ refers that there exists plagiarism between these two files, and because the direction was completely ignored, it was sufficient to retrieve just the predicted pairs.
-
-SOCO contains mainly submissions to a single exercise and couple of documents, that are transformed from C to Java. As only the plagiarized file pairs are annotated and SOCO has been used successfully used in other studies \cite{AIR2015, RCISCP2017, OTIOLSS2015, USCR2014}, we make a simplifying assumption that the train set of SOCO contains one file per one unique author and that all submissions are submitted for the same task. This won't affect negatively the performance of our proposed model, as similarity detection is not affected at all if there exists multiple tasks within a corpus. 
+\input{method/data.tex}
 
 
+% pariohjelmointi?
 
-\paragraph{Corpus statistics}\mbox{}\\
-We are going to focus to Java language, therefore we only use the Java-specific part of SOCO training set, but fully utilize OHPE and OHJA data sets due to a fact that they only contain Java files. Number of non-transformative steps has been made beforehand to form the upcoming corpora: 1) leave SOCO as it is, 2) add exams to both OHPE and OHJA, and 3) concatenate submission containing multiple files into one file. This allows us to assume only one file per submission and we also get the benefit of having exam submissions, which is something where plagiarism is absolutely not allowed. 
-
-%As OHPE and OHJA are both real-life courses, we also include the exam which in OHPE is made out of four tasks and in OHJA out of three tasks. 
-
-Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where ten different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for documents per author, character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; and lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. 
-
-When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
-
-\newpage
-
-\begin{table}[ht]
-\centering
-\caption{Descriptive statistics for the unprocessed corpora. Bold values represents maximum value per metric.}
-\label{tbl-corporastats}
-\begin{tabular}{|l||l|l|l|} \hline
-\backslashbox{\bf Metric}{\bf Corpus}   & SOCO & OHPE & OHJA\\  \hhline{|=|=|=|=|}
-\textbf{Authors}         & 259 & \textbf{316} & 270   \\  \hline
-\textbf{Exercises}       & 1 & \textbf{151} & 92     \\  \hline
-\textbf{Documents}       & 259 & \textbf{33\,363} & 15\,196    \\  \hline
-\textbf{Average documents per author} & 1 & \textbf{106} & 56\\ \hline
-\textbf{Synthetic}       & Partly & No & No \\  \hline
-\textbf{LOC $\min$}         & \textbf{12} & 1 & 1      \\  \hline
-\textbf{LOC AVG.}        & \textbf{149} & 44 & 109     \\  \hline
-\textbf{LOC $\max$}         & \textbf{1696} & 679 & 637   \\  \hline
-\textbf{Expression AVG.}       & \textbf{63} & 17 & 38 \\ \hline
-\textbf{Character AVG.} & \textbf{3898} & 1139 & 2794   \\  \hline
-\end{tabular}
-\end{table}
-
-
-
-A problem however arises when average line count with respect to the exercises is visualized for both OHPE and OHJA. Figure \ref{fig-hists} visualizes this by histograms, where both bin sizes are set to 50. 
-
-
-\begin{figure}[!h]
-\centering
-\captionsetup[subfigure]{justification=centering}
-
-\begin{subfigure}{\textwidth}
-    \setlength\figureheight{5cm}
-    \setlength\figurewidth{\textwidth}
-    \input{plots/ohpe_avgloc.tikz}
-    \label{fig-ohpeavgloc}
-\end{subfigure}
-
-\begin{subfigure}{\textwidth}
-  \setlength\figureheight{5cm}
-    \setlength\figurewidth{\textwidth}
-    \input{plots/ohja_avgloc.tikz}
-    \label{fig-ohjaavgloc}
-\end{subfigure}
-
-\caption[Two histograms for corpora]{Histograms showing average line of count per exercise for OHPE (top) and OHJA (below). OHJA has more evenly distributed submissions, where as OHPEs submissions are mostly under 100 lines in length.}
-\label{fig-hists}
-\end{figure}
-
-\noindent
-From Figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 100 lines of code. This creates an issue for plagiarism detection, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high. 
-
-Consider for example three programs presented in appendix \ref{appendix:programs}. Because the solution to the given task is very limited, the submissions will inevitably have similar solutions, questioning the very fact that can there even exist plagiarism in short tasks. To overcome this problem we filter out all tasks where average line count falls to first quartile \ie under the 25th percentile, which is 21.0 for OHPE and 54.5 for OHJA. We call these filtered out tasks as \emph{trivial tasks} \ie exercises which solution space is very restricted. The intuition behind our filtering is that one cannot simply find plagiarism from too simple exercises which includes given tasks like: printing \say{Hello World} (1st task of OHPE), calculating how many seconds are in a year (6th task of OHPE) or doing simple string concatenation (2nd task of OHJA). 
+%Consider for example three programs presented in appendix \ref{appendix:programs}. Because the solution to the given task is very limited, the submissions will inevitably have similar solutions, questioning the very fact that can there even exist plagiarism in short tasks. To overcome this problem we filter out all tasks where average line count falls to first quartile \ie under the 25th percentile, which is 21.0 for OHPE and 54.5 for OHJA. We call these filtered out tasks as \emph{trivial tasks} \ie exercises which solution space is very restricted. The intuition behind our filtering is that one cannot simply find plagiarism from too simple exercises which includes given tasks like: printing \say{Hello World} (1st task of OHPE), calculating how many seconds are in a year (6th task of OHPE) or doing simple string concatenation (2nd task of OHJA). 
 
 \subsection{Document normalization}
 
@@ -140,8 +69,6 @@ We utilize same approaches as studies reviewed in Chapter \ref{chap-liter-review
 For similarity detection we transform every document into a token stream by first parsing the program with a parser and turning it into abstract syntax tree, then traversing the structure to get the stream as a string format. This method allows to capture the higher-level structure of the program, and still allows to handle it as a text. Also, it works against obfuscation strategies which were stated in Tables \ref{tbl-plag-strat}, \ref{tbl-plag-transf} in Chapter \ref{chap-bg-sc-plag}, by ignoring certain aspects. For example the parses will ignore all white spaces, comments, identifier names and standardizes loop names, working against levels 1,2 and 5 of Table \ref{tbl-plag-transf}. The parser itself only works with Java and is heavily inspired by the one used in JPlag \cite{prechelt2002finding} and the complete list of tokens is seen in Appendix \ref{appendix:token-list}, which shows also the equivalencies to generate certain tokens. For example all loop constructs generate a single token "LOOP\{" to indicate start of the loop. This normalizes the documents to preserve the underlying logic behind them, so even if the plagiarists would use a different looping construct like while instead of for, two programs would still share a common token stream. 
 
 Table \ref{tbl-token-stream} shows the corresponding token stream for program A in Appendix \ref{appendix:programs}, where one can see how much information is discarded from the source code as we only keep the crucial structural information.
-
-\clearpage
 
 \begin{table}[ht]
 \centering
@@ -209,36 +136,56 @@ public class A{
 
 \subsection{Document representation}
 
-To represent every documents as vector, we use information retrieval techniques introduced in Chapter \ref{chap-IR}. Plagiarism detection is therefore done first by converting document into vector space model after the normalization of documents. In both similarity detection and authorship identification documents terms are first extracted, which in our case means all possible $n$-grams with respect to vocabulary $\mathbb{V}$. The only difference being that in similarity detection the vocabulary is formed using every document as a token stream, where as authorship identification uses only the training data to form the available vocabulary. 
+To represent every documents as vector, we use information retrieval techniques introduced in Chapter \ref{chap-IR}. Plagiarism detection is therefore done first by converting document into vector space model after the normalization of documents. In both similarity detection and authorship identification documents terms are first extracted, which in our case means all possible $n$-grams with respect to vocabulary $\mathbb{V}$. The only difference being that in similarity detection the vocabulary is formed using every document as a token stream, where as authorship identification uses only part of the complete data to form the available vocabulary. 
 
-To overcome the problem with varying document length and frequently appearing terms, we apply tf-idf weighting introduced in Chapter \ref{chap-IR-document-repr}. Table \ref{tbl-ngram-sd} shows example of the term extraction using word level 2-grams for program A in Appendix \ref{appendix:programs}. All tf-idf weights have been normalized using Euclidean norm 
+To overcome the problem with varying document length and frequently appearing terms, we apply tf-idf weighting introduced in Chapter \ref{chap-IR-document-repr}. Table \ref{tbl-ngram-sd} shows example of the term extraction for similarity detection using word level 2-grams for program A in Appendix \ref{appendix:programs}. All tf-idf weights have been normalized using Euclidean norm 
 
 \begin{equation}
     \dfrac{\bolditt{x}}
           {\sqrt{\sum \limits_i^{|\mathbb{V}|} x_i^2}}
 \end{equation}
 
+% show example calculation
 
 \begin{table}[ht]
 \centering
-\caption{Similarity detection term extraction for document A. Terms are 2-grams extracted from token stream.}
+\caption{Similarity detection term extraction for document A. Terms are 2-grams extracted from token stream, tf-idf weights have been normalized and values rounded at two decimal places.}
 \label{tbl-ngram-sd}
 \begin{tabular}{l|c|c}
 \bf Term & \bf Raw frequency & \bf TF-IDF weight \\ \hline
-    \texttt{APPLY \}METHOD} & 1 & 0.13\\
-    \texttt{ASSIGN APPLY} & 1 & 0.19\\
-    \texttt{ASSIGN VARDEF} & 3 & 0.56\\
-    \texttt{CLASS\{ VOID} & 1 & 0.13\\
+    \texttt{APPLY \}METHOD} & 1 & 0.14\\
+    \texttt{ASSIGN APPLY} & 1 & 0.18\\
+    \texttt{ASSIGN VARDEF} & 3 & 0.55\\
+    \texttt{CLASS\{ VOID} & 1 & 0.14\\
     \texttt{METHOD\{ APPLY} & 0 & 0.00\\
-    \texttt{METHOD\{ VARDEF} & 1 & 0.19\\
-    \texttt{VARDEF ASSIGN} & 4 & 0.75\\
-    \texttt{VOID METHOD\{} & 1 & 0.13\\
-    \texttt{\}METHOD \}CLASS} & 1 & 0.13\\
+    \texttt{METHOD\{ VARDEF} & 1 & 0.18\\
+    \texttt{VARDEF ASSIGN} & 4 & 0.74\\
+    \texttt{VOID METHOD\{} & 1 & 0.14\\
+    \texttt{\}METHOD \}CLASS} & 1 & 0.14\\
 \end{tabular}
 \end{table}
 
 \noindent
-The vocabulary $\mathbb{V}$ that forms the possible tokens in Table \ref{tbl-ngram-sd}, is the union between every token appearing in three example documents \ie $\bigcup_{i=1}^{3} V_i$ where $V_i = \{t_1, t_2, \cdots, t_n\}$. Therefore some terms may appear zero like the term \texttt{METHOD\{ APPLY} for document A in Table \ref{tbl-ngram-sd}. Terms like \texttt{ASSIGN VARDEF} and \texttt{VARDEF ASSIGN} have a high weight as they mostly appear in document A, \ie document A has more variable assignments than document B or C. 
+To get the value 0.18 for a term \texttt{ASSIGN APPLY} in document A one sees first that the value of $tf$ is 1 from Table \ref{tbl-ngram-sd}. The $idf$ is formed by dividing number of documents with the number of total term frequency over all documents, and taking a logarithm \ie $idf = \log(N/df) = \log((1+3)/(1+2)) + 1 \approx 1.29$. Note that we add extra ones to avoid division with zero and to diminish the effect of terms appearing only in training set. Now $tf{\text -}idf$ is simply $tf \cdot idf = 1 \cdot 1.29 = 1.29$. Finally, after calculating non-normalized weight for each term, we can derive the value 0.18 dividing $1.29$ with the Euclidean norm over the weights which gives $tf{\text -}idf_{norm} = 1.29 / \! \norm{\bolditt{w}}_2 = 1.29 / 6.98 = 0.18$
+
+The vocabulary $\mathbb{V}$ that forms the possible tokens in Table \ref{tbl-ngram-sd}, is the union between every token appearing in three example documents \ie $\mathbb{V} = \bigcup_{i=1}^{3} V_i$ where $V_i = \{t_1, t_2, \cdots, t_n\}$. Therefore some terms may appear zero like the term \texttt{METHOD\{ APPLY} for document A in Table \ref{tbl-ngram-sd}, as it exists only in the token stream of document C. However, this problem with terms appearing zero times is only present in authorship identification, where the main corpus is the training set that is needed to train the model. Therefore even though there can be some terms that appears only in training set and not in test set, the smoothing we apply also in Equation \ref{eq-laplace} prevents the complete product to become zero. Terms like \texttt{ASSIGN VARDEF} and \texttt{VARDEF ASSIGN} have a high weight as they mostly appear in document A, implying that document A has more variable assignments than document B or C, which is true when one looks at the raw source code documents. 
+
+With our approach, we can now represent document as a vector of weights \eg document A as $\bolditt{x} = [0.14, 0.18, \cdots, 0.14, 0.14]$, and the dimension of $\bolditt{x}$ is the size of vocabulary $\mathbb{V}$. The visualization of these three programs as vectors of weights is seen in Figure \ref{fig-tfidf}, where it is clear that program C is the outlier whereas A and B share more similarities between each others.
+
+\begin{figure}[!h]
+\centering
+\setlength\figureheight{7cm}
+\setlength\figurewidth{10cm}
+\input{plots/tfidf.tikz}
+
+\caption{Three sample programs from Appendix \ref{appendix:programs} visualized in two dimensions. Tf-idf weights have been calculated from the token streams.} \label{fig-tfidf}
+\end{figure}
+
+
+
+\input{method/similarity_detection.tex}
+
+\input{method/author_identification.tex}
 
 %\begin{figure}[!h]
 %\centering
@@ -249,15 +196,12 @@ The vocabulary $\mathbb{V}$ that forms the possible tokens in Table \ref{tbl-ngr
 %\caption{TEST} \label{fig:M1}
 %\end{figure}
 
-\newpage
-
-
-\subsection{Similarity detection}
-
 %use t-SNE for visualization!! density is lost https://stats.stackexchange.com/questions/263539/k-means-clustering-on-the-output-of-t-sne?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
-\subsection{Authorship identification}
+
+\subsection{Evaluation}
+
+asd
 
 
-
-\subsection{Evaluation metrics}
+\newpage

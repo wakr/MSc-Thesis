@@ -1,0 +1,93 @@
+\subsection{Data set}
+
+Our model is aimed to the traditional MOOC setting which is for example used by  undergraduate-level programming courses \emph{Introduction to Programming} (OHPE) and \emph{Advanced course in Programming} (OHJA) in University of Helsinki. We use three authentic data sets; students submissions done to both of latter courses during the implementation in fall 2016 and a train data from SOCO task from 2014. All source code files are written in Java programming language. 
+
+Both OHPE and OHJA includes proven cases of plagiarism, however to avoid any bias, more specific information about them is kept hidden as a golden standard by the courses administrative staff Arto Hellas until the final evaluation of our model. SOCO dataset on the other hand, contains prelabeled document pairs that have conducted plagiarism \cite{saez2014pan}.
+
+To implement our model, we first use SOCO to train and evaluate our similarity detection model, then train and test authorship identification with OHPE and OHJA. Our proposed model is built based on these results and plagiarism is detected individually for both courses. The reason to use train set of SOCO for similarity detection, is simply that it's the only data set that contains fully labeled cases of plagiarism, but unfortunately contains only one file per author. OHPE and OHJA on the other hand, contains multiple files per author making author identification possible, but only a few known cases of plagiarism. Therefore we make use of both sets and consider our model to be successful if it has a high precision, minimizing the amount of false-positives. 
+
+\paragraph{Course overview}\mbox{}\\
+OHPE and OHJA shares the same structure; students first register to automatic scoring system called \emph{Test My Code} (TMC) \cite{Vihavainen:2013:SSL:2462476.2462501} which also distributes the exercises as an plugin to \emph{NetBeans IDE}, then independently work during seven weeks by completing programming exercises within deadlines \cite{Vihavainen:2012:MSM:2380552.2380603}. Both of these courses follow \emph{Extreme Apprenticeship method} \cite{Vihavainen:2011:EAM:1953163.1953196}; theoretical material is available online for students, students learn by doing \ie there exists mandatory programming exercises, weekly exercise sessions are available for those who require assistance, instructors can give feedback and students are able to track their process. 
+
+Students earn points from exercises depending if all tests were successfully passed via TMC, and complete an exam at end of the course which is a programming exam that ultimately decides if a student has learned the minimum level required. The exam in fall 2016 was a home exam, meaning that students were able to do it individually wherever they wanted to. There are also no mandatory lectures, thus students are able to earn these credits by working individually without any physical attendance. 
+
+\paragraph{SOCO overview}\mbox{}\\
+Source code reuse (SOCO) data is from a 2014 competition \emph{PAN@FIRE}, where two sets were given to detect monolingual source code re-use \cite{saez2014pan}. SOCO2014 offered a train and a test set for competitors, which contained files written in \cpp\, and Java by various authors. The train set contains the source code files and annotations which are made by three experts flagging which pairs are considered as plagiarism. Competitors were then asked to retrieve which pairs are plagiarized. For example pair $(d_i, d_j)$ refers that there exists plagiarism between these two files, and because the direction was completely ignored, it was sufficient to retrieve just the predicted pairs.
+
+SOCO contains mainly submissions to a single exercise and couple of documents, that are transformed from C to Java. As only the plagiarized file pairs are annotated and SOCO has been used successfully used in other studies \cite{AIR2015, RCISCP2017, OTIOLSS2015, USCR2014}, we make a simplifying assumption that the train set of SOCO contains one file per one unique author and that all submissions are submitted for the same task. This won't affect negatively the performance of our proposed model, as similarity detection is not affected at all if there exists multiple tasks within a corpus. 
+
+
+
+\paragraph{Corpus statistics}\mbox{}\\
+We are going to focus to Java language, therefore we only use the Java-specific part of SOCO training set, but fully utilize OHPE and OHJA data sets due to a fact that they only contain Java files. Number of non-transformative steps has been made beforehand to form the upcoming corpora: 1) leave SOCO as it is, 2) add exams to both OHPE and OHJA, and 3) concatenate submission containing multiple files into one file. This allows us to assume only one file per submission and we also get the benefit of having exam submissions, which is something where plagiarism is absolutely not allowed. 
+
+%As OHPE and OHJA are both real-life courses, we also include the exam which in OHPE is made out of four tasks and in OHJA out of three tasks. 
+
+Descriptive statistics for all three collections without any textual preprocessing is given in table \ref{tbl-corporastats}, where ten different metrics are reported: number of total authors, exercises and documents; does the corpus contains synthetic data; means for documents per author, character count, lines of code (LOC) and expressions\footnote{We assume countable expressions to be the ones ending in a semicolon}; and lastly minimum and maximum line counts. We can see from the table \ref{tbl-corporastats}, that SOCO has the smallest amount of authors but the tasks are more complex indicated by the largest LOC, amount of expressions and character count. 
+
+When comparing OHPE to OHJA, OHPE has relatively smaller submissions than OHJA, which is mostly due to OHPE having easier tasks due to being the introductory course where students are not expected to know anything about programming beforehand. OHPE also has the most largest document-to-author ratio (106) compared to SOCO (1) and OHJA (56), making it the most richest data set when it comes to having a large amount of submissions per author.  Comparing to other corpora presented in chapter \ref{subsec-liter-data}, our OHPE corpus is one of the largest with OHJA. They both have over four times as many authors than any of the corpora used in other studies.
+
+\begin{table}[!h]
+\centering
+\caption{Descriptive statistics for the unprocessed corpora. Bold values represents maximum value per metric.}
+\label{tbl-corporastats}
+\begin{tabular}{|l||l|l|l|} \hline
+\backslashbox{\bf Metric}{\bf Corpus}   & SOCO & OHPE & OHJA\\  \hhline{|=|=|=|=|}
+\textbf{Authors}         & 259 & \textbf{316} & 270   \\  \hline
+\textbf{Exercises}       & 1 & \textbf{151} & 92     \\  \hline
+\textbf{Documents}       & 259 & \textbf{33\,363} & 15\,196    \\  \hline
+\textbf{Average documents per author} & 1 & \textbf{106} & 56\\ \hline
+\textbf{Synthetic}       & Partly & No & No \\  \hline
+\textbf{LOC $\min$}         & \textbf{12} & 1 & 1      \\  \hline
+\textbf{LOC AVG.}        & \textbf{149} & 44 & 109     \\  \hline
+\textbf{LOC $\max$}         & \textbf{1696} & 679 & 637   \\  \hline
+\textbf{Expression AVG.}       & \textbf{63} & 17 & 38 \\ \hline
+\textbf{Character AVG.} & \textbf{3898} & 1139 & 2794   \\  \hline
+\end{tabular}
+\end{table}
+
+
+
+A problem however arises when average line count with respect to the exercises is visualized for both OHPE and OHJA. Figure \ref{fig-hists} visualizes this by histograms, where both bin sizes are set to 50. 
+
+
+\begin{figure}[!h]
+\centering
+\captionsetup[subfigure]{justification=centering}
+
+\begin{subfigure}{\textwidth}
+    \setlength\figureheight{4cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/ohpe_avgloc.tikz}
+    \label{fig-ohpeavgloc}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \setlength\figureheight{4cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/ohja_avgloc.tikz}
+    \label{fig-ohjaavgloc}
+\end{subfigure}
+
+\caption[Two histograms for corpora]{Histograms showing average line of count per exercise for OHPE (top) and OHJA (below). OHJA has more evenly distributed submissions, where as OHPEs submissions are mostly under 100 lines in length.}
+\label{fig-hists}
+\end{figure}
+
+\noindent
+From Figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 100 lines of code. This creates an issue for plagiarism detection, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high. 
+
+To overcome this problem, we target our detection to the most challenging exercises per week which we assume is the final exercise of the week as they are mostly the longest tasks. The data supports this claim, as the mean length of every weeks last exercise submissions is seen in Table \ref{tbl-OHPE-last-week}.
+
+\begin{table}[ht]
+\centering
+\caption{Average line count for submission of the final exercise of each week for OHPE. The only outlier is the last weeks exercise.}
+\label{tbl-OHPE-last-week}
+\begin{tabular}{l|c|c|c|c|c|c|c}
+\bf Week        & 1.  & 2.  & 3.   & 4.  & 5.   & 6.   & 7.   \\ \hline
+\bf Average LOC & 71 & 66 & 149 & 95 & 146 & 206 & 123 \\ \hline
+\bf No. longest & 2nd  & 1st & 1st  & 1st & 1st   & 1st   & 4th  
+\end{tabular}
+\end{table}
+
+\noindent
+In Table \ref{tbl-OHPE-last-week} we don't take in account pair exercises which are meant to be done with another student, and we leave them completely out from the corpus as they violate our single author assumption. Also they are quite sparse; OHPE contains 12 pair programming tasks out of 151 as OHJA 10 out of 92. 

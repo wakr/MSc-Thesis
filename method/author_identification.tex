@@ -1,0 +1,38 @@
+\subsection{Authorship identification}
+
+The second method we apply, is the identification of author from a collection of source codes. Like similarity detection, we apply this to one exercise at a time but as this model requires training, we define the training set to be all documents that the author has previously written. For example when considering a course which consist of seven weeks and the final exam, we can use all seven weeks per author to train the model \ie try to capture the preferred style of an author, and then predict for a random sample from a collection of exam submission that who is the most likely author.  
+
+The algorithm for authorship identification we use is heavily based on the probabilistic model Naïve Bayes from Chapter \ref{chap-bg-classification} and in it, we utilize $n$-grams which was a popular method among other studies in Chapter \ref{chap-liter-review-methods}. The intuition behind utilizing $n$-grams is that it captures all preferences that the author might have when writing source codes by using the raw text given in documents. That is also why we don't apply a lot of normalization for authorship identification. The pseudocode for our authorship identification is seen in Algorithm \ref{alg-ai}.
+
+% multi label?
+
+\begin{algorithm}[ht]
+\caption{Detecting suspicious authors.}
+\label{alg-ai}
+\begin{algorithmic}
+
+\Require Set of authors $A$
+\Require Set of documents $D$ belonging to authors $A$
+\Require Index of the exercise under detection $i$
+\Require Length of character level $n$-grams
+\Procedure{TrainAndPredictNB}{$A, D, i, n$}
+   \State $\bolditt{X} \gets$ \Call{ExctractNgrams}{$D, n$}
+   \State $\bolditt{W} \gets$ \Call{TFIDF}{$\bolditt{X}$}
+   \State $\bolditt{W}_{train}, \bolditt{y}_{train}, \bolditt{W}_{test}, \bolditt{y}_{test} \gets$ \Call{Split}{$\bolditt{W}, A, i$}
+   \State $NB \gets$ \Call{TrainNaïveBayes}{$\bolditt{W}_{train}, \bolditt{y}_{train}$}
+   \State $A_{auth} \gets$ \Call{Predict}{$NB, \bolditt{W}_{test}$}
+   \State \textbf{return} $A_{auth}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+The authorship identification in Algorithm \ref{alg-ai} is dependent from one hyperparameter, which is the length of character level $n$-grams. The value for it will be tuned using both data sets OHPE and OHJA, and choosing the value which performs best on average. 
+
+The remaining flow of Algorithm \ref{alg-ai} is following. After the weight matrix $\bolditt{W}$ has been formed we split the data into training and test sets with appropriate classes, which indicate the authorship. The split is done by treating the $i$th exercise as a test set, and everything before it as a training data. For example if the interest is the exam, which can be thought as the final task of the course, there are 135 exercises before it in OHPE and 79 in OHJA\footnote{Values 135 and 79 are after pair programming tasks are filtered out from both sets.} that can be used to capture the individual style of an author. The training of the Naïve Bayes algorithm allows thus to estimate the probabilistic parameters inside the model as introduced in Chapter \ref{chap-bg-classification}, and the function \textproc{Predict} being the maximum a posteriori probability (MAP) estimate, able to classify the author of the document. 
+
+% ohpe exam 4 parts, 135 tasks before, removed pair programming
+% ohja exam 3 parts, 79 tasks before, removed pair and course feedback
+
+Now, as our final result is the intersection between sets $A_{susp}$ and $A_{auth}$, the results of similarity detection and authorship identification, the intuition behind it can be shown with the following example. Let there be three authors $a,b,c \in A$ and three exercises under detection $d_a, d_b, d_c \in D$, where $D$ contains also previous submissions for each author. Let there also exist a similarity detection phase able to cluster perfectly where document similarity is over the threshold $\theta$\footnote{In DBSCAN algorithm $\theta = \varepsilon$.}, and authorship identification phase that is trained with very high accuracy, so that the expected error when classifying any of the documents $d_a, d_b, d_c$ is minimal. If the clustering result is that $\omega_1 = \{d_a,d_b\}$ and $\omega_2 = \{d_c\}$ implying authors $a$ and $b$ are suspects as they share too much structural similarity, and the identification predicts following authors: $\hat{f}(d_a) = a, \hat{f}(d_b) = a$ and $\hat{f}(d_c) = c$; then we have verified that authors $a$ and $b$ have a high chance for a case of plagiarism. We can even claim that $a$ has probably shared the document to $b$, but as we leave out the direction of plagiarism, both cases should be therefore reviewed equally by a human expert. Human expert could ask questions about the incident and decide how severe the plagiarism has been. 
+

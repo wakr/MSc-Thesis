@@ -238,7 +238,7 @@ Now by taking the product of term frequency and inverse document frequency (tf-i
 
 By using tf-idf weighting scheme, we are able to discriminate between documents and diminish the problem of frequently appearing terms that are introduced often in programming, because the language is very structured and defined by a finite amount of keywords and variables. The representation of documents remains similar to Table \ref{tbl-binmatr}, having term weights to ultimately describe the document.
 
-\subsubsection{Document similarity}
+\subsubsection{Document similarity} \label{chap-bg-sim}
 
 Now as we have a way of expressing a document as a vector, we need to somehow be able to calculate similarity between two documents, which is crucial part for similarity detection. One way of doing this is by using \emph{cosine similarity}.
 
@@ -287,7 +287,7 @@ $F_1$-score is slightly different metric, giving an average between precision an
 
 By using these metrics, we are able to evaluate the results of our detection process when we retrieve a set of documents that our model suspects from plagiarism. But to be able to properly evaluate, the data needs to be labeled \ie there must exist some gold standard about the confirmed cases of plagiarism, or the results needs to be confirmed by a human with domain knowledge \eg course administrative staff. 
 
-\subsection{Document classification}
+\subsection{Document classification} \label{chap-bg-classification}
 
 The problem of classification can be formulated as $\gamma: \mathbb{X} \rightarrow \mathbb{C}$ \cite{Manning:2008:IIR:1394399}, approximating a function $\gamma$ that maps data $\bolditt{x} \in \mathbb{X}$ to class $c \in \mathbb{C}$. For example a \emph{binary classifier} would choose between a positive and a negative class $\mathbb{C} = \{+, -\}$, and \emph{multiclass classifier} between multiple classes $\mathbb{C} = \{c_1, c_2, \cdots, c_n\}$.
 

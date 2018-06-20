@@ -15,6 +15,18 @@ def categorize_columns(df):
 def parse_source_code_columns(df):
     df["ast_repr"] = df["source_code"].apply(lambda s: Parser(s).parse_to_ast())
 
+def add_week_column(df):
+    def assign_week(exer_name):
+        if not "viikko" in exer_name:
+            return 99
+        else:
+            strip_week = lambda s: s.split("-")[0] # viikkoXX-ViikkoXX_000.FOO
+            numerical = strip_week(exer_name)[-2:] #viikkoXX --> XX
+            return int(numerical)
+    df_temp = df.copy()
+    df_temp["week"] = df_temp["exercise"].apply(assign_week)
+    return df_temp
+
 def main():
     pass
 
@@ -30,15 +42,14 @@ course_info = {'ohpe': ('hy-s2016-ohpe', 'hy-s2016-ohpe-konekoe-3'),
                'ohja': ('hy-s2016-ohja', 'hy-s2016-ohja-konekoe-3')}
 
 subset_df = df[df.course.isin(course_info["ohja"])]
+subset_df = add_week_column(subset_df) # 99 = exam
 subset_df = categorize_columns(subset_df)
 
 
-#%% first quartile filter by loc
+#%% filter out pair programming tasks and Kurssipalaute
 
-exer_loc_avg = subset_df.groupby(by="exercise").loc.mean().round(0)
-first_quartile = exer_loc_avg.quantile(q=0.25)
-sensible_exercises = exer_loc_avg[exer_loc_avg > first_quartile].keys().tolist()
-subset_df = subset_df[subset_df.exercise.isin(sensible_exercises)]
+pair_programming_tasks = [x for x in subset_df.exercise.cat.categories if "Pariohjelmointi" in x]
+
 
 #%%
 example_code = subset_df.iloc[0].source_code
