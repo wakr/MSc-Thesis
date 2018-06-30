@@ -1,6 +1,6 @@
 In this chapter we turn the focus to the actual methods used in these studies. We use the same categorization as a baseline for studies that was made earlier. The formal notation used in studies is generalized to match the style of this paper, meaning that a single element of a set and scalars are represented as lower-cased italics, matrices are bold and upper-cased, vectors are bold but lower-cased, tree structures as capitalized $T$ and segments of source codes as capitalized $S$, often implying strings. We use words \emph{term, token} and \emph{word} as a synonym for a single sequence of characters which are usually divided by spaces.
 
-\paragraph{Similarity detection}\mbox{}\\
+\subsubsection{Similarity detection}
 The problem of similarity detection is described formally in chapter \ref{chap-sd} and we use that as a general high-level baseline. We will focus in similarity detection studies mainly to the actual similarity measure, as it's described often in following 17 studies.
 
 
@@ -90,7 +90,7 @@ Where $\lambda$ is a decay factor penalizing tree height, dist is the edit dista
 
 Study utilizing an ensemble of methods by Xiong \etal presents their system named \textit{BUAA AntiPlagiarism} which uses abstract syntax tree to generate $n$-grams \cite{BUAA2009}. They first run the code through optimizer that gets rid of unnecessary complexity, then turn the simplified code into AST-representation and prune the tree by for example removing variable names and constants. This pruned tree is lastly travelled in preorder fashion that turns the tree into string format and forms $n$-grams from that representation. To calculate similarity between documents, Xiong \etal uses Jaccard coefficient, which was defined earlier in equation \ref{jacc_eqn}. Muddu \etal continues on combining approaches and presents their system called Code Plagiarism Detection Platform (CPDP) \cite{CPDPPD2013}. CPDP detects plagiarism by first tokenizing the AST, then turning the generated token stream into $4$-grams to be used in querying the matching documents. Finding the most closest document happens by using string matching algorithm \emph{Karp-Rabin Greedy String Tiling} given $n$-grams from the set of matching documents. Finally, the last similarity detection study is from Ganguly \etal in \cite{RCISCP2017}. They also use information retrieval approach in similar fashion as they did in previous work \cite{AIR2015}, to tackle with the problem related to $n$-grams without AST-representation; false-positives and exhaustive pair-wise calculation. Their method consists of building a pseudo-query and a ranked list of most matching documents. This pseudo-query is built by first retrieving three kinds of features from documents: lexical (3-grams); structural like identifiers, function types, and data types; and 11 stylistic features like average term length. Then documents are ranked according to term selection function for retrieving top ranked most similar documents. 
 
-\paragraph{Authorship identification}\mbox{}\\
+\subsubsection{Authorship identification}
 The problem of authorship identification is very different from similarity detection and given in chapter \ref{chap-ai}. Instead of trying to find a function to represent a numerical value as similarity between two source code to detect plagiarism, authorship identification aims to reveal the writer of a document. It's common in following studies that the identification happens in closed environment, implying that the author of every document is known beforehand and can only be someone from the predefined set of possible authors. It's thus common that authorship identification can be used as authentication, and methods can be evaluated as the ground truth is known. Upcoming 15 studies reflect these findings.
 
 
@@ -116,23 +116,8 @@ Alsulami \etal utilize deep neural network which uses features derived from the 
 
 Finally, two hybrid studies are by Wisse and Veenman \cite{SDNAIJSP2015} and Zhang \etal \cite{AISC2017}. Wisse and Veenman approach the problem of authorship by using a features extracted directly from the AST. They first parse the source code into AST, then traverse it to derive metrics belonging to three classes: structural, style and layout. Structural features include most frequent $n$-grams, style features statistics about comments and layout features are various spacing related metrics. The classification is done by deriving a high dimensional feature vector and using \emph{Support Vector Machine}. Zhang \etal on the other hand, extract multiple features belonging to four classes: layout, style, structure and logic. In their study, layout features capture the usage of whitespace characters, style captures usage of variable names and lengths, structure statistics about methods and logic is defined as word-level $n$-grams.
 
-\paragraph{Summary}\mbox{}\\
+% derived classification
+\subsubsection{Findings}
 Even though there exists multiple different ways to obtain similarity score between a pair of source codes, there are some reoccurring strategies for comparison: Jaccard similarity coefficient can be used for a similarity measure between two sets of tokens \cite{PACASCD2005, BUAA2009, OTIOLSS2015, ramirez2015high}, string edit distance is a simple but requires exhaustive pair-wise search to find direct occurrences \cite{LICD2010, ASTMLPD2013, CPDPPD2013}, cosine similarity can be used as similarity measure with vector space models often utilizing weighting schemes like term-frequency or term frequency–inverse document frequency \cite{AASCPD2012, USCR2014, Heblikar2015NormalizationBS, OTIOLSS2015, ramirez2015high} and similarity between tree structures can be calculated with a tree kernel as a dot product or by exhaustively comparing the nodes \cite{AAPSCDPTK2013, Fu2017WASTKAW, TBCFPD2012}. To reduce noise for similarity calculation, two kinds of approaches are used: preprocessing and normalization. In preprocessing the data is turned into another format \eg from plain text to AST or filtered to remove unnecessary information, and in normalization some weighting scheme is often applied or keyword generalization.
 
 Author identification mainly uses metrics and $n$-grams to answer the question \emph{who wrote this code?}. Used metrics often belongs to three categories: layout, style and structure. However, coming up with meaningful metrics can be hard and can easily lead to feature engineering \cite{EJPFSAI2004}, where one needs to find a subset of well-performing features. $N$-grams are popular and used in SCAP, with information retrieval and alongside statistical metrics. The actual classification is in many cases done by representing source code as a vector of numerical values \ie the metrics, and then using supervised machine learning algorithm like the support vector machine \cite{SDNAIJSP2015}. 
-
-
-
-%\begin{algorithm}[ht]
-%\caption{See how easy it is to provide algorithms}
-%\label{myFirstAlgorithm}
-%\begin{algorithmic}
-%\REQUIRE $a$
-%\STATE $b = 0$
-%\STATE $x \leftarrow 1:10$
-%\FORALL{x}
-%    \STATE $b = b+a$
-%\ENDFOR
-%\RETURN $b$
-%\end{algorithmic}
-%\end{algorithm}

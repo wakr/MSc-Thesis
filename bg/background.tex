@@ -1,7 +1,10 @@
-\subsection{Source-code plagiarism} \label{chap-bg-sc-plag}
+\subsection{Source code plagiarism} \label{chap-bg-sc-plag}
 
-Source-code plagiarism refers to a plagiarism that happens between source code files. This 
-scenario is common in academic programming courses and in software industry, where detection can be impossible due to time constraints. In academia, the underlying motives behind source code plagiarism include things like \cite{DPPA2008}; ambiguity about what is considered as excessive collaboration between students, using other students work to gain grades and minimizing the work needed to complete the course. Also, some students have problems to define what they consider as source-code plagiarism, and thus three common guidelines can be given \cite{Pieterse2014DecodingCP}:
+Source code plagiarism refers to a plagiarism that happens between source code files and it can happen in both academic programming courses as in software industry. Despite that in this thesis we focus on academic courses, both of these domains share a common problematic constraint which makes plagiarism detection often manually impossible. This constraint is simply the time constraint and it creates a need for automatic detection tools. 
+
+In academia, the underlying motives behind source code plagiarism include things like \cite{PlagInProg1999}: ambiguity about what is considered as excessive collaboration between students, using other students work to gain grades and minimizing the work needed to complete the course. One study revealed three emerging plagiarism behaviors with take-home exams \cite{Hellas:2017:PTE:3059009.3059065}: help-seeking, collaboration and systematic cheating. Indicating that the most common type of plagiarism is accidental and done with other students from the same course.
+
+Students committing plagiarism can have problems to define what they consider as source code plagiarism, and generally three common guidelines can be defined \cite{Pieterse2014DecodingCP}:
 
 \begin{enumerate}
     \item[1)] Refactoring other students work, and submitting it as your own, is plagiarism
@@ -11,14 +14,18 @@ scenario is common in academic programming courses and in software industry, whe
 
 \noindent
 %Because of possible confusion about what is considered as plagiarism and the serious nature of plagiarism accusations in academia, it's preferable still to use some kind of human expert to judge to call out if a student has actually plagiarized someone \cite{Pieterse2014DecodingCP}. This allows the detection process to reveal candidates, which prunes heavily the amount of manual work needed.
-Detecting 2. and 3. are straightforward; code templates can be filtered out from documents so that they contain only students own work and detecting direct copy can be easily found by using string matching techniques. However, the problem arises when students tries to hide the plagiarism by mutating the copied document.
+Detecting 2. and 3. are straightforward; code templates can be filtered out from documents so that they contain only students own work and detecting direct copy can be easily found by using string matching techniques. However, the problem arises when students try to hide the plagiarism by mutating the copied document.
 
 \paragraph{Plagiarism strategies}\mbox{}\\
-Some common source code transformation techniques, often called as \emph{obfuscation strategies}, are targeted mainly towards two types of changes \cite{DPPA2008}: lexical and structural. Lexical changes doesn't require a deeper understanding of the logic and are doable with any \emph{integrated development environment} (IDE). Structural changes requires some understanding of the program logic, and includes modifications which change the layout of the source code but keeps the logic same. For example considering clause with an operand \texttt{if(a == true)}, this can be written equally as \texttt{if(a == !false)}.
+Some common source code transformation techniques, often called as \emph{obfuscation strategies}, are targeted mainly towards two types of changes \cite{PlagInProg1999}: lexical and structural. Lexical changes doesn't require a deeper understanding of the logic and are doable with any \emph{integrated development environment} (IDE). Structural changes requires some understanding of the program logic, and includes modifications which change the layout of the source code but keeps the logic same. For example considering following clause with an operand \texttt{if(a == true)}. This can be written equally as \texttt{if(a == !false)}, keeping the logic same but mutating the lexical information.
+
+Table \ref{tbl-plag-strat} shows some of the most common transformation targets in source codes. Given a source code from another student, plagiarist can apply above transformations and complicate the task for a human to spot plagiarism, or even confuse naïve methods. The motivation behind using these transformations is simple, plagiarists want to hide traces and thus, the detection method must be resilient against these strategies.
+
+\newpage
 
 \begin{table}[ht]
 \centering
-\caption{Common transformation targets.}
+\caption{Common targets for transformations \cite{PlagInProg1999}. Lexical changes are superficial and easy to change, whereas structural changes require some understanding of the logic.}
 \label{tbl-plag-strat}
 \begin{tabular}{|l|l|} \hline
  \textbf{Lexical} & \textbf{Structural} \\ \hhline{|=|=|}
@@ -29,10 +36,9 @@ Some common source code transformation techniques, often called as \emph{obfusca
 \end{tabular}
 \end{table}
 
-Table \ref{tbl-plag-strat} shows some of the most common transformation targets in source codes. Given a source code from another student, plagiarist can apply above transformations and complicate the task for a human to spot plagiarism, or even confuse naïve methods. The motivation behind using these transformations is simple, plagiarists want to hide traces and thus, the detection method must be resilient against these strategies.
 
 
-Plagiarism transformations defined in table \ref{tbl-plag-strat} closely relate to an earlier study which characterized six levels of transformations \cite{Faidhi:1987:EAD:27319.27321}.
+Plagiarism transformations defined in Table \ref{tbl-plag-strat} closely relate to an earlier study which characterized six levels of transformations \cite{Faidhi:1987:EAD:27319.27321}.
 
 \begin{table}[ht]
 \centering
@@ -53,44 +59,50 @@ Plagiarism transformations defined in table \ref{tbl-plag-strat} closely relate 
 \end{table}
 
 \noindent
-Applying all of these transformations one after another, makes the detection of plagiarism very difficult, as the plagiarized document diverges too much from the original document and hides most of the traces that could be used for detection. However, as the textual information changes, plagiarists still try to maintain the same logic between original and copied documents. This implies that there still exists some kind of similarity, but now the similarity can't be found directly from the textual representation of a source code. Information about the logical structure is thus crucial and accessible when source code is parsed to a tree format.
+Applying all of these transformations one after another from Table \ref{tbl-plag-transf}, makes the detection of plagiarism very difficult, as the plagiarized document diverges too much from the original document and hides most of the traces that could be used for detection. However, as the textual information changes, plagiarists still try to maintain the same logic between original and copied documents. This means that there still exists some kind of similarity, but now the similarity can not be found directly from the textual representation of a source code. Information about the logical structure is thus crucial and accessible when source code is parsed to a tree format.
 
 \paragraph{Code structure}\mbox{}\\
-Source code is a structured text, made of keywords and user-defined variables. To write a running program, one must know the rules \ie the \emph{grammar} of a language, which is usually represented as the order in which various keywords and variables must follow each others. A compiler is the core of a programming language and is able to transform a source code into a machine code. When rules must be interpreted by the compiler, it uses a \emph{parse tree} that is generated from the source code \cite{johnson1975yacc}. This parse tree captures the syntax and semantics of a source and the abstracted version of it, is called \emph{abstract syntax tree}. Consider for example storing an integer value to a variable, the source code and its syntax tree is visible from the following diagram.
+Source code is a structured text, made of keywords and user-defined variables. To write a running program, one must know the rules \ie the \emph{grammar} of a language, which is usually represented as the order in which various keywords and variables must follow each others. A compiler is the core of a programming language and is able to transform a source code into a machine code. When rules must be interpreted by the compiler, it uses a \emph{parse tree} that is generated from the source code \cite{johnson1975yacc}. This parse tree captures the syntax and semantics of a source and the abstracted version of it is called as the \emph{abstract syntax tree}. 
+
+Consider for example storing an integer value to a variable. The source code in JavaScript and its syntax tree is visible from the following diagram.
 
 \begin{diagram}[ht]
 \centering
 \scalebox{1}{
 \Tree[.VariableDeclaration [.Identifier "a" ] [.Literal "5" ] ]
 }
-\caption{Example syntax tree for \texttt{var a = 5;}}
+\caption{Example syntax tree for the expression \texttt{var a = 5;}}
 \label{diag-parse}
 \end{diagram}
 
 \noindent
-Pruning the leaves of diagram \ref{diag-parse} leads to a more general expression that captures the logic of the source code, becoming resistant against most of the transformations given in table \ref{tbl-plag-transf}. This gives ability to detect similar \emph{structure} rather than similar \emph{tokens}, which are more vulnerable to simple transformations.
+Pruning the leaves of diagram \ref{diag-parse} leads to a more general expression that captures the logic of the source code, becoming resistant against most of the transformations given in Table \ref{tbl-plag-transf}. This gives the ability to detect similar \emph{structure} rather than similar \emph{tokens}, where latter is more vulnerable to simple transformations. For example changing the name of the identifier or the value of the literal won't affect the upper tree structure at all.
 
 \paragraph{Tools}\mbox{}\\
-Because plagiarism is kept as a serious offence in academia, a lot of various detection software has been made for it. Novak lists seven of the most well-known tools in a review \cite{RSCAD2016}: \emph{MOSS, JPlag, SPLaT, SIM, Marble, Plaggie} and \emph{Sherlock}. These tools can be classified into five different categories based on methods used: text, token, graph, tree and hybrid. Among these tools, the most common way to detect plagiarism is a five step approach: pre-process documents, tokenize documents, exclude templates, calculate similarities and find suspects using the similarity scores.
+Because plagiarism is kept as a serious offence in academia, a lot of various detection software has been made to detect it. Novak lists seven of the most well-known tools in a review \cite{RSCAD2016}: \emph{MOSS, JPlag, SPLaT, SIM, Marble, Plaggie} and \emph{Sherlock}. These tools can be classified into five different categories based on methods used: text, token, graph, tree and hybrid. Among these tools, the most common way to detect plagiarism is a five step approach: pre-process documents, tokenize documents, exclude templates, calculate similarities and find suspects using the similarity scores. Therefore, it's notable that each of these tools are trying to purely calculate the similarity between documents.
 
-For example JPlag is tool targeted for Java code \cite{prechelt2002finding}. It works by utilizing the program structure, transforming the program code into sequence of tokens by traversing the parse tree of a program and using predefined token correspondence to form a token stream which represents the source code. To form similarity score between two programs, a string matching algorithm \emph{Greedy String Tiling} \cite{SSGST1993} is applied and the summed length of all matches is calculated. Resulting a similarity score of 1.0, if two programs are exact copies. Makers of JPlag also claim that it is resilient against most common obfuscations made by plagiarists. 
+As an example, JPlag is tool targeted for Java code \cite{prechelt2002finding}. It works by utilizing the program structure, transforming the program code into sequence of tokens by traversing the parse tree of a program and using predefined token correspondence to form a token stream which represents the source code. To form similarity score between two programs, a string matching algorithm \emph{Greedy String Tiling} \cite{SSGST1993} is applied and the summed length of all matches is calculated. This results a similarity value between zero and one where the value one means that two programs are exact copies of themselves. Makers of JPlag also claim that their tool is resilient against most common obfuscations made by plagiarists \eg renaming and reordering. 
 
 \subsection{Similarity detection} \label{chap-sd}
 
-Similarity detection, or code clone detection, focuses directly on finding similar functionality between arbitrary pair of source codes $\{d_i, d_j\}$. We define it formally as following
+Similarity detection, or code clone detection, focuses directly on finding similar functionality from a set of source code documents. We can define it formally as following.
 
 \newtheorem*{smd1}{Similarity detection}
 
 \begin{smd1}
-Given a set of source code documents $D = \{d_1,...,d_n\}$ called corpus, define normalized similarity function $sim: d_i, d_j \rightarrow [0, 1]$ where $1 \leq i, j \leq n$, such that $sim(d_i, d_j) = sim(d_j, d_i)$ and $sim(d_i, d_i) = 1$, with a optional threshold $\theta \in [0, 1]$ that defines the limit where two source codes are considered as too similar. With this definition, any pair of source code file $(d_i, d_j) \in D \times D$ can also be presented as a triplet $(d_i, d_j, s)$, where $s$ is the similarity value between documents. 
+Given a set of source code documents $D = \{d_1,...,d_n\}$ called as the corpus, define normalized similarity function $sim: d_i, d_j \rightarrow [0, 1]$ where $1 \leq i, j \leq n$, such that $sim(d_i, d_j) = sim(d_j, d_i)$ and $sim(d_i, d_i) = 1$. In other words similarity score is same regardless of the order of two documents and similarity between same documents is maximal. With an optional threshold $\theta \in [0, 1]$ one can define the limit when two source codes are considered as too similar. With this definition, any pair of source code file $(d_i, d_j) \in D \times D$ can also be presented as a triplet $(d_i, d_j, s)$, where $s$ is the similarity value between documents. 
 \end{smd1}
 
-\noindent
-Above definition is flexible enough to support multiple solutions for the same task, the only restriction being that one must define a function that is able to return a score that either captures the textual or functional similarity. Defined method should be as resilient as possible against transformations given in table \ref{tbl-plag-strat} and table \ref{tbl-plag-transf}, so that two logically similar programs will get a high score even if their textual information differs. Scoring here refers to the value given by similarity function, which can be thought as a distance between documents.
+%\noindent
+%The definition above is flexible enough to support multiple solutions for the same task, the only restriction being that one must define a function that is able to return a score that either captures the textual or functional similarity. Defined method should be as resilient as possible against transformations given in table \ref{tbl-plag-strat} and table \ref{tbl-plag-transf}, so that two logically similar programs will get a high score even if their textual information differs. Scoring here refers to the value given by similarity function, which can be thought as a distance between documents.
 
-The approach one takes, is ultimately based on how source code document is seen as a data \cite{Roy:2009:CEC:1530898.1531101}: document consisting of plain text, series of tokens, syntax tree, series of metrics or as a graph. The textual approach is based on detecting fragments of copy and paste, and requires no pre-processing if one uses naïve methods like string matching. Another way of approaching is by selecting a specific analysis method: attribute-counting-metrics, which are high-level metrics or by structure-metrics which are able to capture more low level representation of the source code \cite{Verco:1996:SDS:369585.369598}. Despite the approach, some kind of pre-processing and normalization is practically always used to prevent the method to be confused with common obfuscation strategies. 
+The approach one takes to define the similarity function, is ultimately based on how source code document is seen as a data \cite{Roy:2009:CEC:1530898.1531101}: document consisting of plain text, series of tokens, syntax tree, series of metrics or as a graph. If the document is seen purely as a sequences of characters, one can use naïve methods like string matching techniques to detect fragments of copy and paste, which requires no pre-processing. Other data formats require some kind of transformation or an extraction process. 
 
-The core process to detect similarity can be visualized as in figure \ref{fig-sd-flow}, which follows the general structure seen in many state of the art systems \cite{Roy:2009:CEC:1530898.1531101}.
+
+If one represents the source code simply as metrics, then there exists two major categorization for those metrics \cite{Roy:2009:CEC:1530898.1531101}: attribute-counting metrics and structure metrics. Attribute-counting refers to high-level features which can be extracted directly from the plain source code \eg line counts and the amount of whitespace, whereas structure metrics use the underlying structure of the source code to capture the low-level representation \cite{Verco:1996:SDS:369585.369598}.
+
+
+The core process to detect similarity can be visualized to Figure \ref{fig-sd-flow}, which follows the general structure seen in many state of the art systems \cite{Roy:2009:CEC:1530898.1531101}.
 
 \begin{figure}[!ht]
 \centering
@@ -111,33 +123,15 @@ The core process to detect similarity can be visualized as in figure \ref{fig-sd
     
     \end{tikzpicture}
 }
-\caption{Similarity detection process. Corpus is transformed into a intermediate form so similarity scores can be calculated.}
+\caption{Similarity detection process for source code documents. Documents are transformed into intermediate representation so similarity scores can be calculated.}
 \label{fig-sd-flow}
 \end{figure}
 
 \noindent
-In figure \ref{fig-sd-flow} after the corpus has been set, pre-process stage takes as an input the unmodified source codes to perform two key tasks: to remove unnecessary segments and to determine the level of comparison granularity. The granularity one chooses can range from function-level to document-level, depending how accurately the results should pinpoint code reuse. After the source code has been partitioned, it is transformed into intermediate representation which consists of two parts: extraction that transforms the data to be used for clone detection algorithm \eg by parsing, tokenizing or building a control flow; and normalization. In latter one can apply techniques which reduce the noise between source codes: comments and whitespace removal, uniforming user-defined identifiers and/or removing syntactic noise.
+In Figure \ref{fig-sd-flow} after the corpus has been defined, pre-process stage takes as an input the unmodified source codes to perform two key tasks: to remove unnecessary segments and to determine the level of comparison granularity. The granularity one chooses can range from function-level to document-level, depending how accurately the results should pinpoint plagiarism. After the source code is partitioned, it is transformed into intermediate representation which consists of two parts: extraction and normalization. In extraction the data is modified so it is usable in similarity function, and covers things like parsing, tokenization or building control flow from the given code. In normalization one applies techniques which reduce the variation between documents \cite{Roy:2009:CEC:1530898.1531101}: comments and whitespace removal, uniforming user-defined identifiers and removing anything which is not crucial for the detection process.
 
-The most key issue regarding to similarity detection, are false-positives that can be handled by manual verification after the suspects are gathered \cite{Verco:1996:SDS:369585.369598, Roy:2009:CEC:1530898.1531101}. This is often mandatory as detection algorithms can't completely understand nuances related to actual plagiarism \eg what is considered as being too similar. 
+However, the most key issue regarding to similarity detection are false-positives that can be handled by manual verification after the suspects are gathered \cite{ Roy:2009:CEC:1530898.1531101, Verco:1996:SDS:369585.369598}. This is often mandatory step as the detection tools simply try to find similarity between documents, but this similarity can be pure coincidence for example when the solution space for a given task is limited. 
 
-
-%\begin{minipage}{.45\hsize}
-%\begin{lstlisting}[language=Java, caption=Example code 1]{asd1}
-%void code()
-%{
-%
-%}
-%\end{lstlisting}
-%\end{minipage}\hfill
-%\begin{minipage}{.45\hsize}
-%
-%\begin{lstlisting}[language=Java, caption=Example code 2]{asd2}
-%void code()
-%{
-%
-%}
-%\end{lstlisting}
-%\end{minipage}
 
 
 \subsection{Authorship identification} \label{chap-ai}
@@ -146,53 +140,59 @@ Authorship identification deals with the issue of trying to name the author of a
 
 \newtheorem*{aui1}{Authorship identification}
 \begin{aui1}
-Given a set of documents $D$, a set of authors $A$ and a function $f: D \rightarrow A$ that identifies the writer by assigning every source code document $d \in D$ to one author $a \in A$. Estimate $f$ with $\hat{f}$, a classifier that treats every document as a feature vector $\bolditt{x}$ and every known class as a vector $\bolditt{y}$. The predicted author $\hat{y}$ can be thus expressed with $\hat{f}(\bolditt{x}) = \hat{y}$.
+Given a set of documents $D$, a set of authors $A$ and a function $f: D \rightarrow A$ that identifies the writer by assigning every source code document $d \in D$ to one author $a \in A$. Estimate $f$ with $\hat{f}$, a classifier that treats every document as a feature vector $\bolditt{x}$ where $x_i \in \mathbb{R}$, and every known class as a vector $\bolditt{y}$ where $y_i \in \{0, 1\}$. The binary value represents boolean value if the $i$th author is the predicted author for a given document, which means that if dimension of the vector $\bolditt{y}$ is $\mathbb{R}^n$, then there are $n$ authors $|A| = n$. The predicted author $\hat{y}$ can be thus expressed with $\hat{f}(\bolditt{x}) = \hat{\bolditt{y}}, \hat{y} \in \hat{\bolditt{y}}$.
 \end{aui1}
 
-\noindent
-This classifier should be able to discriminate between writing styles of different authors, which in programming refers to the habits \ie programming style. Habits are restricted by the grammar of the chosen programming language, but commonly refers to everything that is controllable by the author \eg how one names variables or uses spacing. As a problem, it's therefore very opposite to the similarity detection where we want to find maximum equivalency between programs. 
+Therefore, the classifier should be able to discriminate between writing styles of different authors, which in programming refers to the habits \ie programming style. Habits are restricted by the grammar of the chosen programming language, but commonly refers to everything that is controllable by the author \eg how one names variables or uses spacing. As a problem it differs from the similarity detection where we want to find maximum equivalency between programs, because now we are more interested of detecting the unique programming style.  
 
-One way to represent programming style is by using software metrics \cite{KRSUL1997233}. Software metrics can be put into roughly three categories: layout being fragile metrics which are easily transformed by the IDE, style which are non-fragile metrics related to layout and lastly structure which can capture experience and ability of the programmer. As source code can be also thought as a text written with a specific language, majority of the methods using a natural language can be applied, thus we can form a five-level categorization for stylistic features called \emph{stylometrics features}  \cite{Stamatatos:2009:SMA:1527090.1527102}. Categorization for stylometric features is visualized in table \ref{tbl-ai-stylomet}, where semantic features are the most difficult to form as they require understanding deeper meaning of the written source code.
+One way to represent programming style is by using software metrics \cite{KRSUL1997233}. Software metrics can be put into roughly three categories: layout being fragile metrics which are easily transformed by the IDE, style which are non-fragile metrics related to layout and lastly structure which can capture experience and ability of the programmer. Because source code can be also thought as a text written with a specific language, natural language processing (NLP) techniques can be applied, thus we can form a five-level categorization for stylistic features called \emph{stylometrics features}  \cite{Stamatatos:2009:SMA:1527090.1527102}. Categorization for stylometric features is visualized in Table \ref{tbl-ai-stylomet}, where semantic features are the most difficult to form as they require understanding deeper meaning of the written source code.
+
+\newpage
 
 \begin{table}[ht]
 \centering
-\caption{Five-levels of stylometrics features. }
+\caption{Five-levels of stylometrics features. More external information is required on each level.}
 \label{tbl-ai-stylomet}
 \begin{tabular}{|c|c|} \hline
 \textbf{Category}             & \textbf{Feature examples} \\ \hline
-Lexical              & Token statistics, word n-grams                   \\
-Character            & Character n-grams, types, compression            \\
-Syntactic            & Errors, expressions, keywords, parse tree        \\
-Semantic             & Synonyms, functional dependencies                \\
-Application-specific & Indentation, language-specific \\ \hline
+Character            & Character subsequences, types, compression            \\
+Lexical              & Token statistics, word sequences                   \\
+Syntactic            & Errors, expression usage, keywords, parse tree        \\
+Application-specific & Indentation, language-specific constructs \\ 
+Semantic             & Synonyms, functional dependencies                \\\hline
 \end{tabular}
 \end{table}
 
-In natural language authorship analysis, statistical methods are often being used \cite{Stamatatos:2009:SMA:1527090.1527102}, and more specifically machine learning to find reoccurring patterns that are able to distinguish between writing styles. The training of these statistical models can happen in two ways: via profile-based or via instance-based. In profile-based approach, all documents that are presented as training data for an author  are concatenated into one file. In instance-based learning, each text is used as an individual data point. 
+In natural language authorship analysis, statistical methods are often being used \cite{Stamatatos:2009:SMA:1527090.1527102}, and more specifically machine learning to find reoccurring patterns that are able to distinguish between writing styles. The training of these statistical models can happen in two ways: via profile-based or via instance-based. In profile-based approach, all documents that are presented as observed data per author are concatenated into one file. In instance-based learning, each text is used as an individual data point. If we know that each document belongs to one author, then the problem can be thought as an instance of \emph{a multiclass classification} \cite{Stamatatos:2009:SMA:1527090.1527102}, where author pool of size $n$ can be encoded into binary vector $\bolditt{y} = [y_1, y_2, \cdots, y_n], y_i \in \{0, 1\}$ and only one value of the vector $\bolditt{y}$ can be one.
 
-Whichever the choice is, one is able to reduce the problem into multiclass classification \cite{Stamatatos:2009:SMA:1527090.1527102}, where author pool of size $n$ can be encoded into binary vector $\bolditt{y} = [y_1, y_2, \cdots, y_n], y_i \in \{0, 1\}$. With this representation if the $i$th candidate is the actual author, the value of that field will be one and the rest are zeroes. 
+
+%Despite the choice of, one is able to reduce the problem into multiclass classification \cite{Stamatatos:2009:SMA:1527090.1527102}, where author pool of size $n$ can be encoded into binary vector $\bolditt{y} = [y_1, y_2, \cdots, y_n], y_i \in \{0, 1\}$. With this representation if the $i$th candidate is the actual author, the value of that field will be one and the rest are zeroes. 
 
 
 \subsection{Information retrieval} \label{chap-IR}
 
-Information retrieval (IR) is a collection of strategies of finding documents from large collections \cite{Manning:2008:IIR:1394399}. These documents are often represented as unstructured text and possible methods covers topic like: clustering documents to find similar groups, classifying documents based on their content, ranking text for query search and building search engines. In this thesis as we mainly focus on finding similarities between documents and how to classify the author, we disregard some of the query-based focus of IR and use techniques that are relevant to plagiarism study \ie how document can be represented for machine learning models and how distance between two documents can be calculated.
+Before we can apply any statistical models to our problem, we need a way of properly handling the collection of documents. One way is to think the problem of plagiarism detection as retrieving certain kinds of documents from a collection. Therefore we next introduce some topics from the \emph{information retrieval}.
+
+Information retrieval (IR) is a collection of strategies of finding documents from large collections \cite{Manning:2008:IIR:1394399}. These documents are often represented as unstructured text and possible methods covers topic like: clustering documents to find similar documents, classifying documents based on their content, ranking text for query search and building search engines. In this thesis as we mainly focus on finding similarities between documents and how to classify the author, we disregard some of the query-based focus of IR and use techniques that are relevant to plagiarism study \ie how document can be represented for statistical models and how distance between two documents can be calculated.
 
 
 
 
 \subsubsection{Document representation} \label{chap-IR-document-repr}
 
-As we need some form of numerical way \ie vector to represent one document, we use following IR-related concepts to express the documents in our corpus: \emph{vector space model} which captures algebraically the representation of the document and a \emph{weighting scheme} which helps to give more importance to specific terms.
+As we want some form of numerical way \ie vector to represent one document, we use following IR-related concepts to express the documents in our corpus: \emph{vector space model} which captures algebraically the representation of the document and a \emph{weighting scheme} which helps to give more importance to specific terms.
 
 
 \paragraph{Vector space model}
 %Tokenization
 
-One form of vector space model is called \emph{a binary term-document incidence matrix} \cite{Manning:2008:IIR:1394399}, which represents documents as columns of the matrix and terms as the rows. Terms are gathered by tokenization procedure which divides single document into units that are often \emph{words} of the document, but can also be \eg adjacent words. Let $\bolditt{M}_{n \times k}$ be this matrix having $n$ terms and $k$ documents, then the value of $\bolditt{M}_{d, t}$ \ie term $t$ appearing in document $d$, is 1 if it appears at all and zero otherwise. Table \ref{tbl-binmatr} shows example matrix build from programs in appendix \ref{appendix:programs}.  
+One form of vector space model is called \emph{a binary term-document incidence matrix} \cite{Manning:2008:IIR:1394399}, which represents documents as columns of the matrix and terms as the rows. Terms are gathered by tokenization procedure which divides single document into units that are often \emph{words} of the document, but can also use adjacent words. 
+
+Let $\bolditt{M}_{n \times k}$ be this matrix having $n$ terms and $k$ documents, then the value of $\bolditt{M}_{d, t}$ \ie term $t$ appearing in document $d$, is 1 if it appears at all and zero otherwise. Table \ref{tbl-binmatr} shows example matrix build from programs in Appendix \ref{appendix:programs}.  
 
 \begin{table}[ht]
 \centering
-\caption{Example of a binary term-document incidence matrix for three sample programs in appendix \ref{appendix:programs}.}
+\caption{Example of a binary term-document incidence matrix for three sample programs in Appendix \ref{appendix:programs}.}
 \label{tbl-binmatr}
 \begin{tabular}{|c|c|c|c|} \hline
       \backslashbox{\bf Term}{\bf Document} & A & B & C \\ \hline
@@ -205,11 +205,13 @@ $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
 \end{table}
 
 \noindent
-Taking a transpose of the matrix in table \ref{tbl-binmatr} gives a document-term matrix, where one row represents now document having $n$ dimensions reserving one dimension per each term occurrence. For example $\bolditt{a} = [1, 0, 1, \cdots, 1]$. This is referred also as the \emph{bag of words} model, because it treats every word as independent event, losing the information about ordering \cite{Manning:2008:IIR:1394399}. Unigrams can be thus expressed as a product of term probabilities 
+Taking a transpose of the values in Table \ref{tbl-binmatr} gives a document-term matrix, where one row represents now document having $n$ dimensions, reserving one dimension for each term occurrence. For example the representation of document A is the vector $\bolditt{a} = [1, 0, 1, \cdots, 1]$. This is referred as the \emph{bag of words} model, because it treats every word as independent event, losing the information about ordering of the words and adjacent words \cite{Manning:2008:IIR:1394399}. 
 
-\begin{equation}
-    P(t_1, t_2, t_3, t_4) = P(t_1)P(t_2)P(t_3)P(t_4)
-\end{equation}
+%Unigrams can be thus expressed as a product of term probabilities 
+
+%\begin{equation}
+%    P(t_1, t_2, t_3, t_4) = P(t_1)P(t_2)P(t_3)P(t_4)
+%\end{equation}
 
 A binary term-document incidence matrix is however very naïve, giving the same value despite the times term appears in a document. The solution is to use a  method called \emph{term weighting}, which is able to assign non-binary value for terms. 
 
@@ -230,21 +232,23 @@ To scale down the most frequently appearing terms, one can use \emph{inverse doc
 \noindent
 Where $N$ is the total amount of documents and $df_{t}$ is the count of documents that contains the term $t$.
 
-Now by taking the product of term frequency and inverse document frequency (tf-idf), we get a weight for each term appearing in a document. It's defined as
+Now by taking the product of the term frequency and inverse document frequency (TF-IDF), we get a weight for each term appearing in a document
 
 \begin{equation}
     tf{\text -}idf_{t, d} = tf_{t, d} \cdot idf_{t}
 \end{equation}
 
-By using tf-idf weighting scheme, we are able to discriminate between documents and diminish the problem of frequently appearing terms that are introduced often in programming, because the language is very structured and defined by a finite amount of keywords and variables. The representation of documents remains similar to Table \ref{tbl-binmatr}, having term weights to ultimately describe the document.
+By using TF-IDF weighting scheme, we are able to discriminate between documents despite their length and diminish the problem of frequently appearing terms that are introduced often in programming. Terms appear frequently in programming because the language is very structured and defined by a finite amount of keywords. 
 
 \subsubsection{Document similarity} \label{chap-bg-sim}
 
-Now as we have a way of expressing a document as a vector, we need to somehow be able to calculate similarity between two documents, which is crucial part for similarity detection. One way of doing this is by using \emph{cosine similarity}.
+As we have a way of expressing a document as a vector, we are interested to be able to calculate similarity between two documents, which is crucial part for similarity detection. One way of doing this is by using \emph{cosine similarity}.
 
 \paragraph{Cosine similarity}
 
-Cosine similarity measures the similarity between two documents by calculating the cosine of the angle between the vector representations \cite{Manning:2008:IIR:1394399}. Let $\bolditt{x}, \bolditt{y}$ be these vectors for documents $d_1, d_2$, then
+Cosine similarity measures the similarity between two documents by calculating the cosine of the angle between the document vector representations \cite{Manning:2008:IIR:1394399}. 
+
+Let $\bolditt{x}, \bolditt{y}$ be these vectors for documents $d_1, d_2$, then
 
 \begin{equation} \label{eq-cosine-orig}
     sim(d_1, d_2) = \cos(\theta) = \dfrac{\bolditt{x} \boldsymbol{\cdot} \bolditt{y}}
@@ -254,16 +258,16 @@ Cosine similarity measures the similarity between two documents by calculating t
 \end{equation}
 
 \noindent
-As the dot-product is normalized in equation \ref{eq-cosine-orig} with Euclidean norm and by using non-negative weights derived from tf-idf, the cosine similarity gets values between zero to one and values closer to one indicate from high content similarity. The complement of cosine similarity called \emph{cosine distance} can be calculated by $d = 1 - \cos(\theta)$ \cite{}.
+The dot-product is normalized in Equation \ref{eq-cosine-orig} with Euclidean norm and because weights derived from TF-IDF are non-negative, the cosine similarity gets values between zero and one \cite{Manning:2008:IIR:1394399}. Values closer to one indicate high content similarity, whereas closer to zero indicate dissimilarity. Complement of the cosine similarity called \emph{cosine distance} can be calculated by subtracting the similarity from one \ie $d = 1 - \cos(\theta)$.
 
 \subsubsection{Retrieval metrics}
 
-Having a way to retrieve candidate documents for possible plagiarism, creates a need to justify how well the model is performing. For evaluating the retrieval method in a binary case, three important metrics have been defined \cite{Manning:2008:IIR:1394399}: precision, recall and $F_1$-score. To express these metrics we use a confusion matrix which has four fields: true positive (TP), true negative (TN), false negative (FN) and false positive (FP). The meaning of these fields is visible from table \ref{tbl-confmatr-orig}.
+Having a way to retrieve candidate documents for possible plagiarism creates a need to justify how well the retrieval process is performing. For evaluating the retrieval method in a binary case, three important metrics have been defined \cite{Manning:2008:IIR:1394399}: precision, recall and $F_1$-score. To express these metrics more clearly, we use a confusion matrix which has four fields: true positive (TP), true negative (TN), false negative (FN) and false positive (FP). These four fields are visualized in Table \ref{tbl-confmatr-orig}.
 
 
 \begin{table}[ht]
 \centering
-\caption{Confusion matrix \cite{Manning:2008:IIR:1394399}.}
+\caption{Confusion matrix which helps to visualize the error in retrieval \cite{Manning:2008:IIR:1394399}.}
 \label{tbl-confmatr-orig}
 \begin{tabular}{c|c|c}
           & \bf Relevant & \bf Irrelevant \\ \hline
@@ -272,28 +276,28 @@ Having a way to retrieve candidate documents for possible plagiarism, creates a 
 \end{tabular}
 \end{table}
 
-Precision and recall can be now defined by using the confusion matrix. Both precision and recall calculate the rate of true positives to falsely retrieved documents, and balancing between these values requires often knowledge about the domain. If precision is preferred to be high, model is able to correctly retrieve greater portion of correct positive cases and if recall is preferred, model is able to retrieve high portion of relevant documents. 
+Precision, recall and $F_1$-score can be all defined by using the cells of the confusion matrix. Both precision and recall count the rate of true positives to falsely retrieved documents, and balancing between these values requires often knowledge about the domain. If precision is preferred to be high, model is able to correctly retrieve greater portion of correct positive cases and if recall is preferred, model is able to retrieve high portion of relevant documents. Formally, precision and recall is defined as
 
 \begin{align}
     \text{Precision } &= \dfrac{TP}{TP + FP} = \dfrac{|\text{relevant} \cap \text{retrieved}|}{|\text{retrieved}|}\\
     \text{Recall } &= \dfrac{TP}{TP + FN} = \dfrac{|\text{relevant} \cap \text{retrieved}|}{|\text{relevant}|}
 \end{align}
 
-$F_1$-score is slightly different metric, giving an average between precision and recall. It's defined as
+$F_1$-score combines precision and recall, giving an average between precision and recall. It's defined as
 
 \begin{equation}
     F_1 = 2 \cdot \dfrac{\text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
 \end{equation}
 
-By using these metrics, we are able to evaluate the results of our detection process when we retrieve a set of documents that our model suspects from plagiarism. But to be able to properly evaluate, the data needs to be labeled \ie there must exist some gold standard about the confirmed cases of plagiarism, or the results needs to be confirmed by a human with domain knowledge \eg course administrative staff. 
+All of the above metrics help to evaluate how well the retrieval process is performing but require some form of process where one decides if a document is relevant or not. If the data is classified and we want to retrieve documents belonging to certain class, then the process can is automatically evaluable. Otherwise some sort of human expertise is needed for the evaluation.
 
 \subsection{Document classification} \label{chap-bg-classification}
 
-The problem of classification can be formulated as $\gamma: \mathbb{X} \rightarrow \mathbb{C}$ \cite{Manning:2008:IIR:1394399}, approximating a function $\gamma$ that maps data $\bolditt{x} \in \mathbb{X}$ to class $c \in \mathbb{C}$. For example a \emph{binary classifier} would choose between a positive and a negative class $\mathbb{C} = \{+, -\}$, and \emph{multiclass classifier} between multiple classes $\mathbb{C} = \{c_1, c_2, \cdots, c_n\}$.
+We can formulate the document classification problem as $\gamma: \mathbb{X} \rightarrow \mathbb{C}$ \cite{Manning:2008:IIR:1394399}, approximating a function $\gamma$ that maps data $\bolditt{x} \in \mathbb{X}$ to class $c \in \mathbb{C}$. For example \emph{a binary classifier} would choose between a positive and a negative class $\mathbb{C} = \{+, -\}$, whereas \emph{a multiclass classifier} chooses between multiple classes $\mathbb{C} = \{c_1, c_2, \cdots, c_n\}$ for a given document.
 
-To be able to classify documents algorithmically into some predefined classes, the classifier must learn a way to predict outputs from inputs \cite{hastie_09_elements-of.statistical-learning}. That is, given some $d$-dimensional data $\bolditt{x} \in \mathbb{R}^d$, it must predict the response variable $y$ which can be encoded into binary vector. To make the prediction, the classifier must be supported with some observed data as a training data represented in matrix format $\bolditt{X}_{n \times d}$ and predefined response variables in a column vector $\bolditt{y}_{n \times 1}$. 
+To be able to classify documents algorithmically into some predefined classes, the classifier must learn a way to predict outputs from inputs \cite{hastie_09_elements-of.statistical-learning}. That is, given some $d$-dimensional data $\bolditt{x} \in \mathbb{R}^d$, the classifier $\gamma$ must predict the response variable $y$ which represents the class. To make the prediction, the classifier is supported with some observed data as a training data represented in matrix format $\bolditt{X}_{n \times d}$ and predefined response variables in a column vector $\bolditt{y}_{n \times 1}$ \cite{hastie_09_elements-of.statistical-learning}. This so called \emph{training} of the model refers that the classifier can use some part of the total data to tune its internal parameters, so when a data point outside the training set is given, the classifier is able to give prediction for it based on the data it has seen already. This kind of setting is also called as \emph{supervised learning} as we have some data that guides the process, and the analogue for supervised learning can be thought as learning with a teacher \cite{hastie_09_elements-of.statistical-learning}.
 
-As we know the output $y$ of each observed point $\bolditt{x}$, we want to have similar data to be predicted with the same output. The prediction the algorithm gives can be noted as $\hat{y}$ for $\bolditt{x}$, and because this value is just a prediction, evaluation is needed for the algorithm to be able to chance its learning into right direction. This evaluation happens by penalizing wrong predictions with a loss function $L: \hat{\theta} \times \theta \rightarrow \mathbb{R}$ \cite{hastie_09_elements-of.statistical-learning}. For example one loss function able to penalize categorical predictions, is called \emph{0-1 loss} and formulated as $L(\hat{y}, y) = I(\hat{y} \neq y)$. This kind of setting is also called as \emph{supervised learning} as we have some data that can guide the algorithm into right direction, the analogue for supervised learning can be thought as learning with a teacher \cite{hastie_09_elements-of.statistical-learning}.
+In this case as we know the output $y$ of each observed point $\bolditt{x}$, we want to have similar data to be predicted with the same output. The prediction the algorithm gives can be noted as $\hat{y}$ for $\bolditt{x}$, and because this value is just a prediction, evaluation is needed for the algorithm to be able to chance its learning into right direction. This evaluation happens by penalizing wrong predictions with a loss function $L: \hat{\theta} \times \theta \rightarrow \mathbb{R}$ \cite{hastie_09_elements-of.statistical-learning}, where $\hat{\theta}$ is the prediction that the classifier gives and $\theta$ the value we want the prediction to be. For example a loss function able to penalize categorical predictions, is called \emph{0-1 loss} and formulated as $L(\hat{y}, y) = I(\hat{y} \neq y)$, where $I$ is the indicator function. 
 
 
 %IR pgs. 259 - 273, Element. stat pgs. 37, 21
@@ -302,53 +306,62 @@ As we know the output $y$ of each observed point $\bolditt{x}$, we want to have 
 
 %A Comparison of Event Models for Naive Bayes Text Classification
 
-Naïve Bayes is a probabilistic model, which is often used as a baseline model in text classification \cite{acemNBtc2001}. It applies the \emph{Bayes theorem} to estimate the parameters of the classifier \ie conditional probabilities with respect to data. Bayes theorem is generally given for events $A, B$ as 
+Naïve Bayes is a probabilistic model, which is often used as a baseline model in text classification \cite{acemNBtc2001}. It applies the \emph{Bayes' theorem} to estimate the parameters of the classifier \ie conditional probabilities with respect to data. Bayes' theorem is generally given for events $A, B$ as 
 
 \begin{equation} \label{eq-naive-bayes}
     P(A \mid B) = \dfrac{P(A \cap B)}{P(B)} = \dfrac{P(A)P(B \mid A)}{P(B)}
 \end{equation}
 
 \noindent
-Where $P(B)$ can be expressed with the law of total probability
+Where $P(B)$ can be expressed by the law of total probability
 \begin{equation}
     P(B) = P(B \mid A)P(A) + P(B \mid \lnot A)P(\lnot A)
 \end{equation}
 
-When the area of interest is classification, we denote the probabilities of events $A,B$ as the \emph{prior} and \emph{likelihood}. Prior being in this case $P(y=c), \; c \in \mathbb{C}$; the probability of a class appearing in data and likelihood $P(\bolditt{x} \mid y=c)$; the likeliness of a document belonging to a class. Equation \ref{eq-naive-bayes} can be therefore rewritten for classification as \cite{Zhang04theoptimality, acemNBtc2001}
+When the area of interest is classification, we denote the probabilities of events $A,B$ as the \emph{prior} and \emph{likelihood}. Prior being in this case the probability of a class appearing in data $P(y=c), \; c \in \mathbb{C}$ and likelihood the likeliness of a document belonging to a class $P(\bolditt{x} \mid y=c)$. Equation \ref{eq-naive-bayes} can be rewritten as \cite{Zhang04theoptimality, acemNBtc2001}
 
 \begin{equation} \label{eq-naive-bayes-class}
     P(y \mid \bolditt{x}) = \dfrac{P(y)P(\bolditt{x} \mid y)}{P(\bolditt{x})} = \dfrac{P(y)P(\bolditt{x} \mid y)}{\sum \limits_{c \in \mathbb{C}} P(y=c)P(\bolditt{x} \mid y=c)}
 \end{equation}
 
-In Equation \ref{eq-naive-bayes-class}, the denominator remains constant because $\bolditt{x}$ is kept unchanged, and therefore it is proportional to product between prior and likelihood
+In Equation \ref{eq-naive-bayes-class}, the denominator remains constant because $\bolditt{x}$ is kept unchanged as it's the sum over every known class, and therefore the Equation \ref{eq-naive-bayes-class} is proportional to the product between prior and likelihood \cite{Manning:2008:IIR:1394399}
 
 \begin{equation}
     P(y \mid \bolditt{x}) \propto P(y)P(\bolditt{x} \mid y)
 \end{equation}
 
-Because the underlying real distribution is unknown, we need to estimate the prior and likelihood from the training data \ie data we are keeping as observations. Estimated prior can be calculated from the relative frequency $\hat{P}(c) = \frac{\#c}{|\mathbb{X}|}$, number of samples belonging to the class $c$ divided by the total number of observations \cite{Manning:2008:IIR:1394399}. To calculate the estimated likelihood $\hat{P}(\bolditt{x} \mid y)$, one uses the assumption that features represented in $\bolditt{x}$ are conditionally independent with respect to each other. Therefore likelihood can be simplified by using the chain rule \cite{Manning:2008:IIR:1394399}
+Because the underlying real distribution is unknown, prior and likelihood needs to be estimated from the training data. Estimated prior can be calculated from the relative frequency \ie number of samples belonging to the class $c$ divided by the total number of observations \cite{Manning:2008:IIR:1394399}.
+
+\begin{equation}
+    \hat{P}(c) = \frac{\#c}{|\mathbb{X}|}
+\end{equation}
+
+\noindent
+ To calculate the estimated likelihood $\hat{P}(\bolditt{x} \mid y)$, one uses the assumption that features represented in $\bolditt{x}$ are conditionally independent with respect to each other. This assumption simplifies the likelihood by using the chain rule \cite{Manning:2008:IIR:1394399}
 
 \begin{equation}
     \hat{P}(\bolditt{x} \mid y) = \hat{P}(x_1, x_2, \cdots, x_n \mid y) = \prod \limits_i^n \hat{P}(x_i \mid y)
 \end{equation}
 
-To assign data into a class, the most probable class is chosen \cite{Zhang04theoptimality, acemNBtc2001, Manning:2008:IIR:1394399}. This is referred to also as \emph{maximum a posteriori} (MAP), and the final class assignment \ie the result of classifier $\gamma$ is expressible as
+To assign data into a class, the most probable class is chosen \cite{Zhang04theoptimality, acemNBtc2001, Manning:2008:IIR:1394399}. This is referred to also as \emph{maximum a posteriori} (MAP), and the final class assignment \ie the result of the classifier $\gamma$, is expressible as
 
 \begin{equation} \label{eq-mapp}
     \hat{y} = c_{\text{map}} = \argmax \limits_{c \in \mathbb{C}} \hat{P}(c) \prod \limits_i^n \hat{P}(x_i \mid c)
 \end{equation}
 
 \noindent
-That is, the most likely class for a data point is the class which maximizes the posterior, which is proportional to calculating product between prior and posterior.  
+This means that the most likely class for a data point is the class which maximizes the posterior, which again is proportional to calculating product between prior and posterior. All values for a 
 
-A variant of Naive Bayes called \emph{Multinomial Naïve Bayes}, is able to form the likelihood by assuming underlying multinomial distribution \cite{acemNBtc2001}. Given the problem of document classification and that the feature vector $\bolditt{x}$ represents term frequencies of vocabulary $\mathbb{V}$ built from the training data, the conditional probability of Equation \ref{eq-mapp} can be given in similar way as term-frequency function in Equation \ref{eq-tf}. Contrast to it we also add a smoothing called \emph{Laplace smoothing}, to eliminate the problem with terms appearing zero times \cite{Manning:2008:IIR:1394399}
+A variant of Naive Bayes called \emph{Multinomial Naïve Bayes}, is able to form the likelihood by assuming underlying multinomial distribution \cite{acemNBtc2001}. Given the problem of document classification and the feature vector $\bolditt{x}$ represented as term frequencies of vocabulary $\mathbb{V}$, the conditional probability of Equation \ref{eq-mapp} can be given in similar way as term-frequency function in Equation \ref{eq-tf}. Contrast to it we can add a smoothing called \emph{Laplace smoothing}, to eliminate the problem with terms appearing zero times \cite{Manning:2008:IIR:1394399}, which can happen because the vocabulary $\mathbb{V}$ is formed from training set. The smoothed version of the conditional probability using frequencies is given as
 
 \begin{equation} \label{eq-laplace}
     \hat{P}(x \mid c) = \hat{P}(t \mid c) = \dfrac{f_{t, c} + 1}{\sum \limits_{t' \in \mathbb{V}} (f_{t', c} + 1)} 
 \end{equation}
 
 \noindent
-In Equation \ref{eq-laplace} $f_{t, c}$ is the frequency of term $t \in \mathbb{V}$ appearing in class $c \in \mathbb{C}$, so the conditional probability of a data point given class can be calculated with smoothed relative frequency of the term that the point represents. However, it has been shown that using tf-idf weigthing scheme can improve the classification results even though the values are non-discrete \cite{Kibriya:2004:MNB:2146834.2146882}.
+In Equation \ref{eq-laplace} $f_{t, c}$ is the frequency of term $t \in \mathbb{V}$ appearing in class $c \in \mathbb{C}$, so the conditional probability of a data point given a class is estimable from the smoothed relative frequency of the term $t$ that the point $x$ represents. 
+
+It has been shown that TF-IDF weighting scheme improves the classification results even as TF-IDF weights are non-discrete like raw term frequencies are \cite{Kibriya:2004:MNB:2146834.2146882}. This means that all documents can be efficiently represented as vectors of TF-IDF weights for Multinomial Naive Bayes.
 
 
 \subsection{Document clustering}
