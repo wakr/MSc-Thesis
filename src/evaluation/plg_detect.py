@@ -3,6 +3,7 @@ import matplotlib.pyplot as plot
 import numpy as np
 from antlr.parser import Parser
 from preprocess.normalizer import normalize_for_ai, normalize_for_ast
+from sklearn.preprocessing import LabelEncoder
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -13,6 +14,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_recall_fscore_support
+
+
 
 import random
 
@@ -86,7 +89,7 @@ exam_df = subset_df[subset_df.exercise_num == 999] # exams
 
 
 exerc_tasks = exam_df.exercise.unique().tolist()
-example_task = exerc_tasks[0]
+example_task = exerc_tasks[1]
 print(example_task)
 
 test_df = exam_df[exam_df.exercise == example_task].copy()
@@ -111,6 +114,7 @@ def build_sim_det_model(corpus, epsilon, ngram_size, minPts=2):
     sim_matrix = np.around(cosine_similarity(W), decimals=8)
     dist_matrix = np.subtract(np.ones(sim_matrix.shape, dtype=np.int8), sim_matrix) # sim <=>
     
+    print(W.shape)
     
     db = DBSCAN(min_samples=minPts, metric="precomputed", eps=epsilon).fit(dist_matrix)
     
@@ -137,13 +141,41 @@ def build_sim_det_model(corpus, epsilon, ngram_size, minPts=2):
     
 corpus = test_df.ast_repr
 authors = test_df.student
+lb = LabelEncoder().fit(authors)
 
-labels, omega, sim_matrix = build_sim_det_model(corpus, epsilon=0.1, ngram_size=6)
+sim_tresh = 0.4
 
+labels, omega, sim_matrix = build_sim_det_model(corpus, epsilon=1-sim_tresh, ngram_size=7)
 
+#%%
 
+def clusters_to_sim_pairs(omega_, sim_matrix_, label_encoder, sim_tresh):
+    import warnings
+    warnings.filterwarnings(action='ignore', category=DeprecationWarning)
+    c = {}
+    for k in omega_.keys():
+        suspects = omega_[k]
+        c[k] = []
+        for sa in suspects:
+            for sb in suspects:
+                if sa == sb: 
+                    continue
+                sim = sim_matrix_[sa, sb]
+                if sim < sim_tresh:
+                    continue
+                sa_key = label_encoder.inverse_transform(sa)
+                sb_key = label_encoder.inverse_transform(sb)
+                already_exists_flipped = False
+                for sc in c[k]: # (a,b) == (b,a) <-- remove duplicates
+                    if sc[0] == sb_key and sc[1] == sa_key:
+                        already_exists_flipped = True
+                if already_exists_flipped:
+                    continue
+                c[k].append((sa_key, sb_key, sim))
+    return c
 
+asd = clusters_to_sim_pairs(omega, sim_matrix, lb, sim_tresh)
 
+cluster_sizes = [len(omega[k]) for k in omega.keys()]
 
-
-
+max(cluster_sizes) / sum(cluster_sizes)

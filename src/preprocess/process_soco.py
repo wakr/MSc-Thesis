@@ -91,7 +91,7 @@ def build_sim_det_model(corpus, epsilon, ngram_size, minPts=2):
             clusters[c].append(i)
     clusters
     
-    return labels, clusters
+    return labels, clusters, sim_matrix
 
 
 #%% 
@@ -99,15 +99,15 @@ def build_sim_det_model(corpus, epsilon, ngram_size, minPts=2):
 corpus = df.ast_repr
 authors = df.ID
 
-hyperparam_ngram = [4,5,6,7,8]
-hyperparam_epsilon = [0.4, 0.5, 0.6, 0.7] # lower eps indicate higher density necessary to form a cluster.
+hyperparam_ngram = [3,4,5,6]
+hyperparam_epsilon = [0.2,0.3,0.4,0.5,0.6] # lower eps indicate higher density necessary to form a cluster.
 
 for n in hyperparam_ngram:
     for e in hyperparam_epsilon:
         
         print(f"running test run with n={n}, e={e}")
         
-        labels, omega = build_sim_det_model(corpus, epsilon=e, ngram_size=n)
+        labels, omega, sim_matrix = build_sim_det_model(corpus, epsilon=e, ngram_size=n)
 
         y_hat = np.zeros(len(authors))
 
@@ -153,8 +153,8 @@ df["ast_repr"] = df.source_code.apply(lambda s: Parser(s).parse_to_ast())
 corpus = df.ast_repr
 authors = df.ID
 
-hyperparam_ngram = [9,10]
-hyperparam_epsilon = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # lower eps indicate higher density necessary to form a cluster.
+hyperparam_ngram = [4,5,6,7]
+hyperparam_epsilon = [0.5, 0.6, 0.7] # lower eps indicate higher density necessary to form a cluster.
 
 for n in hyperparam_ngram:
     for e in hyperparam_epsilon:
@@ -207,15 +207,15 @@ df["ast_repr"] = df.source_code.apply(lambda s: Parser(s).parse_to_ast())
 corpus = df.ast_repr
 authors = df.ID
 
-hyperparam_ngram = [10]
-hyperparam_epsilon = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6] # lower eps indicate higher density necessary to form a cluster.
+hyperparam_ngram = [3]
+hyperparam_epsilon = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99] # lower eps indicate higher density necessary to form a cluster.
 
 for n in hyperparam_ngram:
     for e in hyperparam_epsilon:
         
         print(f"running test run with n={n}, e={e}")
         
-        labels, omega = build_sim_det_model(corpus, epsilon=e, ngram_size=n)
+        labels, omega, sim_matrix = build_sim_det_model(corpus, epsilon=e, ngram_size=n)
 
         y_hat = np.zeros(len(authors))
 

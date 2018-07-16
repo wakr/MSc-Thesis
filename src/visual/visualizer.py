@@ -73,8 +73,21 @@ plt.xlabel("Author pool")
 plt.ylabel("Accuracy %")
 plt.legend()
     
-tikz_save('fig.tikz',
-          figureheight = '\\figureheight',
-           figurewidth = '\\figurewidth')
+#tikz_save('fig.tikz',
+#          figureheight = '\\figureheight',
+#           figurewidth = '\\figurewidth')
 
-#%%
+#%% SD OHPE Cluster sizes (relative max/sum)
+
+model = ["A", "B", "C", "D", "E"]
+relative_size_a = [0.63, 0.89, 0.88,  0.92, 0.85]
+
+relative_size_a = [0.13, 0.34, 0.59, 0.45, 0.23]
+
+plt.bar(model, relative_size)
+plt.xlabel("Model")
+plt.ylabel("Relative size")
+
+#tikz_save('fig.tikz',
+#          figureheight = '\\figureheight',
+#          figurewidth = '\\figurewidth')
