@@ -1,0 +1,100 @@
+Our authorship identification model requires only one parameter to be tuned, the length
+of character-level $n$-grams to be extracted. We tune this parameter based on the average $F_1$-score and accuracy
+over seven split points for both OHPE and OHJA. For every split the final exercise is left out as an test data, 80\% of the remaining used for training and 20\% for validation. 
+
+Course feedback is filtered out:
+
+\begin{table}[ht]
+\centering
+\caption{(OHPE  1-7, OHJA 8-14) based on last exercise. Profile size is document count per student rounded to nearest integer.}
+\label{lbl-result-ai-ohpe-ohja-stat}
+\scalebox{0.65}{
+    \begin{tabular}{|c||c|c|c|c|c|c|c||c|c|c|c|c|c|c|}
+    \hline
+    \bf Week         & \bf 1. & \bf 2. & \bf 3. & \bf 4. & \bf 5. & \bf 6. & \bf 7. & \bf 8. & \bf 9. & \bf 10. & \bf 11. & \bf 12. & \bf 13. & \bf 14. \\ \hline
+    \bf Students     & 230  & 239  &  189 & 174  & 127  & 138  & 53  & 144  & 114  & 137   & 90   & 111   & 121   &  113  \\ \hline
+    \bf AVG Profile size & 24  & 40  & 64  & 76  & 85  & 94  & 102  & 11  & 21  &  30  &  36  &  43  & 50   & 53    \\ \hline
+    \end{tabular}
+}
+\end{table}
+
+
+Results are shown below.
+
+
+\begin{table}[ht]
+\centering
+\caption{Macro-averaged $F_1$-score (OHPE) for validation data}
+\label{lbl-result-ai-f1-ohpe}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|} \hline
+\backslashbox{\bf $n$-gram}{\bf Week}  & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+4     &     0.01 & 0.03  & 0.03  & 0.04  & 0.04  & 0.04  & 0.04    \\ \hline
+6     &  0.02    & 0.04  & 0.05  & 0.05  & 0.05  & 0.05  & 0.05    \\ \hline
+8     & 0.02     & 0.04  & 0.05  & 0.06  & 0.06  & 0.06  & 0.06    \\ \hline
+10    &  0.02    & 0.05  & 0.06  & 0.06  & 0.07  & 0.07  & 0.07     \\ \hline
+12    & 0.02     & 0.05  & 0.06  & 0.06  & 0.07  & 0.07  & 0.07     \\ \hline
+14    & 0.02     & 0.05  & 0.06  & 0.07  & 0.07  & 0.07  & 0.07    \\ \hline
+\end{tabular}
+\end{table}
+
+
+Because the result were so poor, we limited the amount of students. Using the last week where students have the largest profile, we plot the accurace for various author sizes.
+
+\newpage
+
+\begin{figure}[ht]
+\centering
+\setlength\figureheight{7cm}
+\setlength\figurewidth{\textwidth}
+\input{plots/ohpeohja_ai_ng14.tikz}
+\caption{Accuracy on validation set when different size of author pools are being used. Accuracy deteriorates when more than two authors are present. (ng=14, char, 7 weeks))} \label{fig-ohpeohja-ai-ng14}
+\end{figure}
+
+From Figure \ref{fig-ohpeohja-ai-ng14} we see that the model completely fails to predict the author when the size of authors is increased. 
+
+
+
+\begin{table}[ht]
+\centering
+\caption{Test}
+\label{asdasd}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+          & NG & 4 & 6 & 8 & 10 & 12 & 14 \\
+In set of &    &   &   &   &    &    &    \\
+5         &    &   &   &   &    &    &    \\
+10        &    &   &   &   &    &    &    \\
+20        &    &   &   &   &    &    &    \\
+25        &    &   &   &   &    &    &   
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Macro-averaged $F_1$-score (OHJA) for validation data}
+\label{lbl-result-ai-f1-ohja}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|} \hline
+\backslashbox{\bf $n$-gram}{\bf Week}  & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+4     &      &   &   &   &   &   &     \\ \hline
+6     &      &   &   &   &   &   &     \\ \hline
+8     &      &   &   &   &   &   &     \\ \hline
+10    &      &   &   &   &   &   &      \\ \hline
+12    &      &   &   &   &   &   &      \\ \hline
+14    &      &   &   &   &   &   &     \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+
+\newpage
+
+
+\begin{table}[ht]
+\centering
+\caption{My caption}
+\label{lbl-result-ai-best-model}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} \hline
+Week & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+ACC  &   &   &   &   &   &   &  \\ \hline
+\end{tabular}
+\end{table}

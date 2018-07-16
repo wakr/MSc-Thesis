@@ -12,7 +12,7 @@ Return ast-representation from source-code
 """
 class Parser:
     
-    def __init__(self, ID, source_code):
+    def __init__(self, source_code, ID=-1):
         self.source_code = source_code
         self.ID = ID
         self.ast = ""

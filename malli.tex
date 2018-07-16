@@ -57,6 +57,7 @@
 
 \usepackage{parcolumns}
 \usepackage{multicol}
+\usepackage{multirow}
 \usepackage{subcaption}
 
 \usepackage{qtree}
@@ -109,6 +110,11 @@
 \newtheorem{ong}{Ongelma}
 \newtheorem{alg}[lau]{Algoritmi}
 \newtheorem{esim}[lau]{Esimerkki}
+\newtheorem{example}{Example}
+
+% algorithmic
+\algnewcommand\algorithmicinput{\textbf{Assume:}}
+\algnewcommand\Assume{\item[\algorithmicinput]}
 
 \theoremstyle{remark}
 \newtheorem*{huom}{Huomautus}
@@ -249,8 +255,6 @@ To get a better understanding of the details that are relevant to source-code pl
 
 \input{bg/background.tex}
 
-\newpage
-
 \section{Literature Survey} \label{chap-liter-review}
 \input{liter_review/high_results.tex}
 
@@ -268,6 +272,7 @@ To get a better understanding of the details that are relevant to source-code pl
 \input{method/method.tex}
 
 \section{Results}
+\input{results/result.tex}
 
 \section{Discussion}
 

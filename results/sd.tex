@@ -1,0 +1,189 @@
+% macro-averaged results
+
+We start evaluating our similarity detection by tuning the hyperparameters. Results are gained by turning all documents into binary vector based on the SOCO labels \ie vector $\bolditt{y}$ where $y_i = 1$ and $y_j = 1$ if $i$th and $j$th documents are reported as plagiarized pairs. Our predictions are then compared to this golden standard.
+
+Following table shows averaged $F_1$-score for the SOCO-T data.  
+
+\begin{table}[ht]
+\centering
+\caption{Average $F_1$-score for $n$-gram length and $\varepsilon$-range for SOCO-T. The smaller the $\varepsilon$-range is, the more similar documents have to be. $F_1$-scores close or over 0.8 are bolded.}
+\label{tbl-sd-socot-fone}
+\scalebox{0.75}{
+    \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|} \hline
+    \backslashbox{\bf Epsilon}{\bf $N$-gram} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\ \hline
+    0.1 & 0.31  & 0.69  & 0.63  & 0.60  & 0.59  & 0.56 & 0.55  & 0.55   & 0.52  & 0.52   \\ \hline
+    
+    0.2 & 0.28  & 0.59  & 0.73  & 0.66  & 0.63  &  0.62  & 0.60  & 0.59  & 0.56  &  0.55 \\\hline
+    
+    0.3 &  0.27  & 0.43  & \bf 0.78 & 0.73  & 0.70  & 0.67  & 0.64 & 0.63 & 0.59  & 0.58   \\ \hline
+    
+    0.4 & 0.27  & 0.31  & 0.72  & \bf 0.81  & \bf 0.78  & 0.72   &  0.71  & 0.69  & 0.65  & 0.64  \\ \hline
+    
+    0.5 & 0.27  & 0.29  & 0.57  & \bf 0.80  & \bf 0.81  & \bf 0.80  & \bf 0.81  & \bf 0.78 &  0.77   & 0.74   \\ \hline
+    
+    0.6 & 0.27  & 0.27  & 0.39  & 0.71  & \bf 0.83  & \bf 0.89  & \bf 0.90  &  \bf 0.86  & \bf 0.85 & \bf 0.85   \\ \hline
+    
+    \end{tabular}
+}
+\end{table}
+
+\noindent
+One can see from the Table \ref{tbl-sd-socot-fone} that for the training data of SOCO, the $F_1$-score is highest when $n \in [4, 7]$ and $\varepsilon \in [0.4, 0.6]$. However using 60\% similarity between 
+
+Precision matrix for all hyperparameters SOCO:
+
+\begin{table}[ht]
+\centering
+\caption{Precision for plagiarized documents ranging various $n$-gram lengths and $\varepsilon$-ranges for SOCO. Values close or over 0.9 are bolded.}
+\label{tbl-sd-soco-prec}
+\scalebox{0.75}{
+    \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|} \hline
+    \backslashbox{\bf Epsilon}{\bf $n$-gram} 
+        & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\ \hline
+    0.1 & 0.45  & 0.77  & \bf 1.00  & \bf 1.00  & \bf 1.00  & \bf 1.00 & \bf 1.00  & \bf 1.00   & \bf 1.00  & \bf 1.00   \\ \hline
+    
+    0.2 & 0.45  & 0.53  & \bf 0.98  & \bf 1.00  & \bf 1.00  &  \bf 1.00  & \bf 1.00  & \bf 1.00  & \bf 1.00  &  \bf 1.00 \\\hline
+    
+    0.3 &  0.44  & 0.48  &  0.83 & \bf 1.00  & \bf 1.00  & \bf 1.00  & \bf 1.00 & \bf 1.00 & \bf 1.00  & \bf 1.00  \\ \hline
+    
+    0.4 & 0.44  & 0.45  & 0.63  & \bf 0.87  & \bf 0.97  & \bf 0.98  &  \bf 0.98  & \bf 1.00  & \bf 1.00 & \bf 1.00  \\ \hline
+    
+    0.5 & 0.44  & 0.45  & 0.54  & 0.75  & \bf 0.90  &  \bf 0.92  &  \bf 0.97  & \bf 0.98 &  \bf 1.00   & \bf 1.00   \\ \hline
+    
+    0.6 & 0.44  & 0.44  & 0.47  & 0.62  & 0.77  & \bf 0.87  & \bf 0.94  & \bf 0.93  & \bf 0.95 & \bf 0.96   \\ \hline
+    
+    \end{tabular}
+}
+\end{table}
+
+% The epsilon is large and n-grams long
+
+We see from the Table \ref{tbl-sd-soco-prec}, that as we grow the number of $n$-grams, the precision converges to 1.00. This means that the set of retrieved documents contains high number of true-positives, as we have effectively minimized the amount of false-positives, meaning that no document is falsely accused of plagiarism. The most precise predictions are always when the epsilon is as low as 0.1 meaning that documents have to have 90\% of structural similarity. 
+
+However, with a low epsilon value the precision for detecting plagiarized documents quickly lowers unless one grows the $n$-gram length. This can lead to problem of retrieving l 
+
+\begin{table}[ht]
+\centering
+\caption{Average $F_1$-score for SOCO C1, which contains no plagiarism.}
+\scalebox{0.75}{
+    \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}
+    \hline
+    \backslashbox{\bf Epsilon}{\bf $n$-gram}    & 1    & 2    & 3    & 4    & 5    & 6    & 7    & 8    & 9    & 10   \\ \hline
+    0.1 & 0.24 & \bf 0.94 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 \\ \hline
+    0.2 & 0.11 & 0.56 & \bf 0.98 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 \\ \hline
+    0.3 & 0.06 & 0.38 & \bf 0.95 & \bf 0.99 & \bf 0.98 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 \\ \hline
+    0.4 & 0.03 & 0.20  & \bf 0.87 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 \\ \hline
+    0.5 & 0.03 & 0.16 & 0.59 & \bf 0.95 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 \\ \hline
+    0.6 & 0.02 & 0.08 & 0.29 & \bf 0.88 & \bf 0.96 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 & \bf 0.98 \\ \hline
+    \end{tabular}
+}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Average $F_1$-score for SOCO C2, which contains 28 cases of plagiarism.}
+\scalebox{0.75}{
+   \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}
+    \hline
+     \backslashbox{\bf Epsilon}{\bf $n$-gram}     & 1    & 2    & 3    & 4    & 5    & 6    & 7    & 8    & 9    & 10   \\ \hline
+    0.1 & 0.34 & \bf 0.92 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 \\ \hline
+    0.2 & 0.27 & 0.57 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 \\ \hline
+    0.3 & 0.20 & 0.38 & \bf 0.92 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 & \bf 1.00 \\ \hline
+    0.4 & 0.15 & 0.31 & 0.75 & \bf 0.97 & \bf 0.97 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 0.99 & \bf 1.00 \\ \hline
+    0.5 & 0.15 & 0.27 & 0.47 & \bf 0.91 & \bf 0.97 & \bf 0.97 & \bf 0.97 & \bf 0.97 & \bf 0.99 & \bf 0.99 \\ \hline
+    0.6 & 0.15 & 0.22 & 0.33 & 0.78 & \bf 0.92 & \bf 0.97 & \bf 0.97 & \bf 0.97 & \bf 0.97 & \bf 0.97 \\ \hline
+    \end{tabular}
+}
+\end{table}
+
+\newpage
+
+Following table shows recall and accuracy of the best performing models with respect to $F_1$ and precision.
+
+\begin{table}[ht]
+\centering
+\caption{Recall over positive classes (plagiarism).}
+\label{lbl-sd-best-perf}
+\begin{tabular}{|c|c|c|c|} \hline
+$\varepsilon$  & $n$-gram & Recall & ACC  \\ \hhline{|=|=|=|=|}
+0.4 & 4  & 0.68   & 0.81 \\ \hline
+0.4 & 5  & 0.54   & 0.79 \\ 
+0.5 & 5  & 0.67   & 0.82 \\ \hline
+0.5 & 6  & 0.67   & 0.88 \\
+0.6 & 6  & \bf 0.86   & 0.88 \\ \hline
+0.5 & 7  & 0.60    & 0.81 \\
+0.6 & 7  & 0.83   & \bf 0.90  \\ \hline
+0.6 & 8  & 0.75   & 0.86 \\ \hline
+0.6 & 9  & 0.71   & 0.86 \\ \hline
+0.6 & 10 & 0.69   & 0.85 \\ \hline
+\end{tabular}
+\end{table}
+
+Results show that $\varepsilon = 0.6$ and $n$-gram length six, seems to work for our model. 
+
+Confusion matrix SD SOCO:
+
+\begin{table}[ht]
+\centering
+\caption{Confusion matrix for best performing model (6-g)}
+\label{tbl-sd-soco-conf}
+\scalebox{1}{
+    \begin{tabular}{l|c|c|c|c}
+    \multicolumn{2}{c}{}&\multicolumn{2}{c}{True}&\\
+    \cline{3-4}
+    \multicolumn{2}{c|}{}&\bf Non-plagiarized& \bf Plagiarized\\
+    \cline{2-4}
+    \multirow{2}{*}{Predicted}& \bf Non-plagiarized & $129$ & $15$\\
+    \cline{2-4}
+    & \bf Plagiarized & $16$ & $99$ \\
+    \cline{2-4}
+    
+    \end{tabular}
+}
+\end{table}
+
+
+
+Following table shows metrics when JPlag is applied for SOCO. Average values over non-plagiarized and plagiarized classes are reported
+
+\begin{table}[ht]
+\centering
+\caption{JPlag SOCO}
+\label{tbl-jplag-soco}
+\begin{tabular}{|c||c|c|c|c|c|c|} \hline
+\bf Similarity threshold & 90\% & 80\% & 70\% & 60\% & 50\% & 40\% \\ \hline
+\bf F1                  & 0.59   &  0.65   &  0.72   &  0.87   &  0.96   & \bf 0.97    \\ \hline
+\bf Precision           & 0.79    &  0.80   &  0.83   &  0.90   & 0.96    &  \bf 0.97   \\ \hline
+\bf Recall              &  0.66   &  0.69    &  0.75   & 0.88    &  0.96   & \bf 0.97     \\ \hline
+\bf Accuracy            &  0.66   &  0.69   & 0.75    &  0.88   &  0.96   & \bf 0.97   \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+
+Confusion matrix:
+
+\begin{table}[ht]
+\centering
+\caption{Confusion matrix for the best performing JPlag (sim 40\%)}
+\label{tbl-jplag-soco-conf}
+\scalebox{1}{
+    \begin{tabular}{l|c|c|c|c}
+    \multicolumn{2}{c}{}&\multicolumn{2}{c}{True}&\\
+    \cline{3-4}
+    \multicolumn{2}{c|}{}&\bf Non-plagiarized& \bf Plagiarized\\
+    \cline{2-4}
+    \multirow{2}{*}{Predicted}& \bf Non-plagiarized & $136$ & $1$\\
+    \cline{2-4}
+    & \bf Plagiarized & $8$ & $114$ \\
+    \cline{2-4}
+    
+    \end{tabular}
+}
+\end{table}
+
+As we see from the confusion matrices, our similarity detection performs closely to the JPlag. To see how well our clusters agree with JPlag, we calculcate the Jaccard similarity between these two predictions. This agreement based on our model using 6-grams with $\varepsilon = 0.6$, and JPlag with 40\% similarity treshold is x.
+
+!!!<SD(OHPE/OHJA) VS JPLAG JACCARD>!!!
+

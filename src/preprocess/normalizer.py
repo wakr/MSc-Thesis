@@ -22,4 +22,5 @@ def normalize_for_ai(source_code):
 
 def normalize_for_ast(source_code):
     res = re.sub("import.*;", "", source_code)
+    res = re.sub("package.*;", "", res)
     return res

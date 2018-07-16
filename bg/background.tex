@@ -368,33 +368,41 @@ It has been shown that TF-IDF weighting scheme improves the classification resul
 
 Document clustering is a process that is able to group the set of documents, so that their similarities is maximized \ie documents belonging to the same group are as similar as possible. This is relatively easy task for a human to do manually for a small set of documents, but in order to perform this task automatically in large scale we resort to \emph{unsupervised learning}. 
 
-Unsupervised learning can divide the observed data \ie documents, into subgroups called \emph{clusters} \cite{hastie_09_elements-of.statistical-learning}. The main difference to supervised learning (classification) is that when the data is represented as a sequence $X = (\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n)$, where $\bolditt{x}_i \in \mathbb{R}^d$ is $d$-dimensional feature vector which represents the $i$th document, we don't have the sequence of response variables $\bolditt{y} = (y_1, y_2, \cdots, y_n)$ to guide the process. Thus there is no loss function which is dependent from the true label of the data, requiring the distribution of the data to determine the class \cite{Manning:2008:IIR:1394399}. The performance of the unsupervised model can be very subjective, requiring some kind of prior domain knowledge as there might not exist any ground truth for the data \cite{hastie_09_elements-of.statistical-learning}. 
+Unsupervised learning can divide the observed data \ie documents, into subgroups called \emph{clusters} \cite{hastie_09_elements-of.statistical-learning}. The main difference to supervised learning (classification) is that when the data is represented as a sequence $X = (\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n)$, where $\bolditt{x}_i \in \mathbb{R}^d$ is $d$-dimensional feature vector which represents the $i$th document, we don't have the sequence of response variables $\bolditt{y} = (y_1, y_2, \cdots, y_n)$ to guide the process. Thus there is no loss function which is dependent from the true classes of the data, which leads to the situation where distribution of the data determines the classes \cite{Manning:2008:IIR:1394399}. The performance of the unsupervised model can be therefore very subjective, requiring some kind of prior domain knowledge \cite{hastie_09_elements-of.statistical-learning}. 
 
-The Figure \ref{fig-clust-example} visualizes data generated from three separate distributions. If we know how the data was generated, it would be easy by prior knowledge and by visually, to divide the space into three regions. However, if the data would be more uniformly distributed and one could not say the exact amount of regions, then this task requires more knowledge about how two data points are able to have similar location. When considering for example plagiarism between documents, we are highly interest of cases where just two or more documents are too similar to each others. In Figure \ref{fig-clust-example} these would mean for example all data points that are touching each others; a more fine grained classification with a lot more clusters than just three. 
+As an example, the Figure \ref{fig-clust-example} visualizes two-dimensional data generated from three separate distributions. 
 
-\begin{figure}[!h]
+\begin{figure}[ht]
 \centering
 \setlength\figureheight{7cm}
 \setlength\figurewidth{7cm}
 \input{plots/example_datadistr_clust.tikz}
-\caption{Data drawn from three different distributions. Three major clusters are clearly visible as they are formed from three different distributions.} \label{fig-clust-example}
+\caption{Data points centered around three distributions with respect to the means and variances. Three separable clusters are visible.} \label{fig-clust-example}
 \end{figure}
 
-\newpage
+\noindent
+Because we know how the data was generated in Figure \ref{fig-clust-example}, we are able by prior knowledge and by visually to divide the space exactly into three regions. However, if the data would be more uniformly distributed and one could not say the exact amount of regions, then this task requires more knowledge about how two data points are able to have similar location. When considering for example plagiarism between documents, we are highly interest of cases where two or more documents are too similar to each others. 
 
-The normalized similarity value $s \in [0, 1]$, or respectively distance value $d = 1 - s$, is defined before the clustering algorithm is executed, and it ultimately controls what kind of cluster are being formed. Distances between data points can be precomputed into matrix of documents $\bolditt{M}_{d \times d}$, where $\bolditt{M}_{i, j}$ is the similarity, or distance value between two documents. 
+%If Figure \ref{fig-clust-example} would represent documents in two-dimensional plane, and the clustering process would determine which documents belong to the same group, then the process of dividing data points into clusters would produce much more clusters than three.
 
-We define the problem of clustering first formally and then show two different unsupervised clustering algorithms: \emph{K-means clustering} and \emph{DBSCAN}.
+The normalized similarity value $s \in [0, 1]$, or respectively distance value $d = 1 - s$, is defined before the clustering algorithm is executed \cite{hastie_09_elements-of.statistical-learning}, and it ultimately controls what kind of cluster are being formed. Distances between data points can be precomputed into matrix of documents $\bolditt{M}_{d \times d}$, where $\bolditt{M}_{i, j}$ is the similarity, or distance value between two documents $d_i$ and $d_j$. 
+
+We next give a brief formalization for the problem of clustering and then introduce two different unsupervised clustering algorithms: \emph{K-means clustering} and \emph{DBSCAN}.
 
 \newtheorem*{docclus}{Document clustering}
 \begin{docclus}
-Given a set of datapoints $X = \{\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n\},  \; \bolditt{x}_i \in \mathbb{R}^d$, representing the documents, define assignment $\gamma: X \rightarrow \{1, \cdots, k\}$ where $k$ is the total amount of clusters \cite{Manning:2008:IIR:1394399}. The set of clusters can be notated by $\Omega = \{\omega_1, \omega_2, \cdots, \omega_k\}$ and each document belongs to some cluster $\forall d \in \omega$. 
+Given a set of datapoints $X = \{\bolditt{x}_1, \bolditt{x}_2, \cdots, \bolditt{x}_n\},  \; \bolditt{x}_i \in \mathbb{R}^d$ which represents the documents, define assignment $\gamma: X \rightarrow \{1, \cdots, k\}$ where $k$ is the total amount of clusters \cite{Manning:2008:IIR:1394399}. The set of clusters can be notated by $\Omega = \{\omega_1, \omega_2, \cdots, \omega_k\}$ and each document belongs to some cluster $\forall d \in \omega$. 
 \end{docclus}
 
 
 \paragraph{K-means clustering}
 
-K-means clustering requires the $k$ parameter to be predefined and it assumes there exists a \emph{centroid} \ie a mean point, for every cluster $C = (\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \cdots, \boldsymbol{\mu}_k), \; \boldsymbol{\mu}_i \in \mathbb{R}^d$ \cite{Manning:2008:IIR:1394399}. To assign a point to a cluster, one calculates the \emph{squared Euclidean distance} to a centroid $\norm{\bolditt{x}_i - \boldsymbol{\mu}}^2$, and minimizes this distance \ie assigns data point to the same cluster as the nearest centroid. The algorithm works iteratively updating the cluster assignments for each point and calculating new centroids until the algorithm converges. The following pseudocode shows the complete algorithm
+K-means clustering requires the $k$ parameter to be predefined and it assumes there exists a \emph{centroid} \ie a mean point, for every cluster. These \emph{cluster centroids} are notated as $C = \{\boldsymbol{\mu}_1, \boldsymbol{\mu}_2, \cdots, \boldsymbol{\mu}_k\}, \; \boldsymbol{\mu}_i \in \mathbb{R}^d$ \cite{Manning:2008:IIR:1394399}. To assign a data point to a cluster, one calculates the \emph{squared Euclidean distance} from a point to a centroid $\norm{\bolditt{x}_i - \boldsymbol{\mu}}^2$, and minimizes this distance. In other words data point is assigned to the same cluster as the nearest centroid. The K-means algorithm works iteratively by updating the cluster assignments for each point and calculating new centroids until the algorithm converges. Convergence can be decided in multiple ways and one of those is that no new assignments has been done when all data points are iterated. 
+
+
+Algorithm \ref{alg-kmeans} shows the pseudocode for K-means. In it, centroids are first chosen randomly from the set of data points with \textproc{InitCentroids}-function. Then iteratively until there are no further updates to centroids $C$, $k$ clusters are first initialized as empty sets. Next cluster assignments are calculated from the set of data points with respect to Euclidean distance to the nearest cluster. After every loop, new centroids are calculated by taking the mean of assigned data points per cluster in \textproc{UpdateCentroids}. The return value of the K-means will be $k$ centroids which represent the middle points of a cluster, and cluster assignments $\Omega$ indicating which data point belongs to which cluster.
+
+\clearpage
 
 \begin{algorithm}[ht]
 \caption{K-means algorithm \cite{Manning:2008:IIR:1394399}}
@@ -415,19 +423,16 @@ K-means clustering requires the $k$ parameter to be predefined and it assumes th
         \EndFor
        \State $C \gets $ \Call{UpdateCentroids}{$\Omega$}
    \EndWhile
-\State \textbf{return} $C$
+\State \textbf{return} $C, \Omega$
 \EndProcedure
 
 \end{algorithmic}
 \end{algorithm}
 
 \noindent 
+Visualization of the clustering result using K-means for the same data as in Figure \ref{fig-clust-example} is seen in Figure \ref{fig-kmeans-example}.
 
-In Algorithm \ref{alg-kmeans} centroids are first initialized randomly from the set of data points. Then iteratively until stop criterion is met, which is that there were no updates to centroids $C$, $k$ clusters are first initialized and then from the set of data points cluster assignments are calculated. Data point is assigned to nearest cluster with respect to Euclidean distance. After every loop, new centroids are calculated by taking the mean of assigned data points per cluster. 
-
-Visualization of the clustering result using K-means for the same data as in Figure \ref{fig-clust-example} is seen below.
-
-\begin{figure}[ht]
+\begin{figure}[!h]
 \centering
 \setlength\figureheight{7cm}
 \setlength\figurewidth{7cm}
@@ -435,17 +440,18 @@ Visualization of the clustering result using K-means for the same data as in Fig
 \caption{Result of K-means clustering after converge. Crosses indicate the cluster centroids, other colors cluster assignments. Parameter $k$ is set to 3 so three different clusters have been discovered by the algorithm.} \label{fig-kmeans-example}
 \end{figure}
 
-
 %https://www.youtube.com/watch?v=0MQEt10e4NM
 
-The drawback with K-means clustering is that one must specify the parameter $k$ before the clustering, and when detecting plagiarism, there is no indication beforehand that how many documents should be grouped together. Therefore pre-estimating number of clusters can be hard. One solution is to utilize the density of the points rather than direct distance, which is what DBSCAN is cabable of doing.
+The drawback with K-means clustering is that one must specify the parameter $k$ before the clustering \cite{hastie_09_elements-of.statistical-learning}. When for example detecting similar documents, there is no indication beforehand that how many documents should be grouped together, and therefore pre-estimating number of clusters can be very difficult. To overcome this issue, one can utilize the density of the data points rather than direct distance between them.
 
 \paragraph{DBSCAN}
 
-Density-based spatial clustering of applications with noise (DBSCAN), can produce clustering by using only the density information, label some data points as noise, produce arbitrary sized clusters and use any distance function \cite{Ester:1996:DAD:3001460.3001507}. It requires two parameters $\varepsilon$ which controls the neighbour search radius, and $MinPts$ which defines the minimum number of points needed to form a cluster. To form a cluster a point $q$ must be reachable from point $p$ \ie there must be a path $p \leadsto q$ which fulfills the two parameter contraints. To form this path, some points are labeled as core points satisfying parameters simultaneously, and some as border points which have at least one core point in its $\varepsilon$-range. If a data points is neither above, it is labeled as noise \ie unassigned point.
+Density-based spatial clustering of applications with noise (DBSCAN) can produce clustering by using only the density information, label some data points as noise, produce arbitrary sized clusters and use any distance function \cite{Ester:1996:DAD:3001460.3001507}. It requires two parameters $\varepsilon$ which controls the neighbour search radius, and $MinPts$ which defines the minimum number of points needed to form a cluster. 
+
+To form a cluster, point $q$ must be reachable from point $p$ \ie there must exist a path $p \leadsto q$ which fulfills both $\varepsilon$ and $MinPts$ parameters. To form this path, some points are labeled as core points satisfying parameters simultaneously, and some as border points which have at least one core point in its $\varepsilon$-range. If a data points is neither above, it is labeled as noise.
 
 
-The pseudocode for DBSCAN is given in Algorithm \ref{alg-dbscan}, where \textproc{DiscoverNeighbours} is a recursive function that finds the neighbourhood space by forming the radius based on the distance function, and retrieves all reachable points. The algorithm forms the amount of clusters itself if there are just data points to label as core points.
+The pseudocode for DBSCAN is given in Algorithm \ref{alg-dbscan}, where \textproc{DiscoverNeighbours} is a recursive function that finds the neighbourhood space by forming the radius based on the distance function, and retrieves all reachable points restricted by the $\varepsilon$-range. The algorithm is able to form the amount of clusters itself and requires no pre-defined amount of clusters, which is a major benefit for plagiarism detection.
 
 \begin{algorithm}[ht]
 \caption{DBSCAN algorithm \cite{Ester:1996:DAD:3001460.3001507, Schubert:2017:DRR:3129336.3068335}}
@@ -474,13 +480,17 @@ The pseudocode for DBSCAN is given in Algorithm \ref{alg-dbscan}, where \textpro
 \end{algorithm}
 
 
-Using parameters $\varepsilon = 0.5, MinPts = 15$ and setting distance function as Euclidean distance, DBSCAN learns more denser clusters than K-means and is able to label some data as noise, which is visible in Figure \ref{fig-dbscan-example} as black data points. If these data points would be document representation in Euclidean space, we can interpret noise points as documents which are free from plagiarism \ie they are unique programs which are not similar to other authors work. These three clusters then shows the possible plagiarists using three different approaches and might result to three different real life groups who have worked collaboratively. 
+Using parameters $\varepsilon = 0.5, MinPts = 15$ and setting distance function as Euclidean distance, DBSCAN learns more denser clusters than K-means and is able to label some data as noise. This noise is visible in Figure \ref{fig-dbscan-example} as black data crosses. 
 
 \begin{figure}[ht]
 \centering
 \setlength\figureheight{7cm}
 \setlength\figurewidth{7cm}
 \input{plots/example_dbscan.tikz}
-\caption{Result of DBSCAN by setting parameters $\varepsilon = 0.5, MinPts = 15$. Some data has been labeled as noise, as they are too far away from core points.} \label{fig-dbscan-example}
+\caption{Result of DBSCAN by setting parameters $\varepsilon = 0.5, MinPts = 15$. Black crosses refers to noise as these points are too far away from core points which forms the three clusters.} \label{fig-dbscan-example}
 \end{figure}
 
+\newpage
+
+\noindent
+If data points in Figure \ref{fig-dbscan-example} would represent documents in Euclidean space, we can interpret noise as documents which are too dissimilar to any other document and require no further attention. Other points are classified into three dense clusters represented by three different colors. 

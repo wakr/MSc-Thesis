@@ -59,5 +59,22 @@ def acgloc_hist():
     tikz_save('fig.tikz',
            figureheight = '\\figureheight',
            figurewidth = '\\figurewidth')
-   
     
+#%% AI OHPE results, students: [2, 4, 10, 20, 30, 40, 50]. Ng = 14 char
+
+
+var_author_res_ohpe = [0.38, 0.18, 0.09, 0.10, 0.07, 0.07, 0.05]
+var_author_res_ohja = [0.68, 0.10, 0.06, 0.01, 0.01, 0.02, 0.02]
+x = [2,4,10,20,30,40,50]
+plt.plot(x, var_author_res_ohpe, label="OHPE")
+plt.plot(x, var_author_res_ohja, label="OHJA", linestyle=":")
+plt.xticks(x, x)
+plt.xlabel("Author pool")
+plt.ylabel("Accuracy %")
+plt.legend()
+    
+tikz_save('fig.tikz',
+          figureheight = '\\figureheight',
+           figurewidth = '\\figurewidth')
+
+#%%

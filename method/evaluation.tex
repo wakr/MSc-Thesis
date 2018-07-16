@@ -1,0 +1,46 @@
+\subsection{Evaluation} \label{chap-method-evaluation}
+
+Both models of our approach are first evaluated against the data. This means that the similarity detection part uses SOCO to tune its parameters ($n$-gram and $\varepsilon$) and evaluate the performance. Evaluation happens by reporting average Precision, Recall and $F_1$ metrics of document retrieval, which mainly focus on the amount of correctly plagiarized documents retrieved. The performance of similarity detection can be evaluated because the plagiarized document pairs are reported in SOCO, meaning that from the set of plagiarized pairs we can label each document labeled as plagiarized and unlabeled as non-plagiarized. We introduce also a fourth metric called \emph{accuracy} to give another performance score for our similarity detection. Accuracy score, simply being the fraction between correct predictions and total number of predictions, can be defined by using the confusion matrix given in Chapter \ref{chap-bg-sim} as
+
+\begin{equation}
+    ACC = \dfrac{TP + TN}{TP + TN + FP + FN}
+\end{equation}
+
+When evaluating the authorship identification, our classification problem is no longer binary. It's a multiclass classification problem, and in order to use $F_1$-score, it must be redefined. The multiclass-version of the $F_1$-score, which treats all classes equally, is called \emph{macro-averaged $F_1$} \cite{SOKOLOVA2009427}. It's defined as 
+
+\begin{equation}
+    F_M = 2 \cdot \dfrac{\text{Precision}_M \cdot \text{Recall}_M}{\text{Precision}_M + \text{Recall}_M}
+\end{equation}
+
+\noindent
+Where $\text{Precision}_M$ and $\text{Recall}_M$ are averaged over every class as
+
+\begin{equation}
+    \text{Precision}_M = \dfrac{\sum \limits_{c \in \mathbb{C}}
+        \frac{TP_c}
+             {TP_c + FP_c}}
+    {|\mathbb{C}|}
+\end{equation}
+
+\begin{equation}
+    \text{Recall}_M = \dfrac{\sum \limits_{c \in \mathbb{C}}
+        \frac{TP_c}
+             {TP_c + FN_c}}
+    {|\mathbb{C}|}
+\end{equation}
+
+
+
+\noindent
+Using above metrics for multiclass classification, we are able to tune the parameter $n$ which controls the length of character-level $n$-grams. Tuning is done by first dividing both OHPE and OHJA into seven splits which corresponds each week, then taking the set of authors who submitted and using their previous work as a training data, finally predicting the authors of the last exercises and collecting calculating the average performance. For example, when we evaluate our authorship identification on the first week of OHPE, we take the subset of authors $A' \subseteq A$ who submitted to the last exercise of the first week. Then the last exercise is left out as the test data, and for each author $a \in A'$, we collect their submissions to form the training data. As we treat OHPE and OHJA as separate data sets, and we are highly interested about the performance in exam where the authors profile is at its largest, we get total of seven evaluations plus four exam tasks for OHPE and three for OHJA. These exam tasks are treated separately and they are never used as the training data. 
+
+After the hyperparameters of both models have been tuned, we first evaluate how our authorship identification compares to SCAP-method using same tasks, then how well our models can individually agree with state of the art software plagiarism detection JPlag \cite{prechelt2002finding}, and finally run our proposed method on the OHPE's and OHJA's exam tasks to retrieve a set of detected documents which are then verified by a human expert. The agreement with respect to JPlag is scored based on Jaccard similarity, which was given in Chapter \ref{chap-liter-review-methods} between two sets $A, B$ as
+
+\begin{equation}
+    J(A,B) = sim(A,B) = \dfrac{|A \cap B|}{|A \cup B|}
+\end{equation}
+
+\noindent
+We expect Jaccard similarity to be close to one, as our methods should at least get similar results as the JPlag. The problem is that we can't say for sure that did JPlag retrieve all possible cases of plagiarism, thus we don't have direct access to true classes without going through every possible document in OHPE/OHJA. This means we can't calculate precision nor recall for the plagiarism detection, and we must resort to human judgement. 
+
+As our final result will be a set of detected documents for both OHPE's and OHJA's exam tasks, we will use a human expert who manually goes through the retrieved documents and classifies which ones are considered as real plagiarism. As a comparison, we run JPlag's detection for the same tasks to see the level of agreement, and then count how many false accusations JPlag made contrast to our approach. Our hypothesis is that our approach, which combines both similarity detection and authorship identification, should decrease the number of false-positives.  
