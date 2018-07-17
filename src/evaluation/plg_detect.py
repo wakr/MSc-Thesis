@@ -68,7 +68,7 @@ df = pd.read_csv('../data/ohpe2016s_processed.csv')
 course_info = {'ohpe': ('hy-s2016-ohpe', 'hy-s2016-ohpe-konekoe-3'),
                'ohja': ('hy-s2016-ohja', 'hy-s2016-ohja-konekoe-3')}
 
-subset_df = df[df.course.isin(course_info["ohpe"])]
+subset_df = df[df.course.isin(course_info["ohja"])]
 subset_df = categorize_columns(subset_df)
 
 pair_programming_tasks = [x for x in subset_df.exercise.cat.categories if "Pariohjelmointi" in x]
@@ -89,7 +89,7 @@ exam_df = subset_df[subset_df.exercise_num == 999] # exams
 
 
 exerc_tasks = exam_df.exercise.unique().tolist()
-example_task = exerc_tasks[1]
+example_task = exerc_tasks[2]
 print(example_task)
 
 test_df = exam_df[exam_df.exercise == example_task].copy()
@@ -178,4 +178,6 @@ asd = clusters_to_sim_pairs(omega, sim_matrix, lb, sim_tresh)
 
 cluster_sizes = [len(omega[k]) for k in omega.keys()]
 
-max(cluster_sizes) / sum(cluster_sizes)
+#print("Relative size", max(cluster_sizes) / sum(cluster_sizes))
+print("Retrieval rate", sum(cluster_sizes) / corpus.shape[0])
+print("Largest cluster", max(cluster_sizes))

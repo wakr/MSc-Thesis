@@ -82,7 +82,7 @@ plt.legend()
 model = ["A", "B", "C", "D", "E"]
 relative_size_a = [0.63, 0.89, 0.88,  0.92, 0.85]
 
-relative_size_a = [0.13, 0.34, 0.59, 0.45, 0.23]
+relative_size_b = [0.13, 0.34, 0.59, 0.45, 0.23]
 
 plt.bar(model, relative_size)
 plt.xlabel("Model")
