@@ -1,14 +1,17 @@
 % macro-averaged results
 
-We start evaluating our similarity detection by tuning the hyperparameters. Results are gained by turning all documents into binary vector based on the SOCO labels \ie vector $\bolditt{y}$ where $y_i = 1$ and $y_j = 1$ if $i$th and $j$th documents are reported as plagiarized pairs. Our predictions are then compared to this golden standard.
+We start evaluating our similarity detection by tuning the hyperparameters $n$ for $n$-gram length and $\varepsilon$ for the epsilon-range \ie minimum distance to other documents. Results are gained by turning all documents into binary vector based on the SOCO labels \ie vector $\bolditt{y}$ where $y_i = 1$ and $y_j = 1$ if $i$th and $j$th documents are reported as plagiarized pairs. Our predictions are then compared to this golden standard.
 
-Following table shows averaged $F_1$-score for the SOCO-T data.  
+Table \ref{tbl-sd-socot-fone} shows averaged $F_1$-score, weighted by label counts, for the SOCO-T data. One can see from it that the $F_1$-score is highest when $n \in [4, 7]$ and $\varepsilon \in [0.4, 0.6]$. However, allowing 40-50\% dissimilarity between documents means that there is a high chance for false-positives, especially when submissions are relatively short and the task is well-defined like in OHPE and OHJA, meaning that the solution space for a given task can be limited. Therefore to avoid over-fitting similarity detection to SOCO's training data we use also two test sets of SOCO.   
+
+\newpage
 
 \begin{table}[ht]
 \centering
-\caption{Average $F_1$-score for $n$-gram length and $\varepsilon$-range for SOCO-T. The smaller the $\varepsilon$-range is, the more similar documents have to be. $F_1$-scores close or over 0.8 are bolded.}
+\caption{Average $F_1$-score for $n$-gram length and $\varepsilon$-range for SOCO-T containing 115 cases of plagiarism. The smaller the $\varepsilon$-range is, the more similar documents have to be. $F_1$-scores close or over 0.8 are bolded.}
 \label{tbl-sd-socot-fone}
 \scalebox{0.75}{
+    \def\arraystretch{1.5}
     \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|} \hline
     \backslashbox{\bf Epsilon}{\bf $N$-gram} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\ \hline
     0.1 & 0.31  & 0.69  & 0.63  & 0.60  & 0.59  & 0.56 & 0.55  & 0.55   & 0.52  & 0.52   \\ \hline
@@ -27,16 +30,15 @@ Following table shows averaged $F_1$-score for the SOCO-T data.
 }
 \end{table}
 
-\noindent
-One can see from the Table \ref{tbl-sd-socot-fone} that for the training data of SOCO, the $F_1$-score is highest when $n \in [4, 7]$ and $\varepsilon \in [0.4, 0.6]$. However using 60\% similarity between 
 
-Precision matrix for all hyperparameters SOCO:
+
 
 \begin{table}[ht]
 \centering
-\caption{Precision for plagiarized documents ranging various $n$-gram lengths and $\varepsilon$-ranges for SOCO. Values close or over 0.9 are bolded.}
+\caption{Precision with respect to plagiarized class, ranging various $n$-gram lengths and $\varepsilon$-ranges for SOCO-T. Values close or over 0.9 are bolded.}
 \label{tbl-sd-soco-prec}
 \scalebox{0.75}{
+    \def\arraystretch{1.5}
     \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|} \hline
     \backslashbox{\bf Epsilon}{\bf $n$-gram} 
         & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\ \hline
@@ -56,16 +58,18 @@ Precision matrix for all hyperparameters SOCO:
 }
 \end{table}
 
-% The epsilon is large and n-grams long
+\noindent
+We see from the Table \ref{tbl-sd-soco-prec}, that as we grow the number of $n$-grams, the precision starts converging to 1.00. Having a high precision means that the set of retrieved documents contains high number of true positives, as we have effectively minimized the amount of false positives, and no document is falsely accused of plagiarism. This happens because longer $n$-grams grow the size of vocabulary $\mathbb{V}$, thus making already dissimilar documents even more dissimilar and allowing the threshold to grow. The most smallest $n$-gram having a near perfect precision over plagiarized class is when $n=3$ and $\varepsilon \in [0.1, 0.2]$. This kind of high similarity value ranging between 80-99\% is also used in other studies \cite{AASCPD2012, OTIOLSS2015, Heblikar2015NormalizationBS, BUAA2009}. 
 
-We see from the Table \ref{tbl-sd-soco-prec}, that as we grow the number of $n$-grams, the precision converges to 1.00. This means that the set of retrieved documents contains high number of true-positives, as we have effectively minimized the amount of false-positives, meaning that no document is falsely accused of plagiarism. The most precise predictions are always when the epsilon is as low as 0.1 meaning that documents have to have 90\% of structural similarity. 
+One sees from the following table that the $F_1$-score starts to deteriorate in all cases, when no plagiarism occurs in a set of documents. One must either have a high similarity threshold or increase the $n$-gram length to get a high $F_1$-score, because having a low threshold quickly introduces false positives. The model thus becomes too sensitive and retrieves documents where similarity has occurred naturally, adding work for the human expert who must go through the detected pairs and label them again. 
 
-However, with a low epsilon value the precision for detecting plagiarized documents quickly lowers unless one grows the $n$-gram length. This can lead to problem of retrieving l 
 
 \begin{table}[ht]
 \centering
-\caption{Average $F_1$-score for SOCO C1, which contains no plagiarism.}
+\caption{$F_1$-score for SOCO-C1, which contains no cases of plagiarism. False-positives are  introduced as the threshold gets lower.}
+\label{tbl-sd-sococ1-fone}
 \scalebox{0.75}{
+    \def\arraystretch{1.5}
     \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}
     \hline
     \backslashbox{\bf Epsilon}{\bf $n$-gram}    & 1    & 2    & 3    & 4    & 5    & 6    & 7    & 8    & 9    & 10   \\ \hline
@@ -79,10 +83,13 @@ However, with a low epsilon value the precision for detecting plagiarized docume
 }
 \end{table}
 
+
 \begin{table}[ht]
 \centering
-\caption{Average $F_1$-score for SOCO C2, which contains 28 cases of plagiarism.}
+\caption{$F_1$-score for SOCO-C2, which contains 28 cases of plagiarism.}
+\label{tbl-sd-sococ2-fone}
 \scalebox{0.75}{
+   \def\arraystretch{1.5}
    \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|c|}
     \hline
      \backslashbox{\bf Epsilon}{\bf $n$-gram}     & 1    & 2    & 3    & 4    & 5    & 6    & 7    & 8    & 9    & 10   \\ \hline
@@ -95,6 +102,201 @@ However, with a low epsilon value the precision for detecting plagiarized docume
     \end{tabular}
 }
 \end{table}
+
+\noindent
+As in Table \ref{tbl-sd-sococ1-fone}, Table \ref{tbl-sd-sococ2-fone} shows that having $n=3$ with similarity threshold being around 80\%, yields one of the highest $F_1$-score with the lowest $n$ used. 
+
+Taking the best scoring models over all scores for each $n$-gram and excluding $n \geq 8$ as they aren't improving the performance compared to $n=7$, we end up with five model candidates A ($n=3, \varepsilon=0.2$), B ($n=4, \varepsilon=0.4$), C ($n=5, \varepsilon=0.5$), D ($n=6, \varepsilon=0.6$), E ($n=7, \varepsilon=0.6$). As we compare these five models by their relative size of the largest cluster across all formed clusters of OHPE's exam tasks, we see in Figure \ref{fig-sd-clust-size} that in majority of the cases model A's largest cluster has the lowest relative size. In Figure \ref{fig-sd-clust-size:a} models B and D have relative size close to 1.0, meaning that the largest cluster contains almost every single retrieved document. The most probable cause for this is that all submissions share natural similarity, caused by the restricted task description or that the solution space for a given task might be very limited. Thus this kind of super cluster can contain a lot of false positives in form of similar documents which are not necessarily plagiarized, but rather correct similar solutions for the task.
+
+\newpage
+
+\begin{figure}[ht] 
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohpe_sd_cluster_size1.tikz}
+    \caption{OHPE 1st exam task.} 
+    \label{fig-sd-clust-size:a} 
+    \vspace{4ex}
+  \end{subfigure}%% 
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohpe_sd_cluster_size2.tikz}
+    \caption{OHPE 2nd exam task.} 
+    \label{fig-sd-clust-size:b} 
+    \vspace{4ex}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohpe_sd_cluster_size3.tikz}
+    \caption{OHPE 3rd exam task.} 
+    \label{fig-sd-clust-size:c} 
+    \vspace{4ex}
+  \end{subfigure}%% 
+  \begin{subfigure}[b]{0.5\linewidth}
+    \centering
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohpe_sd_cluster_size4.tikz}
+    \caption{OHPE 4th exam task.} 
+    \label{fig-sd-clust-size:d} 
+    \vspace{4ex}
+  \end{subfigure} 
+\caption{Relative size of the largest cluster in OHPE.}
+\label{fig-sd-clust-size}
+\end{figure}
+
+
+
+\begin{figure}[!h] 
+  \centering
+  \begin{subfigure}[b]{0.5\linewidth}
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohja_sd_cluster_size1.tikz}
+    \caption{OHJA 1st exam task.} 
+    \label{fig-sd-clust-size-ohja:a} 
+    \vspace{4ex}
+  \end{subfigure}%
+  \begin{subfigure}[b]{0.5\linewidth}
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohja_sd_cluster_size2.tikz}
+    \caption{OHJA 2nd exam task.} 
+    \label{fig-sd-clust-size-ohja:b} 
+    \vspace{4ex}
+  \end{subfigure}
+   \begin{subfigure}[b]{0.5\linewidth}
+    \setlength\figureheight{3.5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohja_sd_cluster_size3.tikz}
+    \caption{OHJA 3rd exam task.} 
+    \label{fig-sd-clust-size-ohja:c} 
+    %\vspace{4ex}
+  \end{subfigure}
+\caption{Relative size of the largest cluster in OHJA.}
+\label{fig-sd-clust-size-ohja}
+\end{figure}
+
+Figure \ref{fig-sd-clust-size-ohja} shows same results for OHJA, which is an advanced course where a lot more programming skills are required from the students. This allows the tasks to be more difficult and longer, and as we see, the relative size has gone down in all cases compared to OHJA. Cluster sizes are now a lot smaller as exam tasks are more open-ended and more demanding. In other words, exam tasks have a range of multiple solutions and ways to do them, which minimizes the natural similarity between documents. This can be seen as a trend where none of the models now suffer from forming clusters containing majority of the retrieved documents, as the size is around 0.5 (50\%) at maximum. 
+
+
+Retrieving majority of the documents is not optimal for plagiarism detection as these documents often needs to be manually inspected at the end. When inspecting the retrieval rate \ie 
+
+\begin{equation}
+    \text{Retrieval rate} = \dfrac{\#\text{Documents retrieved}}{\#\text{Documents in total}}
+\end{equation}
+
+\noindent
+We can see that this rate should not get values near 1.0, as this would mean that all documents are detected as plagiarism, which is very unlikely in cases with hundreds of documents. In other words, models with a very high retrieval rates are almost guaranteed to have a high number of false positives unless there are only a small set of documents which are all plagiarized from one another. 
+
+The retrieval rates of all models can be seen from the Figure \ref{fig-sd-retrieval-rate}.
+
+\begin{figure}[ht] 
+  \centering
+  \begin{subfigure}[b]{0.8\linewidth}
+    \centering
+    \setlength\figureheight{5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohpe_retrieval_rate.tikz}
+    \caption{OHPE's exam tasks and the retrieval rates. Most models consider around 60-70\% of all document to be over the similarity threshold.} 
+    \label{fig-sd-retrieval-rate:a} 
+    \vspace{1ex}
+  \end{subfigure}
+  
+  \begin{subfigure}[b]{0.8\linewidth}
+    \centering
+    \setlength\figureheight{5cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/SD/ohja_retrieval_rate.tikz}
+    \caption{OHJA's exam tasks and the retrieval rates. Models have similar retrieval rates and the rate of retrieval is low.} 
+    \label{fig-sd-retrieval-rate:b} 
+  \end{subfigure}
+\caption{Retrieval rates of all models across every exam task. The model A keeps the lowest retrieval rate overall.}
+\label{fig-sd-retrieval-rate}
+\end{figure}
+
+\noindent
+The Figure \ref{fig-sd-retrieval-rate:a} shows how the the model A keeps the retrieval rate lowest around 50\%, meaning that half of the documents contain too much similarities between each others, and as said before it's very unlike so many documents are plagiarized. When comparing model A to other models, they claim the partition to be even higher, which is certainly not true. Interestingly in Figure \ref{fig-sd-retrieval-rate:b}, the models agree quite well, only having some level of disagreement with first exam exercise of OHJA. The second exercise shows good agreement, as all models have near 5\% retrieval rate.
+
+Results on similarity detection show that tuning the two parameters $n$ and $\varepsilon$ is very data dependent as choosing the best performing combination might lead to very different results for other data sets. In our case, we choose the model A ($n=3, \varepsilon=0.8$) for the final evaluation, because that model had a decent $F_1$-score in SOCO-T, the precision for SOCO-T was nearly perfect, $F_1$ for both SOCO-C1 and SOCO-C2 were near 1.00. The model A also kept the largest cluster relatively small compared to other models and the retrieval rate for both OHPE and OHJA was the lowest, implying it could maintain a low rate of false positives. Keeping the rate of false positives minimal is more valuable us than retrieving every single plagiarism case, so we allow the model's detection rate to suffer with the benefit of having a high precision.  
+
+To get perspective of how well our chosen model compares to the state of the art Java plagiarism detection tools, we first run JPlag detection for OHPE's and OHJA's exam tasks, then run our model for the same set of exercises and finally report the Jaccard similarity between the set of detected documents. For the JPlag, we use its default parameters and collect all document pairs where reported similarity score is above the same threshold as our model's $\varepsilon$-range, which in practice this means all documents where the reported similarity is over 80\% are collected. Following tables show results for both OHPE and OHJA with five metrics: documents detected by JPlag, documents detected by our chosen model, size of the intersection between the set of detected documents, number of unique documents retrieved in total and the Jaccard similarity score.
+
+\begin{table}[ht]
+\centering
+\caption{Retrieval metrics for model A compared to JPlag with OHPE's exam tasks.}
+\begin{tabular}{|c||c|c|c|c|}
+\hline
+\bf Exercise & 1. & 2. & 3. & 4. \\ \hline
+\bf JPlag - Documents retrieved & 127 & 134 & 106 & 156 \\ \hline
+\bf Model A - Documents retrieved & 109 & 130 & 111 & 114\\ \hline
+\bf Common documents & 98  & 109 & 95 & 102\\ \hline
+\bf Unique documents & 138 & 155 & 122 & 168\\ \hline
+\bf Jaccard similarity    & 0.71  & 0.70  & 0.78  & 0.61  \\ \hline
+\end{tabular}
+\label{tbl-jacc-sd-ohpe}
+\end{table}
+
+\noindent
+Table \ref{tbl-jacc-sd-ohpe} shows how our model agrees quite well with JPlag, as around 100 documents per exam task are shared. But even with the state of the art tool like JPlag one retrieves a lot of documents with a high threshold like 80\% for OHPE, as the retrieval rate with JPlag for all OHPE's tasks is around 50\%. This implies that even JPlag introduces false positives for restricted tasks, and minimizing false positives are a problem for every plagiarism detection tool.   
+
+\begin{table}[ht]
+\centering
+\caption{Retrieval metrics for model A compared to JPlag with OHJA's exam tasks. JPlag retrieves just a few documents when using 80\% threshold.}
+\begin{tabular}{|c||c|c|c|c|}
+\hline
+\bf Exercise & 1. & 2. & 3. \\ \hline
+\bf JPlag - Documents retrieved & 2 & 2 & 0  \\ \hline
+\bf Model A - Documents retrieved & 15 & 9 & 9 \\ \hline
+\bf Common documents & 2  & 2 & 0\\ \hline
+\bf Unique documents & 15 & 9 & 9\\ \hline
+\bf Jaccard similarity    & 0.13  & 0.22  & 0.00  \\ \hline
+\end{tabular}
+\label{tbl-jacc-sd-ohja}
+\end{table}
+
+\noindent
+The retrieval rate for OHJA's tasks for all our model candidates was very low, and this same result is reflected in Table \ref{tbl-jacc-sd-ohja} where JPlag retrieves only two documents or no documents at all. It seems that our model retrieves more documents than JPlag, but without a human interference it's impossible to say which one of the models is more correct. However, as these numbers are small and the tasks 1. and 2. share the same two documents that JPlag detected, the disagreement is mostly due to using a same threshold for both models.  
+
+
+%\begin{figure}[ht]
+%    \centering
+%    \setlength\figureheight{7cm}
+%    \setlength\figurewidth{\textwidth}
+%    \input{plots/result/SD/model_a_vs_jplag_ohja3.tikz}
+%    \caption{asd} 
+%\end{figure}
+
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \newpage
 
@@ -118,6 +320,8 @@ $\varepsilon$  & $n$-gram & Recall & ACC  \\ \hhline{|=|=|=|=|}
 0.6 & 10 & 0.69   & 0.85 \\ \hline
 \end{tabular}
 \end{table}
+
+\newpage
 
 Results show that $\varepsilon = 0.6$ and $n$-gram length six, seems to work for our model. 
 
@@ -183,7 +387,4 @@ Confusion matrix:
 }
 \end{table}
 
-As we see from the confusion matrices, our similarity detection performs closely to the JPlag. To see how well our clusters agree with JPlag, we calculcate the Jaccard similarity between these two predictions. This agreement based on our model using 6-grams with $\varepsilon = 0.6$, and JPlag with 40\% similarity treshold is x.
-
-!!!<SD(OHPE/OHJA) VS JPLAG JACCARD>!!!
 

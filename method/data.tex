@@ -74,9 +74,12 @@ A problem however arises when average line count with respect to the exercises i
 \end{figure}
 
 \noindent
-From Figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 100 lines of code. This creates an issue for plagiarism detection, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high as the solution spaces of these tasks are very limited. 
+From Figure \ref{fig-hists} we see that majority of the submissions for OHPE has under 100 lines of code. This can create an issue, as there exists tasks where the submission can only contain a few dozen lines meaning, that the similarities between solutions will be naturally high as the solution spaces of these tasks are very limited. 
 
-To overcome this problem, we target our detection to the most challenging exercises. We assume these are the final exercises of each week as they are mostly the longest. The data supports this claim, as the mean length of every weeks last exercise submissions is seen in Table \ref{tbl-OHPE-last-week}.
+
+% --------------- Unnecessary part, as detection only occurs for exam
+\iffalse
+The data supports this claim, as the mean length of every weeks last exercise submissions in OHPE is seen in Table \ref{tbl-OHPE-last-week}.
 
 \begin{table}[ht]
 \centering
@@ -93,3 +96,4 @@ To overcome this problem, we target our detection to the most challenging exerci
 
 \noindent
 In Table \ref{tbl-OHPE-last-week} we don't take in account pair exercises which are meant to be done with another student, and we leave them completely out from the corpus as they violate our single author assumption. Pair programming tasks are quite sparse as OHPE contains 12 pair programming tasks out of 151 and OHJA 10 out of 92.
+\fi

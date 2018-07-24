@@ -1,10 +1,22 @@
 
-Following chapters describe the results we gathered during the evaluation of our models. All results are generated using Python version 3.6.0 and scikit-learn version 0.19.1. 
+Following chapters describe the results we gathered during the evaluation of our models. All results are generated using Python version 3.6.0\footnote{\url{https://www.python.org/}} and scikit-learn version 0.19.1\footnote{\url{http://scikit-learn.org/stable/}}. 
 
-As explained in the Chapter \ref{chap-method-evaluation}, we first evaluate both models individually and lastly combine the results to create a final prediction which is evaluated by a human expert. 
+As explained in the Chapter \ref{chap-method-evaluation}, we first evaluate both models individually and lastly combine the results to create a final prediction which is evaluated by a human expert. Our similarity detection is trained with SOCO data set and authorship identification with OHPE and OHJA without using the exams. These exams are our main targets because finding plagiarism from them is the most severe violation. A summary for the data of exam tasks is given below.
 
+\begin{table}[ht]
+\centering
+\caption{Submission count and average line count for exam tasks. A refers to OHPE and B for OHJA.}
+\label{tbl-exam-data}
+\begin{tabular}{|c||c|c|c|c|c|c|c|}
+\hline
+\bf Task        & 1.A & 2.A & 3.A & 4.A & 1.B & 2.B & 3.B \\ \hline
+\bf Submissions & 244 & 242 & 227 & 240 & 200 & 198 & 197 \\ \hline
+\bf Avg. LOC    & 37  & 39  & 47  & 110 & 160 & 86  & 150 \\ \hline
+\end{tabular}
+\end{table}
 
-
+\noindent
+It's clear from the Table \ref{tbl-exam-data} that OHJA's tasks are more longer than OHPE's. Some of the tasks of OHPE's exam have a very low average line count that creates a challenge for the detection.
 
 \subsection{Document similarity}
 \input{results/sd.tex}

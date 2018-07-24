@@ -46,7 +46,7 @@ y_plag = DictVectorizer(sparse=False).fit_transform(ground_truth)[0]
 
 #%% PREDICT AND EVAL
     
-allowed_disssim = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+allowed_disssim = [0.8]
 
 
 for dis in allowed_disssim:
@@ -74,8 +74,6 @@ for dis in allowed_disssim:
     tn, fp, fn, tp = confusion_matrix(y_plag, y_hat).ravel()
     print(f"tn: {tn}, fp: {fp}, fn: {fn}, tp: {tp}")
     print("-------------------")
-    
-
 
 
 

@@ -19,20 +19,28 @@ Above query translates to searching for articles which title, abstract or keywor
 
 The total number of articles gathered by querying Scopus in the inclusive search part of the literature review was 187, and the date when the query was done was 7th of February 2018. The distribution of studies per year can be seen in the following plot.
 
+%\begin{figure}[ht]
+%\centering
+%\includegraphics[width=\textwidth]{plots/Rplot.png}
+%\caption{Results of inclusion phase}
+%\end{figure}
+
 \begin{figure}[ht]
 \centering
-\includegraphics[width=\textwidth]{plots/Rplot.png}
-\caption{Results of inclusion phase}
+\setlength\figureheight{7cm}
+\setlength\figurewidth{\textwidth}
+\input{plots/liter_rev/paper_distribution.tikz}
+\caption{Distribution of papers per year after the inclusion phase.}
 \end{figure}
 
-After the inclusive search, we performed exclusion phase. This was done by filtering out manually all articles that were any of the following types: a review of certain aspect of source code plagiarism e.g. student motives behind plagiarism, an improvement to some pre-existing algorithm\footnote{In this context meaning algorithmic speedup}, plugin to online learning management systems, application to competition where the used method wasn't explained, study that used either byte-level information or information gathered during running the program, hashing techniques\footnote{Using the size of compression as a metric}, system review which didn't address the method and theses. Beside these attributes, articles needed to also test their proposed method in some way and the amount of documents in experiment phase needed to be larger than two. The reason for adding this as a limiting factor was to gather studies that used test sets to evaluate the performance of their model.
+After the inclusive search, we performed exclusion phase. This was done by filtering out manually all articles that were any of the following types: a review of certain aspect of source code plagiarism \eg student motives behind plagiarism, an improvement to some pre-existing algorithm \eg algorithmic speedups, plugin to online learning management systems, application to competition where the used method wasn't explained, study that used either byte-level information or information gathered during running the program, hashing techniques \eg compression and using the remaining size as a metric, system review which didn't address the method and theses. Beside these attributes, articles needed to also test their proposed method in some way and the amount of documents in experiment phase needed to be larger than two. The reason for adding this as a limiting factor was to gather studies that used test sets to evaluate the performance of their model.
 
-The final number of articles after exclusion, and which are inspected more carefully in this systematic literature review is 32. From the set of 32 studies, we look answers for following questions: \emph{how plagiarism can be detected from source code}, \emph{what are possible features that can be derived from source code} and \emph{how can one identify the author of a given source code}. We start first by categorizing the articles by their themes to see what kind of different approaches there are to deal with the problem of plagiarism detection. After the initial classification, we summarize statistics about data and briefly explain the methods.
+The final number of articles after exclusion, and which are inspected more carefully in this systematic literature review is 32. From the set of 32 studies, we look answers for following questions: \emph{how plagiarism can be detected from source code}, \emph{what are possible features that can be derived from source code} and \emph{how can one identify the author of a given source code}. We start first by categorizing the articles by their themes to see what kind of different approaches there are to deal with the problem of plagiarism detection. After the initial classification, we summarize statistics about the data and briefly explain the used methods.
 
 
 \subsection{Categorization}
 
-The naïve categorization between articles can be done in a similar fashion as was used by the query; dividing papers either to be about the detection of plagiarism or identifying the author of a given source code. However, as authorship identifying can also work as a way to detect plagiarism by verifying the author, we use the following high-level split visible in a table \ref{table-highcateq} where similarity detection is used as a second major category to avoid overlap.
+The naïve categorization between articles can be done in a similar fashion as our query was constructed; dividing papers either to be about the detection of plagiarism or identifying the author of a given source code. However, as authorship identifying can also work as a way to detect plagiarism by verifying the author, we use the following high-level split visible in a table \ref{table-highcateq} where similarity detection is used as a second major category to avoid overlap.
 
 \begin{table}[ht]
     \caption{Papers divided into two high-level categories}

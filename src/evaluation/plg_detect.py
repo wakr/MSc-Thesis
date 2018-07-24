@@ -143,9 +143,9 @@ corpus = test_df.ast_repr
 authors = test_df.student
 lb = LabelEncoder().fit(authors)
 
-sim_tresh = 0.4
+sim_tresh = 0.8
 
-labels, omega, sim_matrix = build_sim_det_model(corpus, epsilon=1-sim_tresh, ngram_size=7)
+labels, omega, sim_matrix = build_sim_det_model(corpus, epsilon=1-sim_tresh, ngram_size=3)
 
 #%%
 
@@ -181,3 +181,6 @@ cluster_sizes = [len(omega[k]) for k in omega.keys()]
 #print("Relative size", max(cluster_sizes) / sum(cluster_sizes))
 print("Retrieval rate", sum(cluster_sizes) / corpus.shape[0])
 print("Largest cluster", max(cluster_sizes))
+
+
+test_df.source_code.apply(lambda d: len(d.split("\n"))).mean()
