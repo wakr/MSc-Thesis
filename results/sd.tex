@@ -244,7 +244,7 @@ To get perspective of how well our chosen model compares to the state of the art
 \end{table}
 
 \noindent
-Table \ref{tbl-jacc-sd-ohpe} shows how our model agrees quite well with JPlag, as around 100 documents per exam task are shared. But even with the state of the art tool like JPlag one retrieves a lot of documents with a high threshold like 80\% for OHPE, as the retrieval rate with JPlag for all OHPE's tasks is around 50\%. This implies that even JPlag introduces false positives for restricted tasks, and minimizing false positives are a problem for every plagiarism detection tool.   
+Table \ref{tbl-jacc-sd-ohpe} shows how our model agrees quite well with JPlag, as around 100 documents per exam task are shared. But even with the state of the art tool like JPlag one retrieves a lot of documents with a high threshold like 80\% for OHPE, as the retrieval rate with JPlag for all OHPE's tasks is around 50\%. This implies that even JPlag introduces false positives for restricted tasks, and minimizing false positives is a problem for every plagiarism detection tool.   
 
 \begin{table}[ht]
 \centering
@@ -262,129 +262,23 @@ Table \ref{tbl-jacc-sd-ohpe} shows how our model agrees quite well with JPlag, a
 \end{table}
 
 \noindent
-The retrieval rate for OHJA's tasks for all our model candidates was very low, and this same result is reflected in Table \ref{tbl-jacc-sd-ohja} where JPlag retrieves only two documents or no documents at all. It seems that our model retrieves more documents than JPlag, but without a human interference it's impossible to say which one of the models is more correct. However, as these numbers are small and the tasks 1. and 2. share the same two documents that JPlag detected, the disagreement is mostly due to using a same threshold for both models.  
+The retrieval rate for OHJA's tasks for all our model candidates was very low, and this same result is reflected in Table \ref{tbl-jacc-sd-ohja} where JPlag retrieves only two documents or no documents at all. It seems that our model retrieves more documents than JPlag, but without a human interference it's impossible to say which one of the models is more correct. However, as these numbers are small and the tasks 1. and 2. share the same two documents that JPlag detected, the disagreement is mostly due to using a same threshold for both models.
 
+As we inspect every pair our model retrieved for OHJA's third task and compare the similarity scores to JPlag, we get five unique document pairs which are denoted here as $p_i, i \in [0, 5]$ from a total of nine documents. The results are visible in Figure \ref{fig-jplag-sd-ohja3}.
 
-%\begin{figure}[ht]
-%    \centering
-%    \setlength\figureheight{7cm}
-%    \setlength\figurewidth{\textwidth}
-%    \input{plots/result/SD/model_a_vs_jplag_ohja3.tikz}
-%    \caption{asd} 
-%\end{figure}
+\begin{figure}[ht]
+    \centering
+    \setlength\figureheight{5cm}
+    \setlength\figurewidth{0.8\textwidth}
+    \input{plots/result/SD/model_a_vs_jplag_ohja3.tikz}
+    \caption{The difference between JPlag's reported similarity value and our model. None of the documents are above the 80\% threshold for JPlag.}
+    \label{fig-jplag-sd-ohja3}
+\end{figure}
 
-\newpage
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\newpage
-
-Following table shows recall and accuracy of the best performing models with respect to $F_1$ and precision.
-
-\begin{table}[ht]
-\centering
-\caption{Recall over positive classes (plagiarism).}
-\label{lbl-sd-best-perf}
-\begin{tabular}{|c|c|c|c|} \hline
-$\varepsilon$  & $n$-gram & Recall & ACC  \\ \hhline{|=|=|=|=|}
-0.4 & 4  & 0.68   & 0.81 \\ \hline
-0.4 & 5  & 0.54   & 0.79 \\ 
-0.5 & 5  & 0.67   & 0.82 \\ \hline
-0.5 & 6  & 0.67   & 0.88 \\
-0.6 & 6  & \bf 0.86   & 0.88 \\ \hline
-0.5 & 7  & 0.60    & 0.81 \\
-0.6 & 7  & 0.83   & \bf 0.90  \\ \hline
-0.6 & 8  & 0.75   & 0.86 \\ \hline
-0.6 & 9  & 0.71   & 0.86 \\ \hline
-0.6 & 10 & 0.69   & 0.85 \\ \hline
-\end{tabular}
-\end{table}
-
-\newpage
-
-Results show that $\varepsilon = 0.6$ and $n$-gram length six, seems to work for our model. 
-
-Confusion matrix SD SOCO:
-
-\begin{table}[ht]
-\centering
-\caption{Confusion matrix for best performing model (6-g)}
-\label{tbl-sd-soco-conf}
-\scalebox{1}{
-    \begin{tabular}{l|c|c|c|c}
-    \multicolumn{2}{c}{}&\multicolumn{2}{c}{True}&\\
-    \cline{3-4}
-    \multicolumn{2}{c|}{}&\bf Non-plagiarized& \bf Plagiarized\\
-    \cline{2-4}
-    \multirow{2}{*}{Predicted}& \bf Non-plagiarized & $129$ & $15$\\
-    \cline{2-4}
-    & \bf Plagiarized & $16$ & $99$ \\
-    \cline{2-4}
-    
-    \end{tabular}
-}
-\end{table}
-
-
-
-Following table shows metrics when JPlag is applied for SOCO. Average values over non-plagiarized and plagiarized classes are reported
-
-\begin{table}[ht]
-\centering
-\caption{JPlag SOCO}
-\label{tbl-jplag-soco}
-\begin{tabular}{|c||c|c|c|c|c|c|} \hline
-\bf Similarity threshold & 90\% & 80\% & 70\% & 60\% & 50\% & 40\% \\ \hline
-\bf F1                  & 0.59   &  0.65   &  0.72   &  0.87   &  0.96   & \bf 0.97    \\ \hline
-\bf Precision           & 0.79    &  0.80   &  0.83   &  0.90   & 0.96    &  \bf 0.97   \\ \hline
-\bf Recall              &  0.66   &  0.69    &  0.75   & 0.88    &  0.96   & \bf 0.97     \\ \hline
-\bf Accuracy            &  0.66   &  0.69   & 0.75    &  0.88   &  0.96   & \bf 0.97   \\ \hline
-\end{tabular}
-\end{table}
+In Figure \ref{fig-jplag-sd-ohja3}
 
 \newpage
 
 
-Confusion matrix:
-
-\begin{table}[ht]
-\centering
-\caption{Confusion matrix for the best performing JPlag (sim 40\%)}
-\label{tbl-jplag-soco-conf}
-\scalebox{1}{
-    \begin{tabular}{l|c|c|c|c}
-    \multicolumn{2}{c}{}&\multicolumn{2}{c}{True}&\\
-    \cline{3-4}
-    \multicolumn{2}{c|}{}&\bf Non-plagiarized& \bf Plagiarized\\
-    \cline{2-4}
-    \multirow{2}{*}{Predicted}& \bf Non-plagiarized & $136$ & $1$\\
-    \cline{2-4}
-    & \bf Plagiarized & $8$ & $114$ \\
-    \cline{2-4}
-    
-    \end{tabular}
-}
-\end{table}
 
 
