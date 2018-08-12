@@ -5,9 +5,11 @@ import pandas as pd
 import numpy as np
 import random
 
+random.seed(5)
+
 from preprocess.normalizer import normalize_for_ai
 
-df = pd.read_csv('./data/ohpe2016s_processed.csv')
+df = pd.read_csv('../data/ohpe2016s_processed.csv')
 
 #%%
 
@@ -71,8 +73,6 @@ subset_df = subset_df[subset_df.exercise_num != -1] # remove pair prog
 wo_exam_df = subset_df[subset_df.exercise_num != 999] # all except exam
 exam_df = subset_df[subset_df.exercise_num == 999] # exams
 
-#%%
-
 #%% Split function: last exercise test, preceding 80% train and 20% validation
 
 def create_split(df_, week_target, max_author_count=None):
@@ -115,8 +115,8 @@ def create_split(df_, week_target, max_author_count=None):
 #%% create split
 
 label_encoder, train, val, test = create_split(wo_exam_df,
-                                               week_target=1,
-                                               max_author_count=5)
+                                               week_target=7,
+                                               max_author_count=50)
 
 #%% concatenate train_X per student
 
@@ -132,7 +132,15 @@ CLASSIFY
 3. Calculate the size
 """
 
-train_DF = pd.DataFrame({"X": train[0], "y": train[1]})
+# train + val vs test
+full_train_X = pd.concat([train[0], val[0]])
+full_y_train = np.concatenate((train[1], val[1]))
+
+
+
+
+
+train_DF = pd.DataFrame({"X": full_train_X, "y": full_y_train})
 
 train_S = train_DF.groupby("y")["X"].apply(lambda s: s.sum())
 
@@ -157,39 +165,49 @@ def decide_nearest(profiles_, document_profile):
     sorted_by_second = sorted(sims, key=lambda tup: tup[1], reverse=True)
     return sorted_by_second
 
-L = 100
-n = 2
+L = 10**2
+n = 10
 
 from sklearn.feature_extraction.text import CountVectorizer
-vectorizer = CountVectorizer(lowercase=False, ngram_range=(n, n), analyzer="char")
+vectorizer = CountVectorizer(lowercase=False, 
+                             ngram_range=(n, n), 
+                             analyzer="char",
+                             token_pattern=u'(?u)\b\w\w+\b')
 
 W = vectorizer.fit_transform(train_S, train_S.index.tolist())
 count_vect_df = pd.DataFrame(W.todense(), columns=vectorizer.get_feature_names())
 
 profile_dict = counts_to_most_L_frequent(count_vect_df, L)
 
-#%% get val
+#%% get test
 
-val_DF = pd.DataFrame({"X": val[0], "y": val[1]})
+test_DF = pd.DataFrame({"X": test[0], "y": test[1]})
 
-W_val = vectorizer.transform(val_DF.X)
-count_vect_val_df = pd.DataFrame(W_val.todense(), columns=vectorizer.get_feature_names())
+vectorizer = CountVectorizer(lowercase=False, 
+                             ngram_range=(n, n), 
+                             analyzer="char",
+                             token_pattern=u'(?u)\b\w\w+\b')
+
+W_test = vectorizer.fit_transform(test_DF.X)
+count_vect_test_df = pd.DataFrame(W_test.todense(), columns=vectorizer.get_feature_names())
 
 #%%
-y_true_authors = val_DF.y.tolist()
+y_true_authors = test_DF.y.tolist()
 y_pred_authors = []
 
-for i in range(val_DF.shape[0]):
-    val_profile = count_vect_val_df.iloc[i].nlargest(L).index.tolist()
+for i in range(test_DF.shape[0]):
+    test_profile = count_vect_test_df.iloc[i].nlargest(L).index.tolist()
 
-    res = decide_nearest(profile_dict, val_profile)
-    y_pred = res[0][0]
+    res = decide_nearest(profile_dict,  test_profile)
+    print(f"{len(y_pred_authors)}, ", end=" ")
+    y_pred = res[0][0] # sorted (a, sim)
     y_pred_authors.append(y_pred)
 #%%
+print()
 print(y_true_authors)
 print(y_pred_authors)
 
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 
-print(accuracy_score(y_true_authors, y_pred_authors, normalize=False))
-print(accuracy_score(y_true_authors, y_pred_authors, normalize=True))
+print(accuracy_score(y_true_authors, y_pred_authors))
+print(classification_report(y_true_authors, y_pred_authors))

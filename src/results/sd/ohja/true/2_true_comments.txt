@@ -1,0 +1,6 @@
+OhjaOsa3-OhjaKonekoe3Tehtava2.txt
+
+
+ 1: [('8a30813b', 'c8ef4e53'), -- en lähtisi pidemmälle, näistä vain toisella toimivahko ratkaisu; tässä toki c8ef4e53:lla vähän jännä sisennys, eli seuraisin sitä myös muissa tehtävissä
+     ('c5f8a395', 'c8ef4e53')],-- en lähtisi pidemmälle, mutta seuraisin yhä opiskelijaa c5f8a395
+

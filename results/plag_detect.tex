@@ -1,11 +1,99 @@
+Because the Multinomial Naïve Bayes and the SCAP evaluated poorly with our data sets, we decide not to use authorship identification for the final results as even reducing the amount of authors would diminish the possibility of finding any plagiarists as random sampling would leave some students out of the detection. This is a drawback for our approach and we discuss the implications at the discussion. However, our similarity detection model evaluated well and can be still used for exploring and detecting the possible plagiarists. What we can't do is to restrict efficiently the amount of false detections by using the authorship identification model, as originally planned.
+
+Before we can discuss the final results, we must consider an issue with the retrieval rate of our similarity detection. Looking from the Table \ref{tbl-jacc-sd-ohpe} and Table \ref{tbl-jacc-sd-ohja} there are around 500 total documents retrieved, which is too many documents for the human expert to go through in reasonable time. To overcome this issue the we select only a subset of the exam tasks reducing the amount of documents to 144. These are OHPE's third exam task (3.A) and all of the exam tasks of OHJA's (1.B, 2.B, 3.B). A brief description of each selected task is given below.
+
+\paragraph{3.A (OHPE)} Students were required to fill a method to find the most common number from the Java's ArrayList structure. The methods name, return value and parameters were given as a template. 
+
+\paragraph{1.B (OHJA)} Students were required to make a text interface for adding books with name and year information. The outline of the text interface was given for the students. After the initial adding phase, added books were printed in wanted order.
+
+\paragraph{2.B (OHJA)} This task measured how well students are able to manipulate text data. The task required to have a small text interface to read a text file, censor every occurrence of a given word and write the results to a new text file. This exercise had a hint, which recommended to use a specific Java class to read and write text files. 
+
+\paragraph{3.B (OHJA)} Task required to create a text interface to emulate a simple storage management software. The actions that had to be implemented were adding, listing, searching, removing items and exiting the interface. A small piece of code was given as a hint for this exercise.
+
+\mbox{}\\
+\noindent
+In all exam tasks, also the scoring and example output was given for the students, so that they could mimic the wanted functionality of these programs. The reason behind this was to guide the student into right direction and also to be able to automatically score the submissions.
+
+To see the difference between these tasks, descriptive statistics about them is given in Table \ref{tbl-plagdet-desc-stat}. It shows how OHPE differs from OHJA, as its task is quite constrained having only around 50 lines to get a correct answer. OHPE also creates a lot more clusters, as the similarities between OHJA's submissions are more varied.
+
+
 \begin{table}[ht]
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\centering
+\caption{Results before the evaluation by the human expert. These results are produced by our similarity detection model which uses parameters $n=3$ for the $n$-gram length and $\varepsilon=0.2$ for the maximum allowed distance between the documents, which reflects that the documents have to score over 80\% similarity in order to cluster them together.}
+\begin{tabular}{|c||c|c|c|c|}
 \hline
-Task                & 1A & 1B & 1C & 1D & 2A & 2B & 2C \\ \hline
-Average LOC         &    &    &    &    &    &    &    \\ \hline
-Documents retrieved &    &    &    &    &    &    &    \\ \hline
-Clusters found      &    &    &    &    &    &    &    \\ \hline
-FP                  &    &    &    &    &    &    &    \\ \hline
-TP                  &    &    &    &    &    &    &    \\ \hline
+\bf Task                & 3.A & 1.B & 2.B & 3.C  \\ \hline
+\bf Number of submissions & 227 & 200 & 198 & 197 \\ \hline
+\bf Average line count         & 47   & 160    & 85   & 150     \\ \hline
+\bf Documents retrieved & 111 & 15 & 9 & 9 \\ \hline
+\bf Clusters emerged & 15 & 5 & 3 & 4 \\ \hline
 \end{tabular}
+\label{tbl-plagdet-desc-stat}
 \end{table}
+
+\noindent
+As the final result, we first show the pair-level detection results and then the more general result, which shows the precision with respect to documents considered containing plagiarism. For each of these tasks we inspect every cluster and the true and false positives in them, where the results are given by our human expert who has manually gone through detected documents. Results for each task is given in following figures, where we show the frequencies of retrieved pairs compared to true positives. Note that this format is more fine grained than what we have used before as earlier we have reported only the number of documents detected, and that we had to prune the first cluster of OHPE's third task, as it contained nearly 410 pairs. Pruning was done by keeping only the pairs where the cosine similarity was 1.0.
+
+\newpage
+
+
+\begin{figure}[ht] 
+    \setlength\figureheight{7cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/AI/plgdet_cluster_tpfp_ohpe_3.tikz}
+    \caption{Detected and true pairs of 3.A OHPE. False positives in the first cluster were mostly correct submissions which were similar to model solution. Fourth cluster contained almost empty submissions and sixth cluster similarly wrong solutions with two highly suspicious authors.}
+    \label{fig-plgdet-res3a}
+\end{figure}
+
+\begin{figure}[!h] 
+    \setlength\figureheight{6cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/plgdet/plgdet_cluster_tpfp_ohja_1.tikz}
+    \caption{Detected and true pairs of 1.B OHJA. Most of the pairs were reported to be close to model solution without any signs of plagiarism. However, there were two pairs which were flagged for further attention.}
+     \label{fig-plgdet-res1b}
+\end{figure}
+
+\newpage
+
+\begin{figure}[ht] 
+    \setlength\figureheight{6cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/plgdet/plgdet_cluster_tpfp_ohja_2.tikz}
+    \caption{Detected and true pairs of 2.B OHJA. All of the detected pairs in this task were false positives. However, two non-paired authors were flagged for further attention.}
+    \label{fig-plgdet-res2b}
+\end{figure}
+
+\begin{figure}[!h] 
+    \setlength\figureheight{6cm}
+    \setlength\figurewidth{\textwidth}
+    \input{plots/result/plgdet/plgdet_cluster_tpfp_ohja_3.tikz}
+    \caption{Detected and true pairs of 3.B OHJA. Three pairs were flagged for further attention, but as difficult cases.}
+    \label{fig-plgdet-res3b}
+\end{figure}
+
+\noindent
+In Figures \ref{fig-plgdet-res3a}, \ref{fig-plgdet-res1b} and \ref{fig-plgdet-res3b}, we see that our approach is able to retrieve suspicious documents. As reported by the human expert, most of true positives contain direct copies and renaming of the variables. However, there exist false positives as seen in Figure \ref{fig-plgdet-res2b} where most of these false positives are caused by natural similarity between the submissions. The human expert reported also that in most of the cases one can't say for sure that the document pair is plagiarism. Therefore, the reported pairs are flagged if they are considered as suspicious and would require further information \eg other submissions done by the pair of authors. In the table below, one sees the document level results of false and true positives with the level of precision for each task.
+
+\newpage
+
+
+\begin{table}[ht]
+\centering
+\caption{Document level results of our plagiarism detection. There are many false positives introduced to our detection results.}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\bf Task      & 3.A   & 1.B   & 2.B & 3.B   \\ \hline
+\bf True Positives        & 30   & 4    & 0  & 6    \\ \hline
+\bf False Positives        & 26   & 11   & 9  & 3    \\ \hline
+\bf Precision & 0.54 & 0.27 & 0.00  & 0.67 \\ \hline
+\end{tabular}
+\label{tbl-plgdet-final-res}
+\end{table}
+
+\noindent
+The low precision in Table \ref{tbl-plgdet-final-res} shows how our model fails to limit the amount of false positives, which can be mostly due to the fact that we had to use only the similarity detection part of our approach. As seen before, all of the submissions for OHPE and OHJA contain a high level of natural similarity, which introduces many false positives even with as high threshold as 80\%. To help the work of our human expert, we had to prune the first cluster of OHPE's third task. In reality there would be around 400 detected document pairs, which are clearly all false positives due to the restricted solution space of the task.
+
+
+After the human expert evaluated the detected documents, the five plagiarists caught in 2016 were revealed to us. Our model was able to retrieve documents belonging for all these authors in OHPE's third task. 
+
+\newpage

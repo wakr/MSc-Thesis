@@ -76,7 +76,7 @@ jplag_results_ohja = sorted(glob.glob("../data/jplag/ohja_results/*.txt"))
 for i in range(len(jplag_results_ohpe)):
     file_jp = jplag_results_ohpe[i]
     file_sd = sim_results_ohpe[i]
-    print("Comparing: ", file_jp)
+    print(f"Comparing: {file_jp} vs {file_sd}")
     jp_auth = get_jplag_results_as_authors(file_jp)
     sd_auth = get_sd_printed_to_authors(file_sd)
     print(jaccard_similarity(jp_auth, sd_auth))
@@ -86,7 +86,7 @@ for i in range(len(jplag_results_ohpe)):
 for i in range(len(jplag_results_ohja)):
     file_jp = jplag_results_ohja[i]
     file_sd = sim_results_ohja[i]
-    print("Comparing: ", file_jp)
+    print(f"Comparing: {file_jp} vs {file_sd}")
     jp_auth = get_jplag_results_as_authors(file_jp)
     sd_auth = get_sd_printed_to_authors(file_sd)
     print(jaccard_similarity(jp_auth, sd_auth))

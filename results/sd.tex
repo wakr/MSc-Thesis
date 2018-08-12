@@ -224,7 +224,7 @@ The retrieval rates of all models can be seen from the Figure \ref{fig-sd-retrie
 \noindent
 The Figure \ref{fig-sd-retrieval-rate:a} shows how the the model A keeps the retrieval rate lowest around 50\%, meaning that half of the documents contain too much similarities between each others, and as said before it's very unlike so many documents are plagiarized. When comparing model A to other models, they claim the partition to be even higher, which is certainly not true. Interestingly in Figure \ref{fig-sd-retrieval-rate:b}, the models agree quite well, only having some level of disagreement with first exam exercise of OHJA. The second exercise shows good agreement, as all models have near 5\% retrieval rate.
 
-Results on similarity detection show that tuning the two parameters $n$ and $\varepsilon$ is very data dependent as choosing the best performing combination might lead to very different results for other data sets. In our case, we choose the model A ($n=3, \varepsilon=0.8$) for the final evaluation, because that model had a decent $F_1$-score in SOCO-T, the precision for SOCO-T was nearly perfect, $F_1$ for both SOCO-C1 and SOCO-C2 were near 1.00. The model A also kept the largest cluster relatively small compared to other models and the retrieval rate for both OHPE and OHJA was the lowest, implying it could maintain a low rate of false positives. Keeping the rate of false positives minimal is more valuable us than retrieving every single plagiarism case, so we allow the model's detection rate to suffer with the benefit of having a high precision.  
+Results on similarity detection show that tuning the two parameters $n$ and $\varepsilon$ is very data dependent as choosing the best performing combination might lead to very different results for other data sets. In our case, we choose the model A ($n=3, \varepsilon=0.2$) for the final evaluation, because that model had a decent $F_1$-score in SOCO-T, the precision for SOCO-T was nearly perfect, $F_1$ for both SOCO-C1 and SOCO-C2 were near 1.00. The model A also kept the largest cluster relatively small compared to other models and the retrieval rate for both OHPE and OHJA was the lowest, implying it could maintain a low rate of false positives. Keeping the rate of false positives minimal is more valuable us than retrieving every single plagiarism case, so we allow the model's detection rate to suffer with the benefit of having a high precision.  
 
 To get perspective of how well our chosen model compares to the state of the art Java plagiarism detection tools, we first run JPlag detection for OHPE's and OHJA's exam tasks, then run our model for the same set of exercises and finally report the Jaccard similarity between the set of detected documents. For the JPlag, we use its default parameters and collect all document pairs where reported similarity score is above the same threshold as our model's $\varepsilon$-range, which in practice this means all documents where the reported similarity is over 80\% are collected. Following tables show results for both OHPE and OHJA with five metrics: documents detected by JPlag, documents detected by our chosen model, size of the intersection between the set of detected documents, number of unique documents retrieved in total and the Jaccard similarity score.
 
@@ -262,22 +262,23 @@ Table \ref{tbl-jacc-sd-ohpe} shows how our model agrees quite well with JPlag, a
 \end{table}
 
 \noindent
-The retrieval rate for OHJA's tasks for all our model candidates was very low, and this same result is reflected in Table \ref{tbl-jacc-sd-ohja} where JPlag retrieves only two documents or no documents at all. It seems that our model retrieves more documents than JPlag, but without a human interference it's impossible to say which one of the models is more correct. However, as these numbers are small and the tasks 1. and 2. share the same two documents that JPlag detected, the disagreement is mostly due to using a same threshold for both models.
+The retrieval rate for OHJA's tasks for all our model candidates was very low, and this same result is reflected in Table \ref{tbl-jacc-sd-ohja} where JPlag retrieves only two documents or no documents at all. It seems that our model retrieves more documents than JPlag, but without a human interference it's impossible to say which one of the models is more correct. However, the retrieval from tasks 1. and 2. share the same two documents that JPlag detected, meaning that our model performs similar to JPlag but the scoring it produces is more consistent which can be seen when we inspect the third task where the level of agreement was the lowest. 
 
-As we inspect every pair our model retrieved for OHJA's third task and compare the similarity scores to JPlag, we get five unique document pairs which are denoted here as $p_i, i \in [0, 5]$ from a total of nine documents. The results are visible in Figure \ref{fig-jplag-sd-ohja3}.
+As we inspect every pair our model retrieved from OHJA's third task and compare the similarity scores to JPlag, we get five unique document pairs which are denoted here as $p_i, i \in [0, 5]$, formed by a total of nine documents. The results are visible in Figure \ref{fig-jplag-sd-ohja3}.
 
 \begin{figure}[ht]
     \centering
     \setlength\figureheight{5cm}
     \setlength\figurewidth{0.8\textwidth}
     \input{plots/result/SD/model_a_vs_jplag_ohja3.tikz}
-    \caption{The difference between JPlag's reported similarity value and our model. None of the documents are above the 80\% threshold for JPlag.}
+    \caption{The difference between JPlag's reported similarity value and our model for OHJA's final exam task.}
     \label{fig-jplag-sd-ohja3}
 \end{figure}
 
-In Figure \ref{fig-jplag-sd-ohja3}
+\noindent
+Figure \ref{fig-jplag-sd-ohja3} visualizes how our model keeps the similarity score near 80\% for every pair, whereas JPlag's score varies. The most similar scores are with pairs $p_1$ and $p_4$, where the difference is around 0.1 compared to our model. In other cases, it seems that JPlag can produce more specific results, because the comparing process differs from ours. We use the whole used vocabulary to produce the similarity score, whereas JPlag forms the score by string matching the token streams. 
 
-\newpage
+We have now trained and evaluated our similarity detection model. The model we chose uses $n$-gram length of three, and retrieves any document where the calculated similarity value is above the 80\% threshold, which is reflected as $\varepsilon$-range of 0.2 in our clustering method. Our model was compared to JPlag and the retrieved documents were mostly the same, but there were some variance in number of documents retrieved. In following chapter, we train and evaluate the second model, the authorship identification.
 
 
 

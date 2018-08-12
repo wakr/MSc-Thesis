@@ -1,0 +1,6 @@
+
+
+ 3: [('c3fb7f99', 'c3fce495'), -- l‰htisin katsomaan eteenp‰in, hyvin samankaltaiset (ja "huonot") ratkaisut, lis‰ksi toisella muuttujan nimiss‰ toistolauseissa tyyliin "joku"
+    
+
+ 4: [('c79ca9c1', 'c8eec377')]} -- l‰htisin katsomaan pidemm‰lle, t‰ss‰ voisi arvella ett‰ kopsannut on se, jolla ei ole author-kommentteja. Sill‰ toisaalta nuo aaltosulut comparatorien luona eri tavalla kuin toisella, mik‰ soittaa lis‰‰ h‰lytyskelloja -- jos tekee comparatorit, tekee ne harvemmin niin, ett‰ nuo aaltosulut on muotoa "implements Bla<>{" (eli ilman v‰li‰ ennen aaltosulkua

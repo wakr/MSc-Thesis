@@ -41,6 +41,7 @@
 
 
 \usepackage{pgfplots}
+\usepackage{pgfplotstable}
 \pgfplotsset{compat=1.15}
 \newlength\figureheight
 \newlength\figurewidth
@@ -130,21 +131,25 @@
 \author{Kristian Wahlroos}
 \date{\today}
 \level{M.Sc. Thesis}
-\abstract{
-Plagiarism is an act of copying where one doesn't rightfully credit the original source. The motivations behind plagiarism can vary from gaining economical advantage to even completing academic courses in a desperate way. Plagiarism itself exists in various domains where people want to take credit from something they have worked on. These areas can include e.g. literature, art or software.   
+\abstract{Plagiarism is an act of copying where one doesn't rightfully credit the original source and the motivations behind plagiarism can vary from gaining economical advantage to even completing academic courses. Plagiarism exists in various domains, where people want to take credit from something they have worked on. These areas can include e.g. literature, art or software, which all have a meaning for an authorship.  
 
-In this study, automatic authorship identification and plagiarism detection from software is analyzed and a model is built on top of findings. The term \textit{automatic} here refers to a system which requires as little as possible human intervention as possible. The goal for the model is to point out possible plagiarism from a collection of documents, which here is specified as a collection of source code files written by various authors. This situation closely related to authorship identification, and thus as a statistical tool, supervised machine learning model is utilized. The latter problem can be stated as \emph{given a document, which author has written this} and \emph{does this document follow the previous style of the author}. 
-}
+In this thesis, document similarity detection and authorship identification from source code are analyzed to build an automatic plagiarism detector. The term \textit{automatic} here refers to a system which requires as little as possible human intervention. The goal for our model is to point out possible plagiarism from a collection of documents, which in this thesis is specified as a collection of source code files written by various authors. Our data, which we will use to our statistical methods, consists of three datasets: (1) 33\,000 documents belonging to University of Helsinki's first programming course, (2) 15\,000 documents belonging to University of Helsinki's advanced programming course and (3) around 400 submissions for source code re-use competition. Statistical methods we apply in this thesis are inspired by the theory of search engines, and are data mining for the similarity detection and machine learning for the authorship identification.
+
+The results show that...}
 
 % The following can be used to specify keywords and classification of the paper:
 
-\keywords{plagiarism; authorship identification; }
+\keywords{plagiarism; authorship identification; similarity detection}
 
 % classification according to ACM Computing Classification System (http://www.acm.org/about/class/)
 % This is probably mostly relevant for computer scientists
 % uncomment the following; contents of \classification will be printed under the abstract with a title
-% "ACM Computing Classification System (CCS):"
-% \classification{}
+%"ACM Computing Classification System (CCS):"
+\classification{Information systems $\rightarrow$  Information retrieval $\rightarrow$  Retrieval tasks and goals $\rightarrow$  Near-duplicate and plagiarism detection\\
+Information systems $\rightarrow$  Information retrieval $\rightarrow$  Retrieval tasks and goals $\rightarrow$ Clustering and classification\\
+Information systems $\rightarrow$  Information systems applications $\rightarrow$  Data mining\\
+Computing methodologies $\rightarrow$  Machine learning $\rightarrow$  Learning paradigms $\rightarrow$  Supervised learning\\
+Computing methodologies $\rightarrow$  Machine learning $\rightarrow$  Learning paradigms $\rightarrow$  Unsupervised learning}
 
 % If the automatic page number counting is not working as desired in your case,
 % uncomment the following to manually set the number of pages displayed in the abstract page:
@@ -211,44 +216,43 @@ In this study, automatic authorship identification and plagiarism detection from
 %What is plagiarism?
 %Why studied here --> 
 
-Massive Online Courses (MOOCs) are a popular way to complete undergraduate courses offered by various institutes and universities. For example a course \emph{Circuits and Electronics} led by Massachusetts Institute of Technology and Harvard University, gathered around 155\,000 registered students from all over the world to a website called \emph{edX}\footnote{\url{https://www.edx.org/}} in 2012 \cite{SLWCRFM2013}. The structure of \emph{Circuits and Electronics} consisted of two parts which are now common in majority of MOOCs: theory part and graded tasks which are offered weekly during the timespan of a course. 
+Massive Online Courses (MOOCs) are a popular way to complete undergraduate courses offered by various institutes and universities. For example a course \emph{Circuits and Electronics} led by Massachusetts Institute of Technology and Harvard University, gathered around 155\,000 registered students from all over the world to a website called \emph{edX}\footnote{\url{https://www.edx.org/} Accessed 10th April 2018} in 2012 \cite{SLWCRFM2013}. The structure of \emph{Circuits and Electronics} consisted of two parts which are now common in majority of MOOCs: theory part and graded tasks which are offered weekly during the timespan of a course. 
 
-The course \emph{Ohjelmoinnin MOOC} is an online programming course offered by University of Helsinki. It has a two-parted structure, introduction and advanced course in Java programming language, where both are mandatory undergraduate-level courses split into seven weeks of total workload. During these weeks students follow the offered course material independently and submit their solutions to various programming tasks that are automatically tested and scored. If the participant is not a registered student in University of Helsinki, he/she can apply for a study right after completing the course and taking an exam, otherwise the student gains total of ten credits to his/her degree. 
+The course \emph{Ohjelmoinnin MOOC} is an online programming course offered by University of Helsinki. It has a two-part structure; introduction and advanced course in Java programming language, where both are mandatory undergraduate-level courses including 14 weeks of total workload. During these weeks students follow the offered course material independently and submit their solutions to various programming tasks that are automatically tested and scored. If the participant is not a student in University of Helsinki, she can apply for a study right after completing the course and taking an exam, otherwise the student gains total of ten credits to her degree. As the nature of \emph{Ohjelmoinnin MOOC} is heavily score-based and students are free to choose their working hours without any major mandatory attendance, it can create a motivation to cheat among  students. Also the fact that there are over hundred students registered and many submissions sent by each student, makes it very hard for course staff to manually detect possible cheating. 
 
-As the nature of \emph{Ohjelmoinnin MOOC} is heavily score-based and students are free to choose their working hours without any major mandatory attendance, it can create a motivation to cheat among  students. Also the fact that there are over hundred students registered and many submissions sent by each student, makes it practically impossible for course staff to detect possible cheating. 
-
-The word \emph{cheating} here refers to an act of plagiarism and one of the ways to define the verb \emph{plagiarize} is as \say{to steal and pass off (the ideas or words of another) as one's own}\footnote{\url{https://www.merriam-webster.com} Accessed 10th April 2018}, and the person conducting this act is called \emph{a plagiarist}. Source-code plagiarism on other hand, refers to the act of plagiarism that happens between software that is built from various source code documents. This kind of plagiarism can be also defined as \emph{source-code reuse}, which includes the following four facets \cite{TDSCP2008}: copying others work without alterations, copying and changing some parts of the code to fool a human inspector, converting a solution from one language to another and using code-generators to automatically create a solution. 
+The word \emph{cheating} here refers to an act of plagiarism and one of the ways to define the verb \emph{plagiarize} is as \say{to steal and pass off (the ideas or words of another) as one's own}\footnote{\url{https://www.merriam-webster.com} Accessed 10th April 2018}, and the person conducting this act is called \emph{a plagiarist}. Source-code plagiarism on other hand, refers to the act of plagiarism that happens between software that is built from various source code documents. This kind of plagiarism can be also defined as \emph{source-code reuse}, which includes the following four facets \cite{TDSCP2008}: (1) copying others work without alterations, (2) copying and changing some parts of the code to fool a human inspector, (3) converting a solution from one language to another and (4) using code-generators to automatically create a solution. 
 
 
-Source-code plagiarism in academia is considered as a serious offence and there often exists a zero tolerance for it \cite{TDSCP2008}. This is usually stressed at the start of courses and can lead to serious consequences ranging from rejecting the students current course registration to even suspension. Dick \etal points out that in some cases over 80\% of the students were found guilty of cheating if they were given a good enough opportunity for it \cite{Dick:2002:ASC:782941.783000}. Usual forms of cheating methods were found to be related to plagiarism: copying solutions from the web, sharing solutions with friends and excessive collaboration between students. 
+Source-code plagiarism in academia is considered as a serious offence and there often exists a zero tolerance for it \cite{TDSCP2008}. This is usually stressed at the start of courses and can lead to serious consequences ranging from rejecting the students current course registration to even suspension. Dick \etal points out that in some courses over 80\% of the students were found guilty of cheating if they were given a good enough opportunity for it \cite{Dick:2002:ASC:782941.783000}. Usual forms of cheating methods were found to be related to plagiarism: copying solutions from the web, sharing solutions with friends and excessive collaboration between students. 
 
-The opinions about cheating motives varies between students and academics \cite{TDSCP2008}. Academics reported that cheating is due to three major factors: external pressure, the ease of sharing solutions and cultural differences. Students on the other hand, gave two major reasons: time pressure and heavy workloads. Now given also the MOOCs time sensitive weekly assignments, the automatic scoring system, and freedom to complete the course wherever students want, can give a motivation to cheat.
+The opinions about cheating motives varies between students and academics \cite{TDSCP2008}. Academics reported that cheating is due to three major factors: external pressure, the ease of sharing solutions and cultural differences. Students on the other hand, gave two major reasons under the study: time pressure and heavy workloads. Given that the MOOCs have time sensitive weekly assignments, the automatic scoring system, and freedom to complete the course wherever students want, can increase the motivation to cheat.
 
-In this study we approach the problem of source code plagiarism detection with data mining and machine learning. By data mining we mean an approach that is able to use computers to find interesting patterns from the data, and by machine learning a statistical process which is able to make predictions using computers. For our proposed detection model, we first build two classifiers: identifying suspicious authors based on the similarity scores obtained from documents and authorship identification that is able to predict the most likely author of a document. Suspicious authors are grouped together to reveal clusters of possible plagiarists, whereas authorship identification is used to detect if a writing style of an author matches to his/her previous work. Using results from both of these classifiers, we propose our approach where the intersection between suspicious authors and candidate authors given a document, is able to reveal cases of possible plagiarism from a set of source codes.
+In this thesis we approach the problem of source code plagiarism detection with data mining and machine learning. By data mining we mean an approach that is able to use computers to find interesting patterns from the data, and by machine learning a statistical process which is able to make predictions using computers. For our proposed detection model, we first build two classifiers: identifying suspicious authors based on the similarity of documents and authorship identification that is able to predict the most likely author of a document. Using results from both of these classifiers, we propose a novel approach where the intersection of suspicious authors and candidate authors of a document is able to reveal possible cases of plagiarism. Suspicious authors are grouped together to reveal clusters of possible plagiarists, whereas authorship identification is used to detect if a writing style of an author matches her previous work. The intersection of these two models should thus minimize the amount of falsely accused people, as we can verify if the author is who she claims to be.  
 
-Following three research questions are asked and answered in this study, which are all tied closely to the question \emph{How plagiarism can be automatically detected?}
+Following three research questions are asked and answered in this study, which are all tied closely to the question \emph{How plagiarism can be automatically detected from source code documents?}
 
 \begin{itemize}
     \item[Q1:] \emph{What kind of approaches exist to detect source code plagiarism?}
     \item[Q2:] \emph{What are the possible benefits of using code structure for plagiarism detection?}
-    \item[Q3:] \emph{How one can reduce the amount of false accusations?}
+    \item[Q3:] \emph{How can one reduce the amount of false accusations?}
 \end{itemize}
 
 \noindent
-To answer these questions, we first conduct a literature review in which we will establish a categorization for techniques used in plagiarism detection. Then, we will show how documents can be presented and retrieved in large-scale environment, and introduce the benefits of using the code structure within plagiarism detection. Finally, we will evaluate both models individually and combine the best scoring models to see how false positives are affected, and how they are introduced in the model. 
+To answer these questions, we first conduct a literature review in which we  establish a categorization for techniques used in plagiarism detection. Then, we show how documents can be presented and retrieved in large-scale environment, and introduce the benefits of using the code structure within plagiarism detection. Finally, we evaluate the similarity detection and authorship identification individually and combine the best scoring models to see how false positives are affected, and how they are introduced in the model. 
 
-Rest of this study is structured as follows: in Chapter 2 more detailed overview of source code plagiarism is given with a theory of classifiers, Chapter 3 presents the results of systematic literature review where we focus on data and methods applied in research, in Chapter 4 our method of using the result of two classifiers and the used real-life data sets are presented, Chapter 5 presents the results by comparing our method to two popular baselines answering previous research questions. Chapter 6 discusses the results, shortcomings with our proposal and possible problems when automatic system is used to accuse students from plagiarism. 
+Rest of this thesis is structured as follows: in Chapter 2 more detailed overview of source code plagiarism is given with a theory of classifiers, Chapter 3 presents the results of systematic literature review where we focus on data and methods applied in research, in Chapter 4 our method of using the result of two classifiers and the used real-life data sets are presented, Chapter 5 presents the results by comparing our method to two popular baselines. Chapter 6 discusses the results by answering previous research questions, discusses the shortcomings with our proposal and presents possible problems when automatic system is used to accuse students from plagiarism. 
 
 \section{Background}
 
-In this chapter we define the problem of plagiarism detection more formally, describe possible plagiarism strategies and give an overview of the similarity detection and authorship identification. We will approach these latter two problems by first defining them, then showing how they tie closely to the domain of information retrieval, and finally giving two real-life models. The first model is a probabilistic model able to predict the author based on the authors previous work, and the second model is a clustering algorithm which can group similar documents together. We start first by defining the problem of plagiarism detection.    
+In this chapter we define the problem of plagiarism detection more formally, describe possible plagiarism strategies and give an overview to the similarity detection and authorship identification. We approach these latter two problems by first defining them, then showing how they tie closely to the domain of information retrieval, and finally give two real-life models. The first model is a probabilistic model able to predict the author based on the authors previous work, and the second model is a clustering algorithm able to group similar documents together. We start first by defining the problem of plagiarism detection.    
 
 \newtheorem*{sc-plg}{Plagiarism detection}
 \begin{sc-plg}
 Given a set of documents $D = \{d_1, d_2, ..., d_n\}$ called as the corpus and a set of authors $A = \{a_1, a_2, ..., a_k\}$ who are writers of these documents, define a function $f$ that is able to classify which documents are plagiarized, and who are possible plagiarists from the set of authors $A$.
 \end{sc-plg}
 
-Above formalization gives an overview of the problem that is studied in this thesis, and some aspects about the problem have been simplified for this study. For example we don't try to reveal the \emph{direction} of plagiarism, we ignore any possible data gathered from the creation process and we only consider authors inside a predefined set. This means that we try only to detect if possible plagiarism can be observed from the textual representation, which can be interpreted as the collection of student submissions.  
+\noindent
+The above formalization gives an overview of the problem that is studied in this thesis. Some aspects about the general problem have been simplified for this study, as for example we don't try to reveal the \emph{direction} of plagiarism, we ignore any possible data gathered from the creation process and we only consider authors inside a predefined set. This means that we try only to detect if possible plagiarism can be observed from the the collection of documents submitted by students. 
 
 To get a better understanding of the details that are relevant to source-code plagiarism, instead of \eg detecting plagiarism from essays, we define some important themes and terms next. Starting from the definition of source code plagiarism, we show some common strategies of plagiarists and briefly introduce the underlying structure of a source code and existing tools to detect plagiarism.
 
@@ -274,11 +278,40 @@ To get a better understanding of the details that are relevant to source-code pl
 \input{results/result.tex}
 
 \section{Discussion}
+\input{discu/discu.tex}
 
-% pair programming
-% worked example
 
 \section{Conclusion}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 %

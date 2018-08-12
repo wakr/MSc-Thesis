@@ -1,0 +1,7 @@
+OhjaOsa3-OhjaKonekoe3Tehtava3.txt
+
+{0: [('5a3e7273', 'c5dc6573')], -- siinä ja siinä, katsoisin myös näiden muita tehtäviä
+
+ 2: [('c0938cd5', 'c3d30025'),  -- siinä ja siinä, ihmetyttää tuo toisen muuttujien nimien käyttö ja toisaalta tuo poista-osan lopussa oleva isompi rivinvaihtojen määrä
+
+ 3: [('c72b7293', 'c8f1fd6f')]} -- lähtisin hieman pidemmälle, erityisesti toisen tyypin muuttujien nimet kuten x ja a on hieman kyseenalaisia. Toisaalta sitten, tuo rakenne on näillä vähän erilainen. Ei helppo tapaus.

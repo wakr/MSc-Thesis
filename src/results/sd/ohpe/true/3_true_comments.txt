@@ -1,0 +1,42 @@
+{0: ('bed0252f', 'beebe013'), -- lähtisin katsomaan, toisella muuttujia kuten "a, b, numero"
+     ('bf05ea67', 'c0d750bb'), -- katsoisin ehdottomasti, molemmilla muuttuja "tupu".. taitavat olla kopiot..
+     ('bf05ea67', 'c72c56d9'), -- lähtisin katsomaan, tässä suurin syy on toisella oleva muuttuja nimeltä "tupu"
+     ('bf05ea67', 'c8eed2b3'), -- lähtisin katsomaan, tässä suurin syy on toisella oleva muuttuja nimeltä "tupu"
+     ('c0d750bb', 'c72c56d9'), -- katsoisin eteenpäin, tässä suurin syy on toisella oleva muuttuja nimeltä "tupu". 
+     ('c0d750bb', 'c8eed2b3'), -- katsoisin eteenpäin, tässä suurin syy on toisella oleva muuttuja nimeltä "tupu". 
+     ('c28d9159', 'c3fa1b77'), -- katsoisin eteenpäin, vaikka tässä on malliratkaisun kaltainen ratkaisu, vaivaa rivinvaihdot (eli rakenne) ja muuttuja nimeltä "a".
+
+ 1: [('8b8148d7', 'c73a0539')], -- katsoisin eteenpäin, ihan jo sen takia että käytössä muuttujat a, b, c, luvut
+
+ 2: [('8d7e6ffb', 'c8fc85b5')], -- samanlainen lähestymistapa, ensin lasketaan frekvenssit listalle, jonka jälkeen tarkastellaan frekvenssejä. sen verran uniikki approach että katsoisin ovatko tehneet samankaltaista muualla
+
+
+ 4: [('bd1b5c13', 'c3fcc66f'), -- katsoisin eteenpäin, samankaltaisia, omituisia muuttujien nimiä, jonka lisäksi turhia rivivaihtoja
+     ('bd1b5c13', 'c8eecf51'), -- katsoisin eteenpäin, samankaltaisia, omituisia muuttujien nimiä, jonka lisäksi
+     ('c3fcc66f', 'c8eecf51')], -- katsoisin eteenpäin, samankaltaisia, omituisia muuttujien nimiä, jonka lisäksi
+
+-- vitosklusteri oli jännä, suurin osa palautuksista samalla tavalla väärin
+
+ 5: [('becf4ebf', 'bedb8d7f'), -- Ihmetyttää freq:in käyttö kun sitä ei ole käsitelty. Katsoisin varmaankin eteenpäin koska freq:in kutsu on sulkujen sisällä (eli "(Collections.frequency(luvut, luku))")
+
+
+ 6: [('befa8db7', 'c0da1d01')], -- katsoisin eteenpäin, vaikuttavat kopioilta toisistaan (jopa muuttujien nimien tasolla)
+
+ 7: [('c20c64d7', 'c7471e31')], -- katsoisin tod. näk. eteenpäin, molemmat tehneet suht monimutkaisesti. voi toki olla, että materiaali vain ohjaa tekemään olioita.
+
+ 8: [('c3d30025', 'c73ae6d5'), -- katsoisin tod. näk. eteenpäin, tässä toi frequency on semmoinen mikä vähän rassaa. Toki eri toistolauseet, mutta silti..
+     ('c73ae6d5', 'c8fcedf5')], -- en lähtisi katsomaan eteenpäin, toisella ei toimiva ratkaisu..
+
+ 9: [('c44352f5', 'c5ea8819')], -- katsoisin tod. näk. eteenpäin. Tässä on mielenkiintoinen tuo, että kumpikaan ei aseta muuttujalle "esiintymiskerrat" arvoa alussa. Rakenteellisesti myös hyvin samat, toisella vaan eri muuttujien nimet.
+
+ 10: [('c5ea8439', 'c90dbf73')], -- en jatkaisi eteenpäin, nää molemmat on vaan lähtenyt tekemään melko monimutkaisesti
+
+ 11: [('c5f64a5f', 'c91b542d')], -- jaa-a. tuskin lähtisin katsomaan eteenpäin, tässä käytetty hashmapia joka on esitelty kurssilla, ajattelisin varmaankin vaan että nyt on tehty hippasen vaikeasti
+
+ 12: [('c5f8a395', 'c739ef2f')], -- lähtisin katsomaan eteenpäin; ei ideaalimallinen ratkaisu, jonka toinen on tod näk kopsannut mutta muuttanut muuttujien nimet
+
+ 13: [('c72e3731', 'c8f1f6c3')], -- sen verran erilaiset että en lähtisi katsomaan eteenpäin, lukujen järjestäminen (joka toisella) myös selkeä oivallus, jonka toinenkin olisi ehkä kopioinut jos tekisivät yhdessä
+
+ 14: [('c8ee5e77', 'c8fc1135'), -- katsoisin eteenpäin, tässä suurin ero todellisuudessa se, että toisella enemmän rivinvaihtoja, jonka lisäksi on käytetty listan läpikäynnissä Integer-tyyppiä (joka voi aiheuttaa ongelmia...)
+      ('c8ee5e77', 'c8fecb2f'), -- periaatteessa malliratkaisutyyppinen, mutta sama kuin alla.
+      ('c8fc1135', 'c8fecb2f')]} -- saattaisin katsoa eteenpäin, erit kun toisella on Collections.freq, mitä ei ole käsitelty, mutta muuten rakenne suht sama (parempi auttaa heikompaa?)
