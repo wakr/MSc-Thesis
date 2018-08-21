@@ -1,4 +1,4 @@
-Because the Multinomial Naïve Bayes and the SCAP evaluated poorly with our data sets, we decide not to use authorship identification for the final results as even reducing the amount of authors would diminish the possibility of finding any plagiarists as random sampling would leave some students out of the detection. This is a drawback for our approach and we discuss the implications at the discussion. However, our similarity detection model evaluated well and can be still used for exploring and detecting the possible plagiarists. What we can't do is to restrict efficiently the amount of false detections by using the authorship identification model, as originally planned.
+Because the Multinomial Naïve Bayes and the SCAP evaluated poorly with our data sets, we decide not to use authorship identification for the final results as even reducing the amount of authors would diminish the possibility of finding any plagiarists as random sampling would leave some students out of the detection. This is a drawback for our approach and we discuss the implications at the discussion. However, our similarity detection model evaluated well and can be still used for exploring and detecting the possible plagiarists. What we can't do is to restrict efficiently the amount of false detections by using the authorship identification model.
 
 Before we can discuss the final results, we must consider an issue with the retrieval rate of our similarity detection. Looking from the Table \ref{tbl-jacc-sd-ohpe} and Table \ref{tbl-jacc-sd-ohja} there are around 500 total documents retrieved, which is too many documents for the human expert to go through in reasonable time. To overcome this issue the we select only a subset of the exam tasks reducing the amount of documents to 144. These are OHPE's third exam task (3.A) and all of the exam tasks of OHJA's (1.B, 2.B, 3.B). A brief description of each selected task is given below.
 
@@ -79,7 +79,7 @@ In Figures \ref{fig-plgdet-res3a}, \ref{fig-plgdet-res1b} and \ref{fig-plgdet-re
 
 \begin{table}[ht]
 \centering
-\caption{Document level results of our plagiarism detection. There are many false positives introduced to our detection results.}
+\caption{Document-level results of our plagiarism detection. There are false positives introduced to our detection results.}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \bf Task      & 3.A   & 1.B   & 2.B & 3.B   \\ \hline
@@ -91,9 +91,7 @@ In Figures \ref{fig-plgdet-res3a}, \ref{fig-plgdet-res1b} and \ref{fig-plgdet-re
 \end{table}
 
 \noindent
-The low precision in Table \ref{tbl-plgdet-final-res} shows how our model fails to limit the amount of false positives, which can be mostly due to the fact that we had to use only the similarity detection part of our approach. As seen before, all of the submissions for OHPE and OHJA contain a high level of natural similarity, which introduces many false positives even with as high threshold as 80\%. To help the work of our human expert, we had to prune the first cluster of OHPE's third task. In reality there would be around 400 detected document pairs, which are clearly all false positives due to the restricted solution space of the task.
+The low precision in Table \ref{tbl-plgdet-final-res} shows how our model fails to limit the amount of false positives, which can be mostly due to the fact that we had to use only the similarity detection part of our approach. As seen before, all of the submissions for OHPE and OHJA contain a high level of natural similarity, which introduces many false positives even with as high threshold as 80\%. To help the work of our human expert, we had to prune the first cluster of OHPE's third task. In reality there would be near 400 detected document pairs, which are clearly all false positives due to the restricted solution space of the task.
 
 
-After the human expert evaluated the detected documents, the five plagiarists caught in 2016 were revealed to us. Our model was able to retrieve documents belonging for all these authors in OHPE's third task. 
-
-\newpage
+After the human expert evaluated the detected documents, the five plagiarists caught in 2016 were revealed to us. Our model was able to retrieve documents belonging for all of these authors in OHPE's third task. 

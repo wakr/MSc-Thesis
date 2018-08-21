@@ -1,13 +1,8 @@
 
-In this thesis, we explore the possibility of using a two-phase model that combines both similarity detection and authorship identification, and hypothesize that such model increases the precision of the plagiarism detection. It is noticeable that none of the studies that were discovered during the literature review in Chapter \ref{chap-liter-review} combine these two approaches when making the decision of possible plagiarism. Therefore our goal is to introduce a new approach which make the use of both tasks submitted by students to create an author profile for each student, and document clustering to retrieve similar documents. Building an author profile happens in our setting naturally because academic courses are often offered as weekly exercise sets which are supplemented by lessons, meaning that the accuracy of the author identification should get better as more data for a student is produced each week. 
+In this thesis, we explore the possibility of using a two-phase model that combines both similarity detection and authorship identification, and hypothesize that such minimizes the amount of false positives in plagiarism detection. False-positives are problematic as it means an innocent author is considered to be a possible plagiarist, and therefore having too sensitive model introduces extra work. It is notable that none of the studies that were discovered during the literature review in Chapter \ref{chap-liter-review} combine these two approaches when making the decision of possible plagiarism. Therefore our goal is to introduce a new approach which uses document clustering to retrieve similar documents, and tasks submitted by students to form an author profile for each student. Building an author profile happens naturally, because academic courses are often offered as weekly exercise sets which are supplemented by lessons, meaning that the accuracy of the author identification should get better as more data for a student is produced each week.   
 
 
-
-We base our approach to a two phase model which could reduce the amount of false-positives found in source code plagiarism detection. False-positives are problematic as it means an innocent author is considered to be a possible plagiarist, and therefore having too sensitive model introduces extra work. The two phases of our model are similarity detection and authorship identification, where both of them are able to define a set of authors; similarity detection reveals suspicious authors based on the file similarity and authorship identification predicts candidate authors for a given document $d$. 
-
-%pre-process documents, tokenize documents, exclude templates, calculate similarities and finding suspects using these similarity scores.
-
-Both of our models are based on other studies presented in the literature review and combine the high-level approach used in many tools \cite{RSCAD2016}: preprocess, normalize, evaluate and predict. For similarity detection we use lower level features that capture the structure and are resilient against transformations introduced in Chapter \ref{chap-liter-review-methods}, and for authorship identification we use higher level features which can capture the style of an author. The generalization of the proposed model is given below.
+Both of our models are based on other studies presented in the literature review and combine the high-level approach used in many tools \cite{RSCAD2016}: preprocess, normalize, evaluate and predict. For the similarity detection we use lower level features that capture the structure and are resilient against transformations introduced in Chapter \ref{chap-liter-review-methods}, and for the authorship identification we use higher level features which can capture the style of an author. The generalization of the proposed model is given below.
 
 \begin{algorithm}[ht]
 \caption{Detecting plagiarism between a set of source code files.}
@@ -31,17 +26,11 @@ Both of our models are based on other studies presented in the literature review
 \end{algorithm}
 
 \noindent
-Algorithm \ref{alg-toplvl} requires six parameters so it can fully function and the most import ones are the collection of documents $D$, which all are assigned respectively to authors inside a set $A$ \ie all source codes are submitted by a known author. Remaining four parameters ($i, n_w, n_c, \varepsilon$) can be defined freely but in this thesis we estimate the latter three by running a series of tests and choosing the best performing values. Therefore the only parameter we can't estimate is of course the index of interest, which in best case iterates over every exercise. However, for the sake of clarity we later choose only a subset of tasks \eg the most challenging tasks, to be under inspection.   
+Algorithm \ref{alg-toplvl} requires six parameters so it can fully function and the most import ones are the collection of documents $D$, and the set of authors $A$ \ie all source codes are submitted by a known author. Remaining four parameters ($i, n_w, n_c, \varepsilon$) can be defined freely but in this thesis we estimate the latter three by running a series of tests and choosing the best performing values. Therefore the only parameter we can't estimate is the index of interest, which in best case iterates over every exercise. However, for the sake of clarity we choose only a subset of tasks to be under inspection.   
 
-The flow of Algorithm \ref{alg-toplvl} is following. Source code files are first normalized for similarity and author detection separately. Then similarity is detected for a collection of documents belonging under same exercise with the function \textproc{DetectSim}, which forms a group of suspicious authors noted as $A_{susp}$. The similarity detection process is controlled by the parameter $\varepsilon$ which acts as a threshold for the detection. For example $\varepsilon = 1.0$ means that documents must be exact copies in order to group them together. The function \textproc{trainAndPredictAuthor} trains our authorship identification model with previous documents that the author has written, and then predicts who are the most likely authors from the set $A$ for $i$th exercise noted as $A_{auth}$. 
+The flow of Algorithm \ref{alg-toplvl} is following. Source code files are first normalized for similarity and authorship detection separately. Then similarity is detected for a collection of documents belonging under same exercise with the function \textproc{DetectSim}, which forms a group of suspicious authors noted as $A_{susp}$. The similarity detection process is controlled by the parameter $\varepsilon$ which acts as a threshold for the detection. For example $\varepsilon = 1.0$ means that documents must be exact copies in order to group them together. The function \textproc{trainAndPredictAuthor} trains our authorship identification model with previous documents that the author has written, and then predicts who are the most likely authors from the set $A$ for $i$th exercise noted as $A_{auth}$. 
 
-Our final result is the intersection between sets $A_{susp}$ and $A_{auth}$, the results of similarity detection and authorship identification. Our intuition behind this can be shown with the following example. 
-
-\begin{example}
-Let there be three authors $a,b,c \in A$ and three exercises under detection $d_a, d_b, d_c \in D$, where $D$ contains also previous submissions for each author. Let there also exist a similarity detection phase able to cluster perfectly when document similarity is over the threshold $\varepsilon$, and authorship identification model trained with 100\% accuracy so that the expected error when classifying any of the documents $d_a, d_b, d_c$ as is minimal. 
-
-If the clustering result is that $\omega_1 = \{d_a,d_b\}$ and $\omega_2 = \{d_c\}$ implying authors $a$ and $b$ are suspects as they share too much structural similarity, and the identification predicts following authors: $\hat{f}(d_a) = a, \hat{f}(d_b) = a$ and $\hat{f}(d_c) = c$. Then we have verified that authors $a$ and $b$ have a high chance for a case of plagiarism as their submissions are too similar and the style of a document send by author $b$ matches more the style of the author $a$. We claim that $a$ has probably shared the document to $b$, but because in this thesis we completely leave out the direction of plagiarism, both cases should be reviewed equally by a human expert \ie we treat sharing as equally serious offense as copying.
-\end{example}
+Our final result is the intersection between sets $A_{susp}$ and $A_{auth}$, the results of similarity detection and authorship identification. Our intuition behind this can be shown with the following example. Let there be three authors $a,b,c \in A$ and three exercises under detection $d_a, d_b, d_c \in D$, where $D$ contains also previous submissions for each author. Let there also exist a similarity detection phase able to cluster perfectly when document similarity is over the threshold $\varepsilon$, and authorship identification model trained with 100\% accuracy so that the expected error when classifying any of the documents $d_a, d_b, d_c$ as is minimal. If the clustering result is that $\omega_1 = \{d_a,d_b\}$ and $\omega_2 = \{d_c\}$ implying authors $a$ and $b$ are suspects as they share too much structural similarity, and the identification predicts  $\hat{f}(d_a) = a, \hat{f}(d_b) = a$ and $\hat{f}(d_c) = c$, then we have verified that authors $a$ and $b$ have a high chance for a case of plagiarism as their submissions are too similar and the style of a document send by author $b$ matches more the style of the author $a$. We claim that $a$ has probably shared the document to $b$, but because in this thesis we completely leave out the direction of plagiarism, both cases should be reviewed equally by a human expert \ie we treat sharing as equally serious offense as copying.
 
 
 
@@ -53,35 +42,35 @@ universities. Following five assumptions are defined to simplify the problem of 
 detection by allowing us to focus only on plagiarism that happens in a closed environment and within a closed set of documents. 
 
 \paragraph{In-class plagiarism} Plagiarism has occured only inside a 
-specific course implementation. Let $\mathcal{P}(A)$ be a powerset of students within offered courses in university. We are only interested about a set of students referred as authors $A$ attended in a specific course $c$ \ie a subset $A_c \subseteq \mathcal{P}(A), A_c \neq \emptyset$. The corpus $D_c$ is built by gathering every submission done by students $\forall a \in A_c$ and a set of documents belonging to individual student is defined as $D_a = \{d \mid d \in D_c, a = auth(d)\}$. 
+specific course implementation. Let $\mathcal{P}(A)$ be a powerset of students within offered courses in a university. We are only interested about a set of students referred as authors $A$ attended in a specific course $c$ \ie a subset $A_c \subseteq \mathcal{P}(A), A_c \neq \emptyset$. The corpus $D_c$ is built by gathering every submission done by students $\forall a \in A_c$ and a set of documents belonging to individual student is defined as $D_a = \{d \mid d \in D_c, a = auth(d)\}$. 
 
 
 \paragraph{Exercise focus} 
-Let $E_c = \{e_1, e_2, ..., e_n\}$ be a set of exercises for a course $c$, then submissions for a single exercise is represented by a subset $D_{c,e} \subseteq D_c$. With this assumption, we focus the plagiarism detection to submissions done to a single exercise at a time \ie plagiarism can happen only between submissions to a single exercise.
+Let $E_c = \{e_1, e_2, ..., e_n\}$ be a set of exercises for a course $c$, then submissions for a single exercise is represented by a subset $D_{c,e} \subseteq D_c$. With this assumption, we focus the plagiarism detection to submissions done to a single exercise at a time \ie plagiarism can happen only between submissions done to a single exercise.
 
 \paragraph{Single author} 
-Every source code $d \in D_c$ is assumed to have a single author $a = auth(d), a \in A_c$. This allows us to assume that every source code submissions is done as a individual work, and all results that suggests otherwise implies about the case of excessive collaboration \ie plagiarism. 
+Every source code $d \in D_c$ is assumed to have a single author $a = auth(d), a \in A_c$. This allows us to assume that every source code submission is done as a individual work, and all results that suggests otherwise implies about the case of excessive collaboration \ie plagiarism. 
 
 \paragraph{Plagiarism direction} 
 Let a file $d_i$ be plagiarized from $d_j$: $d_i \xrightarrow{plag} d_j$. We treat this as same as the opposite direction $d_i \xleftarrow{plag} d_j$, making the direction of plagiarism unimportant. This means that we treat both cases sharing and copying, as an act of supporting plagiarism. 
 
 \paragraph{Expert interference}
-We believe that no system can be accurate enough to autonomously accuse students about plagiarism. However, this is doable when some form of human judgment is added to the model. In principal this means that the model can make predictions about cases of plagiarisms which we call \emph{suspects}, but the human expert must make the \emph{allegation} of plagiarism based on the results and after questioning the students. Having guidelines about what is considered as plagiarism and how such cases are handled\footnote{University of Helsinki's guidelines: \url{https://blogs.helsinki.fi/alakopsaa/?lang=en} Accessed 9th May 2018}, helps both students and teachers to understand what the institution means when it accuses of plagiarism. 
+We believe that no system can be accurate enough to autonomously accuse students of plagiarism. However, this is doable when some form of human judgment is added to the model. In principal this means that the model can make predictions about cases of plagiarisms which we call \emph{suspects}, but the human expert must make the \emph{allegation} of plagiarism based on the results and after questioning the students. Having guidelines about what is considered as plagiarism and how such cases are handled\footnote{University of Helsinki's guidelines: \url{https://blogs.helsinki.fi/alakopsaa/?lang=en} Accessed 9th May 2018}, helps both students and teachers to understand what the institution means when it accuses somebody of plagiarism. 
 
 \input{method/data.tex}
 
 
 \subsection{Document normalization}
 
-We utilize same approaches as studies reviewed in Chapter \ref{chap-liter-review-methods} to minimize the variance between documents. The benefit of normalization mainly is, that it reduces the vocabulary size by unifying language structures which are unimportant. However, with normalization we can also emphasize certain aspects. In case of similarity detection we want to preserve as much structural information as possible, and in case of authorship identification the students author profile must be captured. This means we can ignore all stylistic preferences in similarity detection and all structural information in authorship identification, because they share different goals.
+We utilize same approaches as studies reviewed in Chapter \ref{chap-liter-review-methods} to minimize the variance between documents by using normalization. The benefit of normalization  is, that it reduces the vocabulary size by unifying language structures which are unimportant. However, with normalization we can also emphasize certain aspects. In case of similarity detection we want to preserve as much structural information as possible, and in case of authorship identification the students author profile must be captured. This means we can ignore all stylistic preferences in similarity detection and all structural information in authorship identification, as they share different goals.
 
-For similarity detection we transform every document into a token stream by first parsing the program with a parser and turning it into abstract syntax tree, then traversing the structure to get the stream as a string format. This method allows to capture the higher-level structure of the program, and still allows to handle it as a text. Also, it works against obfuscation strategies which were stated in Tables \ref{tbl-plag-strat}, \ref{tbl-plag-transf} in Chapter \ref{chap-bg-sc-plag}, by ignoring certain aspects. For example the parses will ignore all white spaces, comments, identifier names and standardizes loop names. This means it works against levels 1,2 and 5 of Table \ref{tbl-plag-transf}. The parser itself only works with Java and is heavily inspired by the one used in JPlag \cite{prechelt2002finding}. The complete list of tokens is seen in Appendix \ref{appendix:token-list}, which shows also the equivalencies to generate certain tokens. For example all loop constructs generate a single token "LOOP\{" to indicate start of the loop. This normalizes the documents to preserve the underlying logic behind them, so even if the plagiarists would use a different looping construct like while instead of for, two programs would still share a common token stream. 
+For similarity detection we transform every document into a token stream by first parsing the program with a parser and turning it into abstract syntax tree, then traversing the structure to get the stream as a string format. This method allows to capture the higher-level structure of the program, and still allows to handle it as a text. Also, it works against obfuscation strategies which were stated in Tables \ref{tbl-plag-strat}, \ref{tbl-plag-transf} in Chapter \ref{chap-bg-sc-plag}, by ignoring certain structures. For example the parses will ignore all white spaces, comments, identifier names and it standardizes loop names, meaning it works against levels 1,2 and 5 of Table \ref{tbl-plag-transf}. The parser itself only works with Java and is heavily inspired by the one used in JPlag \cite{prechelt2002finding}. The complete list of tokens is seen in Appendix \ref{appendix:token-list}, which shows also the equivalencies to generate certain tokens. For example all loop constructs generate a single token "LOOP\{" to indicate start of the loop, which normalizes the documents to preserve the underlying similar logic behind them. 
 
-Table \ref{tbl-token-stream} shows the corresponding token stream for program A in Appendix \ref{appendix:programs}, where one can see how much information is discarded from the source code as we only keep the crucial structural information. This allows us to reduce the size of the possible vocabulary and generalize documents, as for example changing all integer values of the example source code leaves token stream intact. Same goes for changing the variable names, as they are not presented in any way inside the token stream. 
+Table \ref{tbl-token-stream} shows the corresponding token stream for the program A in Appendix \ref{appendix:programs}, where one can see how much information is discarded from the source code as we only keep the crucial structural information. It allows us to reduce the size of the possible vocabulary and generalize documents, as for example changing all integer values of the example source code leaves the token stream completely intact. Same goes for changing of the variable names, as they are not presented in any way in the token stream. 
 
 \begin{table}[ht]
 \centering
-\caption{Token stream generated from the example source code in Appendix \ref{appendix:programs}.}
+\caption{Token stream generated from the example source code in Appendix \ref{appendix:programs}. No literal values are being saved to generalize documents as much as possible.}
 \label{tbl-token-stream}
 \begin{tabular}{|l|l|} \hline
 \bf Original source code & \bf Token stream \\ \hline
@@ -120,11 +109,11 @@ APPLY
 
 \newpage
 
-For the authorship identification, normalization method we apply uses the same idea as in \cite{AIRTSCAA2009, SCANG2007}. We discard all comments and normalize literal values to remove any possible notion of the original author, like unique student number or name in comments. The purpose behind normalization for authorship identification is therefore to leave the original document as intact as possible, maintaining the preferences that the programmer might have for \eg variable naming or spacing. An example of the normalization procedure is given in Table \ref{tbl-ai-normalization} for the same program used in Table \ref{tbl-token-stream}, where one can see that all numerical values have been transformed under a single dollar token \texttt{\$}.
+For the authorship identification, normalization method we apply uses the same idea as in \cite{AIRTSCAA2009, SCANG2007}. We discard all comments and normalize literal values to remove any possible notion of the original author, like unique student number or name in comments. The purpose behind normalization for authorship identification is therefore to leave the original document as intact as possible, maintaining the preferences that the programmer might have for variable naming or spacing. An example of the normalization procedure is given in Table \ref{tbl-ai-normalization} for the same program used in Table \ref{tbl-token-stream}, where one can see that all numerical values have been transformed under a single dollar token \texttt{\$}.
 
 \begin{table}[ht]
 \centering
-\caption{The result of normalization procedure for authorship identification.}
+\caption{The result of normalization procedure for the authorship identification. All literals have been mutated.}
 \label{tbl-ai-normalization}
 \begin{tabular}{|l|} \hline
 \bf Normalized code \\ \hline
@@ -147,9 +136,9 @@ public class A{
 
 \subsection{Document representation}
 
-To represent every documents as vector, we use information retrieval techniques introduced in Chapter \ref{chap-IR}. Plagiarism detection is therefore done first by converting document into vector space model after the normalization of documents. In both similarity detection and authorship identification documents terms are first extracted, which in our case means all possible $n$-grams with respect to vocabulary $\mathbb{V}$. The only difference being that in similarity detection the vocabulary is formed using every document as a token stream, where as authorship identification uses only part of the complete data to form the available vocabulary. 
+To represent every documents as vector, we use information retrieval techniques introduced in Chapter \ref{chap-IR}. Plagiarism detection is therefore done first by converting document into vector space model after the normalization. In both similarity detection and authorship identification, terms are first extracted, which in our case means all possible $n$-grams with respect to vocabulary $\mathbb{V}$. The only difference being that in similarity detection the vocabulary is formed using every document as a token stream, where as authorship identification uses only part of the complete data to form the available vocabulary \ie the training data. 
 
-To overcome the problem with varying document length and frequently appearing terms, we apply TF-IDF weighting introduced in Chapter \ref{chap-IR-document-repr}. Table \ref{tbl-ngram-sd} shows example of the term extraction for similarity detection using word level 2-grams for program A in Appendix \ref{appendix:programs}. All TF-IDF weights have been normalized using Euclidean norm 
+To overcome the problem with varying document length and frequently appearing terms, we apply TF-IDF weighting introduced in Chapter \ref{chap-IR-document-repr}. Table \ref{tbl-ngram-sd} shows example of the term extraction for similarity detection using word level 2-grams for program A in Appendix \ref{appendix:programs}. All TF-IDF weights have been normalized using Euclidean norm, which is given following.
 
 \begin{equation}
     \dfrac{\bolditt{x}}
@@ -177,16 +166,13 @@ To overcome the problem with varying document length and frequently appearing te
 \end{table}
 
 \noindent
-Example how the calculation is done in Table \ref{tbl-ngram-sd} is given below.
-\begin{example}
-To get the value 0.18 for a term \texttt{ASSIGN APPLY} in document A one sees first that the value of $tf$ is 1 from Table \ref{tbl-ngram-sd}. The $idf$ is formed by dividing number of documents with the number of total term frequency over all documents, and taking a logarithm \ie $idf = \log(N/df) = \log((1+3)/(1+2)) + 1 \approx 1.29$. Note that we add extra ones to avoid division with zero and to diminish the effect of terms appearing only in training set. Now $tf{\text -}idf$ is simply $tf \cdot idf = 1 \cdot 1.29 = 1.29$. Finally, after calculating non-normalized weight for each term, we can derive the value 0.18 dividing $1.29$ with the Euclidean norm over the weights which gives $tf{\text -}idf_{norm} = 1.29 / \! \norm{\bolditt{w}}_2 = 1.29 / 6.98 = 0.18$
-\end{example}
+Example how the calculation is done in Table \ref{tbl-ngram-sd} is given next. To get the value 0.18 for a term \texttt{ASSIGN APPLY} in document A one sees first that the value of $tf$ is 1 from Table \ref{tbl-ngram-sd}. The $idf$ is formed by dividing number of documents with the number of total term frequency over all documents, and taking a logarithm \ie $idf = \log(N/df) = \log((1+3)/(1+2)) + 1 \approx 1.29$. Note that we add extra ones to avoid division with zero and to diminish the effect of terms appearing only in training set. Now $tf{\text -}idf$ is simply $tf \cdot idf = 1 \cdot 1.29 = 1.29$. Finally, after calculating non-normalized weight for each term, we can derive the value 0.18 dividing $1.29$ with the Euclidean norm over the weights which gives $tf{\text -}idf_{norm} = 1.29 / \! \norm{\bolditt{w}}_2 = 1.29 / 6.98 = 0.18$.
 
-The vocabulary $\mathbb{V}$ that forms the set of possible tokens in Table \ref{tbl-ngram-sd}, is the union between every token appearing in three example documents \ie $\mathbb{V} = \bigcup_{i=1}^{3} V_i$ where $V_i = \{t_1, t_2, \cdots, t_n\}$. Therefore some terms may appear zero like the term \texttt{METHOD\{ APPLY} for document A in Table \ref{tbl-ngram-sd}, as it exists only in the token stream of document C. However, this problem with terms appearing zero times is only present in authorship identification, where the main corpus is the training set that is needed to train the model. Therefore even though there can be some terms that appears only in training set and not in test set, the smoothing we apply also in Equation \ref{eq-laplace} prevents the complete product to become zero. Terms like \texttt{ASSIGN VARDEF} and \texttt{VARDEF ASSIGN} have a high weight as they mostly appear in document A, implying that document A has more variable assignments than document B or C, which is true when one looks at the raw source code documents. 
+The vocabulary $\mathbb{V}$ that forms the set of possible tokens in Table \ref{tbl-ngram-sd}, is the union between every token appearing in three example documents \ie $\mathbb{V} = \bigcup_{i=1}^{3} V_i$ where $V_i = \{t_1, t_2, \cdots, t_n\}$. Therefore some terms may appear zero like the term \texttt{METHOD\{ APPLY} for the document A in Table \ref{tbl-ngram-sd}, as it exists only in the token stream of document C. The smoothing we apply in Equation \ref{eq-laplace} prevents the complete product to become zero. Terms like \texttt{ASSIGN VARDEF} and \texttt{VARDEF ASSIGN} have a high weight as they mostly appear in document A, implying that document A has more variable assignments than document B or C, which is true when one looks at the raw source code documents. 
 
-With our approach, we can now represent document as a vector of weights \eg document A as $\bolditt{x} = [0.14, 0.18, \cdots, 0.14, 0.14]$, and the dimension of $\bolditt{x}$ is the size of vocabulary $\mathbb{V}$. The visualization of these three programs as vectors of weights is seen in Figure \ref{fig-tfidf}, where it is clear that program C is the outlier whereas A and B share more similarities between each others.
+With our approach, we can now represent document as a vector of weights \eg document A as $\bolditt{x} = [0.14, 0.18, \cdots, 0.14, 0.14]$, where the dimension of $\bolditt{x}$ is the size of vocabulary $\mathbb{V}$. The visualization of these three programs as vectors of weights can be seen in Figure \ref{fig-tfidf}, where it is clear that program C is the outlier whereas A and B share more similarities between each others.
 
-\begin{figure}[!h]
+\begin{figure}[ht]
 \centering
 \setlength\figureheight{7cm}
 \setlength\figurewidth{10cm}
@@ -201,19 +187,5 @@ With our approach, we can now represent document as a vector of weights \eg docu
 
 \input{method/author_identification.tex}
 
-%\begin{figure}[!h]
-%\centering
-%\setlength\figureheight{5cm}
-%\setlength\figurewidth{8cm}
-%\input{plots/fig.tikz}
-%
-%\caption{TEST} \label{fig:M1}
-%\end{figure}
-
-%use t-SNE for visualization!! density is lost https://stats.stackexchange.com/questions/263539/k-means-clustering-on-the-output-of-t-sne?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-
 
 \input{method/evaluation.tex}
-
-
-\newpage

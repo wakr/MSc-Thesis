@@ -1,15 +1,15 @@
-The data used in testing phase of 32 gathered articles is presented next, where the focus is for the similarity detection on following attributes: number of total documents, is there any synthetic data used and the average number of lines of code (Avg. LOC). For the authorship identification we focus on features like documents per author and number of possible authors. The term \emph{document} here refers to the number of source code file samples per author. We summarize the findings from data utilizing the categorization that was made earlier.
+The data used in testing phase of the 32 gathered articles is presented next, where the focus is for the similarity detection on following attributes: number of total documents, is there any synthetic data used and the average number of lines of code (Avg. LOC). For the authorship identification we focus on features like documents per author and number of possible authors. We summarize these findings utilizing the same categorization that was made earlier.
 
 \paragraph{Similarity Detection}\mbox{}\\
-Attribute counting study by Moussiades and Vakali in \cite{PACASCD2005} uses two real data sets written in C\texttt{++}. They contain programming assignments and a forged set of programs. The first data set contains 24 programs having an average of 247 lines of code per submission, the second set is 51 programs having an average of 178 lines per source code. The forged data set is two modified versions from one program, trying to deliberately confuse state-of-the-art detectors.
+Attribute counting study by Moussiades and Vakali \cite{PACASCD2005}, uses two real data sets written in C\texttt{++}. Both contain programming assignments and a forged set of programs. The first data set contains 24 programs having an average of 247 lines of code per submission and the second set 51 programs having an average of 178 lines per source code. The forged data set uses two modified versions from one program, trying to deliberately confuse state-of-the-art detectors.
 
-Segment matching study by Brixtel et al. used three corpora on their evaluation and are written in Haskell, Python and C \cite{LICD2010}. Haskell corpus had 13 documents averaging 400 lines per each, Python 15 documents averaging 150 lines per each and C 19 documents averaging 250 lines per source code. Study by Zhang and Liu used 12 programs written in C that all reflected different plagiarism strategies \cite{ASTMLPD2013}. 
+Segment matching study by Brixtel et al. used three corpora on their evaluation, which are written in Haskell, Python and C \cite{LICD2010}. Haskell corpus has 13 documents averaging 400 lines per each, Python 15 documents averaging 150 lines per each and C 19 documents averaging 250 lines per source code. Study by Zhang and Liu used 12 programs written in C that all reflected different plagiarism strategies \cite{ASTMLPD2013}. 
 
 Studies utilizing $n$-grams are summarized into following table.
 
 \begin{table}[ht]
 \centering
-\caption{Data used in similarity detection studies utilizing $n$-grams}
+\caption{Data used in similarity detection studies utilizing $n$-grams.}
 \label{table-ng-str-data}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
           \hline
@@ -21,8 +21,9 @@ Studies utilizing $n$-grams are summarized into following table.
 \end{table}
 
 \noindent
-It's visible from the table \ref{table-ng-str-data} that there are now a lot more documents used in experimentation and surprisingly synthetic data is not used at all. This is due to the usage of student submissions and competition data sets like \emph{Google Code Jam} submissions, which was for example utilized by Flores \etal in \cite{USCR2014}. 
+It's visible from the Table \ref{table-ng-str-data} that there are a lot more documents used in experimentation and surprisingly synthetic data is not used at all. This is due to the usage of student submissions and competition data sets like \emph{Google Code Jam} submissions, which was utilized  for example by Flores \etal \cite{USCR2014}. 
 
+\clearpage
 
 \begin{table}[ht]
 \centering
@@ -38,19 +39,19 @@ It's visible from the table \ref{table-ng-str-data} that there are now a lot mor
 \end{table}
 
 \noindent
-One can see from the table \ref{table-ast-str-data} that a study done by Fu \etal in \cite{Fu2017WASTKAW} has a large number of documents, and this due to two facts: they reported the size as pairs of documents and they used a generator to form a lot of forged documents from a small set of 10 original submissions. Ganguly and Jones in \cite{AIR2015} don't explicitly report the statistics of their data set, but refers to a competition test set called \emph{SOurce COde Re-use} (SOCO). This competition offers a set of C and Java files which contains known cases of cross-lingual plagiarism \cite{saez2014pan}. The train set size of SOCO is 338 files. 
+One can see from the Table \ref{table-ast-str-data} that a study done by Fu \etal \cite{Fu2017WASTKAW} has a large number of documents, which is due to two facts: they reported the size as pairs of documents and they used a generator to form a lot of forged documents from a small set of 10 original submissions. Ganguly and Jones don't explicitly report the statistics of their data set \cite{AIR2015}, but refers to a competition test set called \emph{SOurce COde Re-use} (SOCO). This competition offers a set of C and Java files which contains known cases of cross-lingual plagiarism \cite{saez2014pan}.
 
-Finally, hybrid study by Xiong \etal utilizes 40 assignments gathered from students \cite{BUAA2009}, Muddu \etal uses 5054 original files that they mutate to introduce copied code \cite{CPDPPD2013} and Ganguly \etal uses both train and test set of the SOCO competition, totaling around 12\,000 files \cite{RCISCP2017}. 
+Finally, a hybrid study by Xiong \etal utilizes 40 assignments gathered from students \cite{BUAA2009}, Muddu \etal uses 5054 original files that they mutate to introduce copied code \cite{CPDPPD2013} and Ganguly \etal uses both train and test set of the SOCO competition, totaling around 12\,000 files \cite{RCISCP2017}. 
 
 
 \paragraph{Authorship identification}\mbox{}\\
-Usage of data in studies dealing with the problem of identifying the author and utilizing attribute counting are summarized to the following table, where we now turn the focus on the amount of candidate authors and documents per author reported in studies.
+Usage of data in studies dealing with the problem of identifying the author and utilizing attribute counting, are summarized to the following table where we focus on the amount of candidate authors and documents per author reported in studies.
 
-In table \ref{table-ai-ac-str-data}, one can see that there are two same data sets used in \cite{SCAIUFL2013, DNNSCAI2013}. This set was collected from \emph{SourceForge}\footnote{\url{https://sourceforge.net/}} projects and there are around 61 to 377 files per author. Rest of the attribute counting studies prefers to use \eg submissions gathered from students, as it's an easy way to gather tagged source code files.  
+In Table \ref{table-ai-ac-str-data}, one can see that there are two same data sets used in \cite{SCAIUFL2013, DNNSCAI2013}. This set was collected from \emph{SourceForge}\footnote{\url{https://sourceforge.net/} Accessed 5th February 2018} projects and there are around 61 to 377 files per author. Rest of the attribute counting studies prefers to use \eg submissions gathered from students, as it's an easy way to gather source code files that contain the author information.  
 
 \begin{table}[ht]
 \centering
-\caption{Data used in authorship studies utilizing attribute counting}
+\caption{Data used in authorship studies utilizing attribute counting.}
 \label{table-ai-ac-str-data}
 \scalebox{0.9}{
     \begin{tabular}{|c|c|c|c|c|c|c|c|}
@@ -64,7 +65,7 @@ In table \ref{table-ai-ac-str-data}, one can see that there are two same data se
 \end{table}
 
 
-Next, data sets from the second popular method $n$-grams used in authorship identification, are summarized into following table.
+Data sets from the second popular method $n$-grams used in authorship identification, are summarized into following table.
 
 \begin{table}[ht]
 \centering
@@ -80,13 +81,13 @@ Next, data sets from the second popular method $n$-grams used in authorship iden
 \end{table}
 
 \noindent
-There exists three different data sets used by three different authors in table \ref{table-ai-ng-str-data}: Burrows \etal in \cite{SCANG2007, AIRTSCAA2009} used data set gathered from students C programming assignments, Frantzeskou \etal in \cite{ESHPFSCAC2008, TSUDIJSCAI2011} used open-source programs written in Java and Tennyson \etal in \cite{CAPSCAP2014, ABEC2014} used programs written in \cpp and Java which mixture of were open-source, sample and textbook programs.
+There exists three different data sets used by three different authors in Table \ref{table-ai-ng-str-data}: Burrows \etal \cite{SCANG2007, AIRTSCAA2009} used data set gathered from students C programming assignments, Frantzeskou \etal \cite{ESHPFSCAC2008, TSUDIJSCAI2011} used open-source programs written in Java and Tennyson \etal \cite{CAPSCAP2014, ABEC2014} used programs written in \cpp\, and Java.
 
-The only study that mainly used abstract syntax tree in their authorship study is by Alsulami \etal in \cite{SCAANN2017}. They used \emph{Google Code Jam} to gather 700 Python source code files belonging to 70 programmers averaging around 10 submissions per author. 
+The only study that mainly used abstract syntax tree in their authorship study is by Alsulami \etal \cite{SCAANN2017}. They used \emph{Google Code Jam} to gather 700 Python source code files belonging to 70 programmers averaging around 10 submissions per author. 
 
-Finally, the data used in two hybrid studies are summarized. Wisse and Veenman used repositories from version control website called \emph{GitHub} \cite{SDNAIJSP2015}. The largest author pool they had while testing was 30. Zhang \etal had the data set also gathered from websites like \emph{GitHub} in their study \cite{AISC2017}. Their largest data set with respect to the author size, was imbalanced set of 503 programs belonging to 53 authors. 
+Finally, the data used in two hybrid studies are summarized. Wisse and Veenman used repositories from version control website called \emph{GitHub}\footnote{\url{https://github.com/} Accessed 5th February 2018} \cite{SDNAIJSP2015}. The largest author pool they had while testing was 30. Zhang \etal had the data set also gathered from websites like \emph{GitHub} in their study \cite{AISC2017}. Their largest data set with respect to the author size, was imbalanced set of 503 programs belonging to 53 authors. 
 
 \paragraph{Summary}\mbox{}\\
-When looking the data usage of plagiarism study as a whole, one can see that almost all studies use data that is non-synthetic \ie use real-life data, that can be gathered for example from students course submissions or from competitions like SOCO. In similarity detection studies the median of the amount of source codes used is 447 and very few studies reported the average lines of code, which is a bit problematic as it can be easier to find plagiarism from a small set of program lines than from larger programs. In authorship attribution the median of possible authors in studies is 30 and the documents per author ranges from two to as high as 377.
+When looking the data usage of plagiarism study as a whole, one can see that almost all studies use data that is non-synthetic \ie use real-life data, that can be gathered for example from students course submissions or from competitions like SOCO. In similarity detection studies the median of the amount of source codes used is 447 and very few studies reported the average lines of code, which is a bit problematic as it can be easier to find plagiarism from a small set of program lines than from larger programs. In authorship attribution the median of possible authors in studies is 30 and the documents per author ranges from 2 to as high as 377.
 
 % tarkista mediaani

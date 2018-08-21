@@ -31,7 +31,7 @@ Tables below show the splits we make, the number of students submitted to the la
 \noindent
 We see in Table \ref{lbl-result-ai-ohpe-stat} how the amount of students varies quite a bit for the final week as only 53 students submitted. This is probably because students have calculated that they already got the points they need in order to pass the course with the exam, so they skip the last exercise. The amount of students remains more stable in OHJA seen in Table \ref{lbl-result-ai-ohja-stat}, where the profile size grows more steadily. 
 
-For every split in OHPE we calculated the macro-averaged $F_1$ for the validation data and got following results.
+For every split in OHPE we calculate the macro-averaged $F_1$ for the validation data, and these results are visible in following table.
 
 
 \begin{table}[ht]
@@ -52,7 +52,7 @@ For every split in OHPE we calculated the macro-averaged $F_1$ for the validatio
 \end{table}
 
 \noindent
-Table \ref{lbl-result-ai-f1-ohpe} shows how the model fails to predict the correct authors in multiclass setting, where each document can be predicted only to one author. We see that the $F_1$-score slightly increases when $n \geq 10$ and when the used weeks grows \ie the submission amount per student grows. The same evaluation was also run for the OHJA, but the results were as poor as for the OHPE, and therefore they are not shown here. Based on these result we fix the $n$-gram length as 10, as it's the best overall result we got with the smallest $n$ used which also limits the size of vocabulary.
+Table \ref{lbl-result-ai-f1-ohpe} shows how the model fails to predict the correct authors in a multiclass setting, where each document can be predicted only to one author. We see that the $F_1$-score slightly increases when $n \geq 10$ and when the used weeks grows \ie the submission amount per student grows. The same evaluation was also run for the OHJA, but the results were as poor as for the OHPE, and therefore they are not shown here. Based on these result we fix the $n$-gram length as 10 as it's the best overall result we got with the smallest $n$ used, which also limits the size of vocabulary.
 
 Figure \ref{fig-ai-ohpe-ngram-voc} reveals how the vocabulary size grows when the $n$-gram length gets larger. Even by using a small value of $n$ which keeps the vocabulary size smallest and should effectively capture \eg the spacing used after operator symbols, gives poor results as seen in Table \ref{lbl-result-ai-f1-ohpe}. However the problem with large vocabulary is that the training consists a lot of noisy features \ie features that could be dismissed completely, that the model is unable to find important features and weight them properly. 
 
@@ -68,7 +68,7 @@ Figure \ref{fig-ai-ohpe-ngram-voc} reveals how the vocabulary size grows when th
 \end{figure}
 
 
-As we look the ten most common $n$-grams formed from the training using OHPE's data set and their frequencies, we see how similar most of the features are from Table \ref{tbl-ai-result-topten-ngrams}. 
+As we look from Table \ref{tbl-ai-result-topten-ngrams} the ten most common $n$-grams formed from the training using OHPE's data set and their frequencies, we see how similar most features can be. 
 
 \begin{table}[ht]
     \centering
@@ -108,7 +108,7 @@ We looked would the data be skewed while training \ie would some author have a m
 There are only four authors 2, 35, 41 and 49 who are below the average profile size in Figure \ref{fig-author-to-document-dist-ohpe}, so we can't say that our data would have been skewed in the training process. The data is very evenly spread amongst the authors, as nearly all have around 100 documents for their profile size. When comparing these numbers to other studies presented during literature review in Chapter \ref{subsec-liter-data}, we see that not only we have around ten times more documents per authors, but also our author pool is a lot larger. Having a lot of sample documents for each author should generate more distinct writing preferences, but in our case it's not the case as submissions seem to be too similar. Excessive similarity was a problem also in our similarity detection evaluation in Chapter \ref{chap-sd-result}.
 
 
-To see the missclassification of our model, we formed the frequencies of true authors and the predicted authors in the validation data of OHPE. Figure \ref{fig-ai-result-author-distr} shows how the authorship identification should produce a uniform distribution of authors, where each author has around 25 documents classified for them. However, our model can't find enough unique stylistic preferences during the training, thus misclassifying majority of the documents to four authors. This result reflects the same observation that was made earlier about the excessive similarity of the documents. The similarity between source code documents leads to situation where some amount of authors might be so close to other profiles, that there any not enough discriminating $n$-grams which could divide authors apart from each other. This problem is visualized in Figure \ref{fig-ai-result-author-distr} as spikes, where four authors become author archetypes who capture the same writing style as everybody else.
+To visualize the missclassification of our model, we formed the frequencies of true authors and the predicted authors in the validation data of OHPE. Figure \ref{fig-ai-result-author-distr} shows how the authorship identification should produce a uniform distribution of authors, where each author has around 25 documents classified for them. However, our model can't find enough unique stylistic preferences during the training, thus misclassifying majority of the documents to four authors. This result reflects the same observation that was made earlier about the excessive similarity of the documents, which leads to a situation where some amount of authors might be so close to other profiles, that there any not enough discriminating $n$-grams that could divide authors apart from each other. This problem is visualized in Figure \ref{fig-ai-result-author-distr} as spikes, where four authors become author archetypes who capture the writing style of everybody else.
 
 \newpage
 
@@ -135,9 +135,9 @@ To see the missclassification of our model, we formed the frequencies of true au
 
 
 
-Inspecting the probabilities of the Multinomial Naïve Bayes which is trained with OHPE, the mean prior is 0.02 (2\%) and the standard deviation 0.002. This means that the prior probabilities $P(y)$ are very close to each other so their influence is diminished at the prediction phase. The likelihood \ie probability of the $i$th feature appearing given the class $P(x_i | y)$, is also very small for every feature and class combination, as using 10-grams there are around 246\,000 unique features. For every class the mean conditional probability is $4.1 \times 10^{-6}$ and standard deviations for conditional probabilities are in range $[1.3 \times 10^{-7}, 2.0 \times 10^{-7}]$, showing again how similar all values are because our vocabulary is too large. 
+Inspecting the probabilities of the Multinomial Naïve Bayes which is trained with OHPE, the mean prior is 0.02 (2\%) and the standard deviation 0.002. This means that the prior probabilities $P(y)$ are very close to each other so their influence is diminished at the prediction phase. The likelihood \ie probability of the $i$th feature appearing given the class $P(x_i | y)$, is also very small for every feature and class combination, as using 10-grams there are around 278\,000 unique features. For every class the mean conditional probability is $4.1 \times 10^{-6}$ and standard deviations for conditional probabilities are in range $[1.3 \times 10^{-7}, 2.0 \times 10^{-7}]$, showing again how similar all values are because our vocabulary is too large. 
 
-As we have now shown the results for training and validation, selected the $n$-gram length as 10 and looked some of the reasons why the model fails to predict the author, we next present the results for the test data. It consist of the last exercises and uses all possible data for the training phase, as shown in Table \ref{lbl-result-ai-ohpe-stat} and Table \ref{lbl-result-ai-ohja-stat}. We will restrict the author pool size to ease the problem and use the last week for both OHPE and OHJA to have a full data set, and these results for both $F_1$-score and accuracy are visible in Figure \ref{fig-ai-result-ohpeohja-testset}. 
+As we have now shown the results for training and validation, selected the $n$-gram length as 10 and looked some of the reasons why the model fails to predict the author, we next present the results for the test data. It consist of the last exercises of OHPE and OHJA, and uses all possible data for the training phase, as shown in Table \ref{lbl-result-ai-ohpe-stat} and Table \ref{lbl-result-ai-ohja-stat}. We will restrict the author pool size to ease the problem and use the last week for both OHPE and OHJA to have a full data set, and these results for both $F_1$-score and accuracy are visible in Figure \ref{fig-ai-result-ohpeohja-testset}. 
 
 
 \begin{figure}[!h] 

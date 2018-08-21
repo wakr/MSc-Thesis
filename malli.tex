@@ -135,7 +135,7 @@
 
 In this thesis, document similarity detection and authorship identification from source code are analyzed to build an automatic plagiarism detector. The term \textit{automatic} here refers to a system which requires as little as possible human intervention. The goal for our model is to point out possible plagiarism from a collection of documents, which in this thesis is specified as a collection of source code files written by various authors. Our data, which we will use to our statistical methods, consists of three datasets: (1) 33\,000 documents belonging to University of Helsinki's first programming course, (2) 15\,000 documents belonging to University of Helsinki's advanced programming course and (3) around 400 submissions for source code re-use competition. Statistical methods we apply in this thesis are inspired by the theory of search engines, and are data mining for the similarity detection and machine learning for the authorship identification.
 
-The results show that...}
+Our results show that similarity detection model can be used successfully to retrieve documents for further plagiarism inspection, but false positives are quickly introduced when using a high threshold. We were unable to apply authorship identification for our datasets due to high similarity between the submitted documents. This similarity is mostly caused by the tasks and the course settings, where a specific programming style is taught during the timespan of the course.}
 
 % The following can be used to specify keywords and classification of the paper:
 
@@ -283,7 +283,22 @@ To get a better understanding of the details that are relevant to source-code pl
 
 \section{Conclusion}
 
+The problem of software plagiarism detection is difficult as the term itself is very vague. In it's simplest form, plagiarism can mean direct copying and in it's most complex forms, it's undetectable as there exist so many little nuances that can be detected. To detect plagiarism from large amounts of source codes, like seen in many programming related courses, one must resort to tools that can help humans with the overwhelming process. 
 
+In this thesis, we have conducted a literature review on the topic of \emph{How source code plagiarism can be detected}, showed an $n$-gram-based approach to detect software plagiarism using two real-life data sets and compared it to modern tool called JPlag. Our proposed approach consists of two parts which both share inspiration from the field of information retrieval using submissions of students: similarity detection and authorship identification. Excessive similarity is detected by calculating the cosine similarity between the vector representations of documents and applying density-based clustering. For the problem of authorship identification, we trained a probabilistic machine learning model, which uses all previous submissions from a student given a fixed exercise. 
+
+
+Our results show, that the problem of authorship identification is too difficult for our model and thus we couldn't apply it during the plagiarism detection phase. We tested it using various training data and author pool sizes, but without any major breakthroughs. At largest, there were over 200 classes (students) having 24 sample documents in our training phase and at lowest, around 50 classes having around 100 samples for each class.  Because the results were so poor, we applied another $n$-gram-based method called source code author profile (SCAP), which restricts our feature space from nearly 280\,000 features to just under 10\,000. The SCAP method failed at the task also, and thus we suspect that from our data sets it's nearly impossible to detect any unique author profiles as the students are being taught a single style during the two courses our data is from.  
+
+Another finding is that our similarity detection model, which uses $n$-gram length of three and similarity threshold 0.8, works reasonably well when we compared it to JPlag. We selected this model by running multiple evaluations ranging from $F_1$-score to inspecting the sizes of emerged clusters, and found that many false positives were falsely detected. However, also JPlag detected many of these false positives, and thus we conclude that submissions in our data sets were too similar in multiple ways. For example one of the largest cluster we found after applying our similarity detection to one of the exams, had 410 unique pairs. After we inspected the nature of these submissions, we found that most of them were correct solutions without containing any suspicious \ie most of them were naturally similar caused by restricted solutions space to a given problem. Another observation comes from the tuning of hyperparameters of our model, as parameters tuned by using a different data set could give nearly a perfect accuracy, but introduces many false positives when applying the model to real-life data set. 
+
+Final major observation was made when we evaluated our proposed approach to a predefined set of exams, which in practice was only was the similarity detection part. We were told by the course instructor that there exists true proven cases of plagiarism among the submissions, and our approach found all five of them. This result was also confirmed by our human expert, who evaluated every detected document from four exam tasks that we picked. During this human evaluation process more suspicious documents were found, and thus we can say that our model was a success even though the authorship identification still remains as a challenge for data sets with large amount of students.  
+
+% mita Arto loys
+
+
+% viimeiset sanat plagioimisen tunnistamisesta
+% haasteet
 
 
 

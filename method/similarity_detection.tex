@@ -1,9 +1,11 @@
 \subsection{Similarity detection}
 
 
-After submissions for a given exercise have been normalized to a token stream, we apply the \textproc{DetectSim} function of the Algorithm \ref{alg-toplvl}, which retrieves set of authors we call suspicious authors. These authors share a lot of structural similarity to each others within a given task, implying that there is a high chance that plagiarism might be occurred within this set. 
+After submissions for a given exercise have been normalized into a token stream, we apply the \textproc{DetectSim} function of the Algorithm \ref{alg-toplvl}, which retrieves set of authors we call suspicious authors. These authors share a lot of structural similarity to each others within a given task, implying that there is a high chance that plagiarism might be occurred within this set. 
 
-The \textproc{DetectSim} in other words is the similarity detection method of our study, where we first calculate the vector similarity to form a distance matrix $\bolditt{M}$. In this matrix $\bolditt{M}_{i,j}$ implicates the similarity between documents $d_i$ and $d_j$. Then, we calculate the similarity by using cosine similarity introduced in Chapter \ref{chap-bg-sim}, which was also extensively utilized by other studies in Chapter \ref{chap-liter-review-methods}. Lastly, we apply DBSCAN clustering to the values in similarity matrix $\bolditt{M}$ to form a groups of suspicious authors. The pseudocode for the \textproc{DetectSim} function can be seen in Algorithm \ref{alg-detectSim}.
+The \textproc{DetectSim} in other words, is the similarity detection method of our study, where we first calculate the vector similarity to form a distance matrix $\bolditt{M}$. In this matrix $\bolditt{M}_{i,j}$ implicates the similarity between documents $d_i$ and $d_j$. Then, we calculate the similarity by using cosine similarity introduced in Chapter \ref{chap-bg-sim}, which was also extensively utilized by other studies in Chapter \ref{chap-liter-review-methods}. Lastly, we apply DBSCAN clustering to the values in similarity matrix $\bolditt{M}$ to form a groups of suspicious authors. The pseudocode for the \textproc{DetectSim} function can be seen in Algorithm \ref{alg-detectSim}, which is dependant from two parameters: length of $n$-grams and similarity threshold $\varepsilon$. These two hyperparameters are tuned with SOCO data set before the final evaluation. The overall flow of operations is following: first we extract all word level $n$-grams and turn the documents into raw term frequencies, then terms are weighted using TF-IDF and cosine similarity is calculated between every document. Finally DBSCAN clustering algorithm is used to form clusters of similar documents. Because we know every author of each document and we assume single authorship, these clusters are identical to clusters of authors.
+
+\clearpage
 
 \begin{algorithm}[ht]
 \caption{Detecting suspicious authors.}
@@ -27,6 +29,4 @@ The \textproc{DetectSim} in other words is the similarity detection method of ou
 \end{algorithm}
 
 \noindent
-The Algorithm \ref{alg-detectSim} is dependant from two parameters: length of $n$-grams and similarity threshold $\varepsilon$. These two hyperparameters are tuned with SOCO data set before the final evaluation. The overall flow of operations is following: first we extract all word level $n$-grams and turn the documents into raw term frequencies, then terms are weighted using TF-IDF and cosine similarity is calculated between every document. Finally DBSCAN clustering algorithm is used to form clusters of similar documents. Because we know every author of each document and we assume single authorship, these clusters are identical to clusters of authors. 
-
-Note that the value of $MinPts$ is assumed to be value 2, as only two documents is needed to form a cluster of suspicious documents. This refers to real life situation where two students have shared source code between each others. 
+Note that in Algorithm \ref{alg-detectSim}, the value of $MinPts$ is assumed to be value 2, as only two documents are needed to form a cluster of suspicious documents. This refers to a real life situation where two students have shared source code between each others. 
